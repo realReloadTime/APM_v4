@@ -1,3 +1,5 @@
 Django
 asyncpg
+psycopg2-binary
 uvicorn
+channels

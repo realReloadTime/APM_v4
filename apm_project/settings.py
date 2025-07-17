@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +84,7 @@ DATABASES = {
         'PORT': '5432',
         'OPTIONS': {
             'isolation_level': 'read committed',
+            'async': True
         },
         'CONN_MAX_AGE': 0,
     }
