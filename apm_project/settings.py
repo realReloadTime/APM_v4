@@ -83,9 +83,8 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
         'OPTIONS': {
-            'isolation_level': 'read committed',
             'async': True
-        },
+        },  # ЗАККОМЕНТИТЬ НА ВРЕМЯ МИГРАЦИИ
         'CONN_MAX_AGE': 0,
     }
 }
