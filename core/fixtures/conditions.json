@@ -1,0 +1,51 @@
+[
+  {
+    "model": "core.condition",
+    "pk": 1,
+    "fields": {
+      "name": "Ясно"
+    }
+  },
+  {
+    "model": "core.condition",
+    "pk": 2,
+    "fields": {
+      "name": "Облачно"
+    }
+  },
+  {
+    "model": "core.condition",
+    "pk": 3,
+    "fields": {
+      "name": "Пасмурно"
+    }
+  },
+  {
+    "model": "core.condition",
+    "pk": 4,
+    "fields": {
+      "name": "Дождь"
+    }
+  },
+  {
+    "model": "core.condition",
+    "pk": 5,
+    "fields": {
+      "name": "Туман"
+    }
+  },
+  {
+    "model": "core.condition",
+    "pk": 6,
+    "fields": {
+      "name": "Снег"
+    }
+  },
+  {
+    "model": "core.condition",
+    "pk": 7,
+    "fields": {
+      "name": "Метель"
+    }
+  }
+]

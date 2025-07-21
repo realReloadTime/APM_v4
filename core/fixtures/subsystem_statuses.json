@@ -1,0 +1,30 @@
+[
+  {
+    "model": "core.subsystemstatus",
+    "pk": 1,
+    "fields": {
+      "name": "С замечаниями"
+    }
+  },
+  {
+    "model": "core.subsystemstatus",
+    "pk": 2,
+    "fields": {
+      "name": "Не работает"
+    }
+  },
+  {
+    "model": "core.subsystemstatus",
+    "pk": 3,
+    "fields": {
+      "name": "СМР/ПНР не завершены"
+    }
+  },
+  {
+    "model": "core.subsystemstatus",
+    "pk": 4,
+    "fields": {
+      "name": "Выполняются работы"
+    }
+  }
+]
