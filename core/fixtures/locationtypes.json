@@ -1,0 +1,16 @@
+[
+  {
+    "model": "core.locationtype",
+    "pk": 1,
+    "fields": {
+      "name": "Магистральный газопровод"
+    }
+  },
+  {
+    "model": "core.locationtype",
+    "pk": 2,
+    "fields": {
+      "name": "Прочее"
+    }
+  }
+]

@@ -1,0 +1,170 @@
+[
+  {
+    "model": "core.loa",
+    "pk": 1,
+    "fields": {
+      "name": "Александровское ЛПУ МГ",
+      "region": null
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 2,
+    "fields": {
+      "name": "Алтайское ЛПУ МГ",
+      "region": null
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 3,
+    "fields": {
+      "name": "Амурское ЛПУ МГ",
+      "region": 4
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 4,
+    "fields": {
+      "name": "Барабинское ЛПУ МГ",
+      "region": 51
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 5,
+    "fields": {
+      "name": "Иркутское ЛПУ МГ",
+      "region": 22
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 6,
+    "fields": {
+      "name": "Камчатское ЛПУ МГ",
+      "region": 27
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 7,
+    "fields": {
+      "name": "Кемеровское ЛПУ МГ",
+      "region": 31
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 8,
+    "fields": {
+      "name": "Ленское ЛПУ МГ",
+      "region": null
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 9,
+    "fields": {
+      "name": "Новокузнецкое ЛПУ МГ",
+      "region": 31
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 10,
+    "fields": {
+      "name": "Новосибирское ЛПУ МГ",
+      "region": 51
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 11,
+    "fields": {
+      "name": "Омское ЛПУ МГ",
+      "region": 52
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 12,
+    "fields": {
+      "name": "Приморское ЛПУ МГ",
+      "region": 57
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 13,
+    "fields": {
+      "name": "Сахалинское ЛПУ МТ",
+      "region": 65
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 14,
+    "fields": {
+      "name": "Томское ЛПУ МГ",
+      "region": 74
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 15,
+    "fields": {
+      "name": "Хабаровское ЛПУ МГ",
+      "region": 80
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 16,
+    "fields": {
+      "name": "Юргинское ЛПУ МГ",
+      "region": 31
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 17,
+    "fields": {
+      "name": "Алданское ЛПУ МГ",
+      "region": 64
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 18,
+    "fields": {
+      "name": "Нерюнгринское ЛПУ МГ",
+      "region": 64
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 19,
+    "fields": {
+      "name": "Сковородинское ЛПУ МГ",
+      "region": 4
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 20,
+    "fields": {
+      "name": "Свободненское ЛПУ МГ",
+      "region": 4
+    }
+  },
+  {
+    "model": "core.loa",
+    "pk": 21,
+    "fields": {
+      "name": "Магистральное ЛПУ МГ",
+      "region": null
+    }
+  }
+]

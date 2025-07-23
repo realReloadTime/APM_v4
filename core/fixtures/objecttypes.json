@@ -1,0 +1,58 @@
+[
+  {
+    "model": "core.objecttype",
+    "pk": 1,
+    "fields": {
+      "name": "Компрессорная станция"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 2,
+    "fields": {
+      "name": "Газораспределительная станция"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 3,
+    "fields": {
+      "name": "Крановый узел"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 4,
+    "fields": {
+      "name": "Радио-релейная связь"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 5,
+    "fields": {
+      "name": "ВЛЭП"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 6,
+    "fields": {
+      "name": "КП СЛТМ"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 7,
+    "fields": {
+      "name": "КП ЭХЗ"
+    }
+  },
+  {
+    "model": "core.objecttype",
+    "pk": 8,
+    "fields": {
+      "name": "Прочее"
+    }
+  }
+]

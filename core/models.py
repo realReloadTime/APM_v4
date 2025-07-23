@@ -66,10 +66,10 @@ class User(Model):
 
     class Meta:
         indexes = [
-            # Ускорение авторизации/поиска по имени
+            # ускорение авторизации/поиска по имени
             Index(fields=['name']),
 
-            # Быстрая фильтрация по уровню доступа
+            # быстрая фильтрация по уровню доступа
             Index(fields=['admin', 'edit']),
         ]
 
@@ -87,10 +87,10 @@ class Attachment(Model):
 
     class Meta:
         indexes = [
-            # Поиск вложений по автору
+            # поиск вложений по автору
             Index(fields=['author']),
 
-            # Сортировка по дате создания
+            # сортировка по дате создания
             Index(fields=['-created_at']),
         ]
 
@@ -114,7 +114,8 @@ class LOA(Model):
     region = ForeignKey(
         Region,
         on_delete=CASCADE,
-        related_name='region_loas'
+        related_name='region_loas',
+        null=True
     )
 
 
@@ -134,10 +135,9 @@ class Location(Model):
 
     class Meta:
         indexes = [
-            # Поиск мест по LOA
+            # поиск мест по ЛПУ
             Index(fields=['loa']),
 
-            # Ускорение JOIN-запросов
             Index(fields=['location_type']),
         ]
 
@@ -161,10 +161,10 @@ class Object(Model):
 
     class Meta:
         indexes = [
-            # Фильтрация объектов по LOA
+            # фильтрация объектов по ЛПУ
             Index(fields=['loa']),
 
-            # Поиск по типу объекта
+            # поиск по типу объекта
             Index(fields=['type']),
         ]
 
@@ -209,16 +209,16 @@ class Event(Model):
 
     class Meta:
         indexes = [
-            # Для быстрого поиска событий по времени
+            # для быстрого поиска событий по времени
             Index(fields=['begin']),
 
-            # Для фильтрации по LOA + категории
+            # для фильтрации по ЛПУ + категории
             Index(fields=['loa', 'category']),
 
-            # Для выборки по месту события
+            # для выборки по месту события
             Index(fields=['location']),
 
-            # Для отчетов по временным диапазонам
+            # для отчетов по временным диапазонам
             Index(fields=['end']),
         ]
 
@@ -235,10 +235,10 @@ class MeasuresTaken(Model):
 
     class Meta:
         indexes = [
-            # Фильтрация мер по событию
+            # фильтрация мер по событию
             Index(fields=['event']),
 
-            # Аналитика по времени принятия мер
+            # аналитика по времени принятия мер
             Index(fields=['adopted_at']),
         ]
 
@@ -279,15 +279,15 @@ class EquipmentFailure(Model):
 
     class Meta:
         indexes = [
-            # Частый поиск по связанному объекту
+            # поиск по связанному объекту
             Index(fields=['object']),
 
             Index(fields=['event']),
 
-            # Фильтрация по статусу подсистемы
+            # фильтрация по статусу подсистемы
             Index(fields=['subsystem_status']),
 
-            # Комбинированный индекс для аналитики
+            # комбинированный индекс для аналитики
             Index(fields=['subsystem', 'subsystem_status']),
         ]
 
