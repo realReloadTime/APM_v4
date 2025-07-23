@@ -1,0 +1,273 @@
+[
+  {
+    "model": "core.subsystem",
+    "pk": 1,
+    "fields": {
+      "name": "ВЛ",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 2,
+    "fields": {
+      "name": "Реклоузер",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 3,
+    "fields": {
+      "name": "Внешнее электроснабжение",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 4,
+    "fields": {
+      "name": "АИП №1",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 5,
+    "fields": {
+      "name": "АИП №2",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 6,
+    "fields": {
+      "name": "АТИП №1",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 7,
+    "fields": {
+      "name": "АТИП №2",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 8,
+    "fields": {
+      "name": "АПЭ №1",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 9,
+    "fields": {
+      "name": "АПЭ №2",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 10,
+    "fields": {
+      "name": "Ормат №1",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 11,
+    "fields": {
+      "name": "Ормат №2",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 12,
+    "fields": {
+      "name": "СЛТМ",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 13,
+    "fields": {
+      "name": "Пожарная сигнализация",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 14,
+    "fields": {
+      "name": "Контроль загазованности",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 15,
+    "fields": {
+      "name": "САУ",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 16,
+    "fields": {
+      "name": "КП телемеханики",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 17,
+    "fields": {
+      "name": "Контроль загазованности на переходе",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 18,
+    "fields": {
+      "name": "Волс",
+      "system": 3
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 19,
+    "fields": {
+      "name": "Передача данных Зелакс",
+      "system": 3
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 20,
+    "fields": {
+      "name": "Оборудование Радиус-IP",
+      "system": 3
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 21,
+    "fields": {
+      "name": "Оборудование Микран",
+      "system": 3
+    }
+  },{
+    "model": "core.subsystem",
+    "pk": 22,
+    "fields": {
+      "name": "Оборудование Хуавэй",
+      "system": 3
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 23,
+    "fields": {
+      "name": "Катодная защита",
+      "system": 4
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 24,
+    "fields": {
+      "name": "ГПА",
+      "system": 5
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 25,
+    "fields": {
+      "name": "Компрессор",
+      "system": 5
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 26,
+    "fields": {
+      "name": "Влагомер",
+      "system": 5
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 27,
+    "fields": {
+      "name": "Хроматограф",
+      "system": 5
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 28,
+    "fields": {
+      "name": "Расходомер",
+      "system": 5
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 29,
+    "fields": {
+      "name": "Прочее",
+      "system": 1
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 30,
+    "fields": {
+      "name": "Прочее",
+      "system": 2
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 31,
+    "fields": {
+      "name": "Прочее",
+      "system": 3
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 32,
+    "fields": {
+      "name": "Прочее",
+      "system": 4
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 33,
+    "fields": {
+      "name": "Прочее",
+      "system": 5
+    }
+  },
+  {
+    "model": "core.subsystem",
+    "pk": 34,
+    "fields": {
+      "name": "Прочее",
+      "system": 6
+    }
+  }
+]

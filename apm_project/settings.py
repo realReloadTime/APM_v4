@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +69,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'apm_project.wsgi.application'
+ASGI_APPLICATION = 'apm_project.asgi.application'
 
 
 # Database
@@ -81,8 +84,8 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
         'OPTIONS': {
-            'isolation_level': 'read committed',
-        },
+            'async': True
+        },  # ЗАККОМЕНТИТЬ НА ВРЕМЯ МИГРАЦИИ
         'CONN_MAX_AGE': 0,
     }
 }

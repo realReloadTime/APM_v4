@@ -1,0 +1,44 @@
+[
+  {
+    "model": "core.system",
+    "pk": 1,
+    "fields": {
+      "name": "Энергоснабжение"
+    }
+  },
+  {
+    "model": "core.system",
+    "pk": 2,
+    "fields": {
+      "name": "КИПиА"
+    }
+  },
+  {
+    "model": "core.system",
+    "pk": 3,
+    "fields": {
+      "name": "Связь"
+    }
+  },
+  {
+    "model": "core.system",
+    "pk": 4,
+    "fields": {
+      "name": "ЭХЗ"
+    }
+  },
+  {
+    "model": "core.system",
+    "pk": 5,
+    "fields": {
+      "name": "Технологическое оборудование"
+    }
+  },
+  {
+    "model": "core.system",
+    "pk": 6,
+    "fields": {
+      "name": "Прочее"
+    }
+  }
+]

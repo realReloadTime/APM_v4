@@ -1,0 +1,58 @@
+[
+  {
+    "model": "core.precipitation",
+    "pk": 1,
+    "fields": {
+      "name": "Дождь"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 2,
+    "fields": {
+      "name": "Гроза"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 3,
+    "fields": {
+      "name": "Снег"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 4,
+    "fields": {
+      "name": "Град"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 5,
+    "fields": {
+      "name": "Ледяной дождь"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 6,
+    "fields": {
+      "name": "Дождь с порывами ветра"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 7,
+    "fields": {
+      "name": "Снег с порывами ветра"
+    }
+  },
+  {
+    "model": "core.precipitation",
+    "pk": 8,
+    "fields": {
+      "name": "Без осадков"
+    }
+  }
+]

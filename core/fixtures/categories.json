@@ -1,0 +1,58 @@
+[
+  {
+    "model": "core.category",
+    "pk": 1,
+    "fields": {
+      "name": "Отказ / нарушение в работе оборудования",
+      "table_name": "equipmentfailure"
+    }
+  },
+  {
+    "model": "core.category",
+    "pk": 2,
+    "fields": {
+      "name": "Неблагоприятные погодные условия",
+      "table_name": "adverseweather"
+    }
+  },
+  {
+    "model": "core.category",
+    "pk": 3,
+    "fields": {
+      "name": "Неблагоприятная пожарная обстановка",
+      "table_name": "firedanger"
+    }
+  },
+  {
+    "model": "core.category",
+    "pk": 4,
+    "fields": {
+      "name": "Неблагоприятная геологическая обстановка",
+      "table_name": "geologicaldanger"
+    }
+  },
+  {
+    "model": "core.category",
+    "pk": 5,
+    "fields": {
+      "name": "Неблагоприятная гидрологическая обстановка",
+      "table_name": "hydrologicaldanger"
+    }
+  },
+  {
+    "model": "core.category",
+    "pk": 6,
+    "fields": {
+      "name": "ЧС / авария на объекте на смежной территории",
+      "table_name": "emergencysituation"
+    }
+  },
+  {
+    "model": "core.category",
+    "pk": 7,
+    "fields": {
+      "name": "Другие неблагоприятные условия",
+      "table_name": "otherdanger"
+    }
+  }
+]
