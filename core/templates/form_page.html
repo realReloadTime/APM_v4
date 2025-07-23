@@ -1,10 +1,296 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Пустая форма</title>    
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <nav class="navbar-fixed-top justify-content-center bg-light" data-bs-theme="light">
+        <div class="form-top-container">
+            <div class="form-section">
+                <div class="form-row" style="display: grid; grid-template-columns: auto auto;">
+                    <div class="input-group" style="display: grid; grid-template-columns: auto auto;">
+                        <label class="input-group-text" for="filial">Филиал</label>
+                        <select class="form-select" id="filial" style="width:100%">
+                            <option value="">Выберите филиал</option>
+                            <option value="tatar">Татарский АУГ МПГ</option>
+                            <option value="bashkir">Башкирский АУГ МПГ</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="display: grid; grid-template-columns: auto auto;">
+                        <label class="input-group-text" id="lbl_start">Дата начала события: </label>
+                        <input type="date" class="form-control" style="width:100%" aria-describedby="lbl_start"/>
+                    </div>
+                </div>
+                <div class="input-group" style="display: grid; grid-template-columns: auto auto;">
+                    <label class="input-group-text" for="enviroment-type">Тип обстановки</label>
+                    <select class="form-select" id="enviroment-type" aria-describedby="lbl-enviroment-type" style="width:100%">
+                        <option value="equipment-failure">Отказ оборудования</option>
+                        <option value="weather">Погодные условия</option>
+                        <option value="fire">Пожарные условия</option>
+                        <option value="geology">Геологические условия</option>
+                        <option value="hydrology">Гидрологические условия</option>
+                        <option value="emergency">Чрезвычайная ситуация</option>
+                        <option value="other">Другие</option>
+                    </select>
+                </div>
+                
+            </div>
+            <div class="admin-section" style="grid-column: 2; grid-row: 1 / span 2; align-self: top;">
+                <label>Администратор - <br>Админ Админович</label>
+            </div>
+            <div class="location-section" style="grid-column: 1 / span 2; grid-row: 2;">
+                <div class="input-group" style="display: grid; grid-template-columns: auto auto;">
+                    <label class="input-group-text" for="event-location">Место возникновения события</label>
+                    <select class="form-select" id="event-location" style="width:100%">
+                        <option value="">Выберите место возникновения</option>
+                        <option value="water">водопровод</option>
+                    </select>
+                </div>
+            </div>
+            
+        </div>
+    </nav>
+    <div class="main-form">
+        <div class="changing-form" id="equipment-failure" style="display: block;">
+            <div class="internal-block" id="pick-objects" style="width: 100%; display: grid;">
+                <div style="display:flex inline; align-items: center; width: 100%; grid-row: 1; grid-column: 1/ span 2; gap: 5px">
+                    <label id="one_object">Объект, на котором произошло событие: </label>
+                    <input class="form-control" name="picked_object" type="text"/>
+                    <button class="btn btn-primary">Выбрать объект</button>
+                </div>
+                <span style="grid-column: 1; grid-row: 2; ">Список объектов под влиянием события:</span>
+                <button class="btn btn-primary" style="grid-column: 1; grid-row: 3; ">Добавить/изменить объекты</button>
+                <textarea class="form-control" style="grid-column: 2; grid-row: 2 /span 2 ;"></textarea>
+            </div>
+            <div class="internal-block" style="width: 100%; display: inline flex;">
+                <span> Система возникновения отказа:</span>
+                <select class="form-select" id="system_decline"> 
+                    <option value="">Выберите тип обстановки</option>
+                    <option value="equipment failure">Отказ оборудования</option>
+                    <option value="weather">Погодные условия</option>
+                </select>
+            </div>
+            <div class="internal-block" style="width: 100%; display: inline flex;">
+                <span for="equipment-type"> Тип оборудования:</span>
+                <select class="form-select" id="equipment-type"> 
+                    <option value="">Выберите тип обстановки</option>
+                    <option value="equipment failure">Отказ оборудования</option>
+                    <option value="weather">Погодные условия</option>
+                </select>
+            </div>
+            <div class="internal-block" style="width: 100%; display: inline flex;">
+                <span id="lbl-equipment-correction">Уточнение по оборудованию:</span>
+                <input class="form-control" name="equipment-correction" type="text" aria-describedby="lbl-equipment-correction"/>
+            </div>
+            <div class="internal-block" style="width: 100%; display: inline flex;;">
+                <span for="equipment-state"> Состояние оборудования:</span>
+                <select class="form-select" id="equipment-state"> 
+                    <option value="">Выберите тип обстановки</option>
+                    <option value="equipment failure">Отказ оборудования</option>
+                    <option value="weather">Погодные условия</option>
+                </select>
+            </div>
+            <div class="internal-block" style="width: 100%; display: block;">
+                <span for="describe-event">Описание события: </span>
+                <textarea class="form-control" name="describe-event" type="text" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="changing-form" id="weather">
+            <div class="internal-block" style="display: block;">
+                <div style="display: inline-flex; align-items: center; gap: 5px; white-space: pre">
+                    <label>Вид информации и источник: </label>
+                    <select class="form-select" id=""></select>
+                </div>
+                <div>
+                    <label>Географическая территория(край, область, регион):</label>
+                    <textarea class="form-control" id="territory" ></textarea>
+                </div>
+            </div>
+            <div class="internal-block" style="display: grid;  grid-template-columns: 7% auto 7% 7% auto 7%;"> 
+                <label style="grid-column: 1 / span 3; grid-row: 1;">Метеоусловия:</label>
+                <label style="grid-column: 4/ span 3; grid-row: 1;">Осадки:</label>
+                <button class="btn btn-primary" style="grid-column: 1; grid-row: 2;">&lt</button>
+                <select class="form-select" style="grid-column: 2; grid-row: 2;">
+                    <option>Ясно</option>
+                </select>
+                <button class="btn btn-primary" style="grid-column: 3;grid-row: 2;">&gt</button>
+                <button class="btn btn-primary" style="grid-column: 4; grid-row: 2;">&lt</button>
+                <select class="form-select" id="select-rainfall" style="grid-column: 5; grid-row: 2;">
+                    <option>Отстутсвуют</option>
+                </select>
+                <button class="btn btn-primary" style="grid-column: 6;grid-row: 2;">&gt</button>
+                <label style="grid-column: 1 / span 2; grid-row: 3;">Температура (по Цельсию)</label>
+                <input class="form-control" type="text" style="grid-column: 3/ span 2; grid-row: 3;"/>
+                <label style="grid-column: 1 / span 2; grid-row: 4;">Ветер (м/сек)</label>
+                <input class="form-control" type="text" style="grid-column: 3/ span 2; grid-row: 4;"/>
+                <input class="form-control" type="text" style="grid-column: 5/ span 2; grid-row: 4;" disabled/>
+            </div>
+            <div class="internal-block" style="display: grid;">
+                <label>Прочее:</label>
+                <textarea class="form-control"></textarea>    
+            </div>
 
+            
+        </div>
+        <div class="changing-form" id="fire">
+            <div class="internal-block" style="display: inline-flex; align-items: center; gap: 5px; white-space: pre">
+                <label>Вид информации и источник: </label>
+                <select class="form-select" id=""></select>
+            </div>
+            <div class="internal-block" style="display: inline-flex; align-items: center; gap: 5px;">
+                <label>Площадь пожара:</label>
+                <input class="form-control" type="text">
+                <input class="form-control" type="text" disabled>
+            </div>
+            <div class="internal-block">
+                <label>Прочее:</label>
+                <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="changing-form" id="geology">
+            <div class="internal-block" style="display: inline-flex; align-items: center; gap: 5px; white-space: pre">
+                <label>Вид информации и источник: </label>
+                <select class="form-select" id=""></select>
+            </div>
+            <div class="internal-block">
+                <label>Географическая территория(край, область, регион):</label>
+                <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+            <div class="internal-block">
+                <label>Эпицентр возникновения события:</label>
+                <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+            <div class="internal-block">
+                <label>Магнитуда: </label> 
+                <span style="margin-left:auto" id="magnitudeValue">1</span>
+                <input class="form-control" type="range" min="1" max="9" step="1" value="1" list="values"
+                    oninput="document.getElementById('magnitudeValue').textContent = this.value">
+                <datalist id="values">
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    <option value="6"></option>
+                    <option value="7"></option>
+                    <option value="8"></option>
+                    <option value="9"></option>
+                </datalist>
+            </div>
+            <div class="internal-block">
+                <label>Прочее:</label>
+                <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="changing-form" id="hydrology">
+            <div class="internal-block" style="display: inline-flex; align-items: center; gap: 5px; white-space: pre; width: 100%;">
+                <label>Вид информации и источник: </label>
+                <select class="form-select" id=""></select>
+            </div>
+            <div class="internal-block" style="display: inline-flex; grid-row: 1; width: 100%;">
+                <label>Название водоема:</label> 
+                <input type="text" class="form-control">
+            </div>
+            <div class="internal-block" style="display: inline-flex; grid-row: 2; width: 100%;">
+                <label>Ожидаемый уровень воды:</label> 
+                <input type="text" class="form-control">
+            </div>
+            <div class="internal-block" style="width: 100%;">
+                <label>Прочее:</label>
+                <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="changing-form" id="emergency">
+            <div class="internal-block" style="display: inline-flex; align-items: center; gap: 5px; white-space: pre; width: 100%;">
+                    <label>Вид информации и источник: </label>
+                    <select class="form-select" id=""></select>
+            </div>
+            <div class="internal-block" style="width: 100%;">
+                <label>Географическая территория(край, область, регион):</label>
+                <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+            <div class="internal-block" style="width: 100%;">
+                    <label>Прочее:</label>
+                    <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="changing-form" id="other">
+            <div class="internal-block" style="display: inline-flex; align-items: center; gap: 5px; white-space: pre; width: 100%;">
+                    <label>Вид информации и источник: </label>
+                    <select class="form-select" id=""></select>
+            </div>
+            <div class="internal-block" style="width: 100%;">
+                    <label>Прочее:</label>
+                    <textarea class="form-control" style="width: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="stable-form" style="display: block;">
+            <div class="internal-block" style="display: block;">
+                <label for="consequences">Возможные последствия:</label>
+                <textarea class="form-control" id="consequences" name="consequences" rows="3"></textarea>
+            </div>
+            <div class="internal-block" style="grid-column: 1; grid-row: 2; display: grid; grid-template-columns: auto auto; ">
+                <div style="display: grid;">
+                    <label for="add-actions">Принятые меры:</label>
+                    <button class="btn btn-primary">Добавить принятые меры</button>
+                    <label for="elimination">Привлечено к устранению: </label>
+                    <div class="elimination" style="display: grid; ">
+                        <div class="input-group">
+                            <input class="form-control" type="number" name="employees" min="0" max="999" step="1" value="1">
+                            <label class="input-group-text">Человек</label>
+                        </div>
+                        <div class="input-group">
+                            <input class="form-control" type="number" name="venicles" min="0" max="999" step="1" value="1">
+                            <label class="input-group-text">ед. техники</label>
+                        </div>
+                    </div>
+                </div>
+                <textarea class="form-control" name="actions"></textarea>
+            </div>
+            <div class="internal-block" style="grid-column: 1; grid-row: 3; ">
+                <label>Название организации: </label>
+                <input class="form-control" name="organization" type="text"/>
+            </div>
+            <div class="internal-block" style="grid-column: 1; grid-row: 4; display: grid;grid-template-rows: auto auto;">
+                <label for="notice">Примечание </label>
+                <textarea class="form-control" name="notice"> </textarea>
+            </div>
+            <div class="internal-block" style="grid-column: 1; grid-row: 5; display: block;grid-template-rows: auto auto;">
+                <label for="attachments">Вложение(пока не сделаны) </label>
+                <textarea class="form-control" name="attachments"> </textarea>
+            </div>
+        </div>
+    </div>
+    <div class="form-footer" style="display: grid; grid-template-columns: 50% auto auto;">
+        <button class="btn btn-danger btn-lg" style="width: 40%; align-self: flex-start;">
+            Отменить
+        </button>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="is_ended">
+            <span class="form-check-label" for="is_ended">Событие закончено</span>
+        </div>
+        <button class="btn btn-success btn-lg">
+            Сохранить
+        </button>
+    </div>
+    <script>
+        let select = document.getElementById('enviroment-type');
+        let block = document.querySelectorAll('.changing-form');
+        let lastIndex = 0; // После каждой смены опции, сохраняем сюда индекс предыдущего блока
+
+        select.addEventListener('change', function() {
+            block[lastIndex].style.display = "none"; 
+            // Чтобы сразу делать именно его невидимым при следующей смене 
+
+            let index = select.selectedIndex; // Определить индекс выбранной опции
+            block[index].style.display = "block"; // Показать блок с соответствующим индексом
+
+            lastIndex = index; // Обновить сохраненный индекс.
+        });
+    </script>
 </body>
 </html>
