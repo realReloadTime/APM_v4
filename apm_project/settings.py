@@ -83,9 +83,9 @@ DATABASES = {
         'PASSWORD': '8+Y wDB*(ZUPJo_#kgtq',
         'HOST': 'localhost',
         'PORT': '5432',
-        'OPTIONS': {
-            'async': True
-        },  # ЗАККОМЕНТИТЬ НА ВРЕМЯ МИГРАЦИИ
+        # 'OPTIONS': {
+        #     'async': True
+        # },  # ЗАККОМЕНТИТЬ НА ВРЕМЯ МИГРАЦИИ
         'CONN_MAX_AGE': 0,
     }
 }
