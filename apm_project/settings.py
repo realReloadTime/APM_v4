@@ -27,6 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ADMIN_INTERFACE = {
+    'SHOW_THEMES': True,
+    'SHOW_UI_BUILDER': True,
+    'LIST_FILTERS_POSITION': 'right',
+}
 
 # Application definition
 
@@ -39,6 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'core',
+
+    'admin_interface',
+    'colorfield',
+    'import_export'
 ]
 
 MIDDLEWARE = [

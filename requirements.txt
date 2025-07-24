@@ -4,3 +4,6 @@ psycopg2-binary
 uvicorn
 channels
 djangorestframework
+django-import-export
+django-admin-interface
+django-jet-reboot
