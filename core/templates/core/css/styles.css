@@ -3,7 +3,7 @@ html {
     padding: 0;
     height: 100%;
 }
-@media (min-width: 768px) {
+@media (min-width: 1200px) {
     html {
         font-size: 16px;
     }
@@ -15,7 +15,7 @@ html {
         grid-column: 2;
     }
 }
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     body {
         font-size: 14px;
     }
@@ -28,16 +28,9 @@ html {
         gap:30px
     }
 }
-.form-footer {
-    background-color: #f1f1f1;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 0.25%;
-}
 body{
     overflow-x: hidden;
+    padding-bottom: 50px;
 }
 table {
     border:3px solid rgb(195, 195, 243);
@@ -85,7 +78,8 @@ main{
 input.form-control,
 select.form-select,
 button.btn-primary,
-textarea.form-control{
+textarea.form-control,
+button.btn-danger{
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     line-height: 1.5;
