@@ -3,11 +3,11 @@ djangorestframework
 django-import-export
 django-admin-interface
 django-jet-reboot
+django-extensions
 channels
-
 asyncpg
 psycopg2-binary
-
 uvicorn
-
+gunicorn
 asgiref
+drf-spectacular

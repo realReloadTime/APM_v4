@@ -1,10 +1,16 @@
 from asgiref.sync import sync_to_async
 
 from django.db.models import QuerySet
-from django.http import JsonResponse
 from rest_framework.serializers import ModelSerializer
+from rest_framework.response import Response
 
-from ..models import SubsystemStatus
+from core.models import SubsystemStatus
+
+
+class SubsystemStatusSerializer(ModelSerializer):  # ExampleSerializer(example) -> JSON response
+    class Meta:
+        model = SubsystemStatus
+        fields = '__all__'
 
 
 class SubsystemStatusRepository:  # CRUD логика чистой работы с БД
@@ -33,23 +39,18 @@ class SubsystemStatusRepository:  # CRUD логика чистой работы 
 
 
 class SubsystemStatusService:  # бизнес-логика (связь между View и PostgreSQL)
-    class SubsystemStatusSerializer(ModelSerializer):  # ExampleSerializer(example) -> JSON response
-        class Meta:
-            model = SubsystemStatus
-            fields = '__all__'
-
     def __init__(self, repository: SubsystemStatusRepository):
         self.repository = repository
 
-    async def create_subsystem_status(self, data: dict) -> JsonResponse:
+    async def create_subsystem_status(self, data: dict) -> Response:
         result = await self.repository.create_subsystem_status(data)
         return await self.serialize_subsystem_status(result)
 
-    async def get_subsystem_status(self, pk: int | None) -> JsonResponse:
+    async def get_subsystem_status(self, pk: int | None) -> Response:
         result = await self.repository.get_subsystem_status(pk)
         return await self.serialize_subsystem_status(result)
 
-    async def update_subsystem_status(self, data: dict) -> JsonResponse:
+    async def update_subsystem_status(self, data: dict) -> Response:
         if 'id' not in data:
             raise ValueError("Can't update without ID key.")
         result = await self.repository.update_subsystem_status(data)
@@ -58,5 +59,16 @@ class SubsystemStatusService:  # бизнес-логика (связь межд�
     async def delete_subsystem_status(self, pk: int) -> bool:
         return await self.repository.delete_subsystem_status(pk)
 
-    async def serialize_subsystem_status(self, current_object: SubsystemStatus) -> JsonResponse:
-        return JsonResponse(self.SubsystemStatusSerializer(current_object).data)
+    @staticmethod
+    async def serialize_subsystem_status(result) -> Response:
+        from asgiref.sync import sync_to_async
+
+        async def _serialize():
+            if isinstance(result, list):
+                serializer = SubsystemStatusSerializer(result, many=True)
+            else:
+                serializer = SubsystemStatusSerializer(result)
+            return serializer.data
+
+        data = await _serialize()
+        return Response(data)
