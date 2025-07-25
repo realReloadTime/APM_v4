@@ -7,7 +7,7 @@ from rest_framework import exceptions
 from rest_framework.permissions import BasePermission
 from rest_framework.throttling import BaseThrottle
 from http import HTTPStatus
-from apm_project.drfutil.requests import AsyncRequest
+from core.drfutil.requests import AsyncRequest
 
 
 class AsyncAPIView(APIView):

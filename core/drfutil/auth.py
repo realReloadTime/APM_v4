@@ -1,14 +1,17 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
-from asgiref.sync import sync_to_async
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.permissions import BasePermission
-from apm_project.drfutil.asyncapiview import AsyncRequest, AsyncAPIView
+from core.drfutil.requests import AsyncRequest
 from rest_framework.throttling import BaseThrottle
 import asyncio
 
-@sync_to_async
-def get_token(model, key):
-    return model.objects.select_related('user').get(key=key)
+
+async def get_token(model, key):
+    try:
+        return await model.objects.select_related('user').aget(key=key)
+    except model.DoesNotExist:
+        return None
 
 
 def get_authorization_header(request):
@@ -91,16 +94,16 @@ class AsyncAuthentication(BaseAuthentication):
 
 
 class AsyncPermission(BasePermission):
-    async def has_permission(self, request: AsyncRequest, view: AsyncAPIView) -> bool:
+    async def has_permission(self, request: AsyncRequest, view) -> bool:
         await asyncio.sleep(0.01)
         return True
 
 
 class AsyncThrottle(BaseThrottle):
-    async def allow_request(self, request: AsyncRequest, view: AsyncAPIView) -> bool:
+    async def allow_request(self, request: AsyncRequest, view) -> bool:
         await asyncio.sleep(0.01)
         return True
 
 class AsyncIsAuthenticated(BasePermission):
-    async def has_permission(self, request: AsyncRequest, view: AsyncAPIView):
+    async def has_permission(self, request: AsyncRequest, view):
         return bool(request.user and request.user.is_authenticated)

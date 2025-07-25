@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'admin_interface',
     'colorfield',
     'import_export',
-    'drf_spectacular',
     'rest_framework',
 ]
 
@@ -63,9 +62,13 @@ INSTALLED_APPS = [
 #     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 # }
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'core.drfutil.auth.AsyncAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'core.drfutil.auth.AsyncIsAuthenticated'
+    ]
 }
 
 MIDDLEWARE = [
@@ -113,8 +116,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
         'OPTIONS': {
-            'async': True,
-            'isolation_level': 'read committed'
+            # 'async': True,
         },  # ЗАККОМЕНТИТЬ НА ВРЕМЯ МИГРАЦИИ ИЛИ ЗАПУСКА АДМИНКИ
         'CONN_MAX_AGE': 0,
     }
@@ -166,6 +168,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
     'SCHEMA_PATH_PREFIX': '/api/',
-    'TITLE': 'Your API',
+    'TITLE': 'APMv4 API',
     'VERSION': '1.0.0',
 }

@@ -10,4 +10,3 @@ psycopg2-binary
 uvicorn
 gunicorn
 asgiref
-drf-spectacular

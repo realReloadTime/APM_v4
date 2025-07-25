@@ -5,13 +5,13 @@ from core.logic.subsystem_status import (SubsystemStatusService,
                                          SubsystemStatusRepository,
                                          SubsystemStatusSerializer)
 from core.models import SubsystemStatus
-from apm_project.drfutil.auth import AsyncIsAuthenticated, AsyncAuthentication
-from apm_project.drfutil.asyncapiview import AsyncAPIView
+from core.drfutil.auth import AsyncIsAuthenticated, AsyncAuthentication
+from core.drfutil.async_apiview import AsyncAPIView
 
 
 class SubsystemStatusCRUD(AsyncAPIView):
-    authentication_classes = [AsyncAuthentication]
-    permission_classes = [AsyncIsAuthenticated]
+    authentication_classes = [AsyncAuthentication, ]
+    permission_classes = [AsyncIsAuthenticated, ]
     serializer_class = SubsystemStatusSerializer
 
     def __init__(self, **kwargs):

@@ -22,8 +22,7 @@ class SubsystemStatusRepository:  # CRUD логика чистой работы 
     async def get_subsystem_status(pk: int | None) -> SubsystemStatus | QuerySet[SubsystemStatus]:
         if pk is None:
             return await sync_to_async(SubsystemStatus.objects.all)()
-        else:
-            return await SubsystemStatus.objects.aget(id=pk)
+        return await SubsystemStatus.objects.aget(id=pk)
 
     @staticmethod
     async def update_subsystem_status(data: dict) -> SubsystemStatus | None:

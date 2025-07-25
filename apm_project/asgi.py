@@ -18,5 +18,7 @@ from channels.routing import ProtocolTypeRouter
 from core.middleware import AsyncAuthMiddleware
 
 application = ProtocolTypeRouter({
-    "http": AsyncAuthMiddleware(get_asgi_application()),
+    "http":
+        AsyncAuthMiddleware(get_asgi_application())
+    ,
 })

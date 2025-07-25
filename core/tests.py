@@ -1,3 +1,6 @@
-from django.test import TestCase
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
-# Create your tests here.
+user = User.objects.create_user('test')
+token = Token.objects.create(user=user)
+print(token.key)
