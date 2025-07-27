@@ -6,6 +6,12 @@
     <title>Пустая форма</title>    
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="js/change-block-script.js"></script>
+    <script src="js/select-navigation.js"></script>
+    <script src="js/show-end-date.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/measures.js"></script>
+    <script src="js/wind-speed.js"></script>
 </head>
 <body>
     <nav class="navbar-fixed-top justify-content-center bg-light" data-bs-theme="light" style="padding-top: 1.90%; padding-left: 2.53%; padding-right: 2.53%;">
@@ -42,7 +48,7 @@
             <div class="internal-block" style="display: grid; grid-template-columns: 1fr auto; " >
                 <div style="display: grid; grid-template-columns: auto 1fr; grid-row: 1; align-items: start; column-gap: 10px;">
                     <label style="white-space: nowrap;">Дата начала: </label>
-                    <input type="date" class="form-control" style="width:100%;">
+                    <input type="date" class="form-control" min="1900-01-01" style="width:100%;">
                 </div>
                 <label style="text-align: center; grid-row: 1; white-space: nowrap;">Администратор <br>Админ Админович</label>
                 <div id="event-end" style="display: none; grid-template-columns: auto 1fr; grid-row: 2; align-items: start; column-gap: 10px;">
@@ -56,15 +62,15 @@
     <div class="main-form">
         <div class="changing-form" id="equipment-failure" style="display: block;">
             <div class="external-block" id="pick-objects" style="width: 100%; display: block;">
-                <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 28.5% 1fr;">
+                <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr auto;">
                     <label id="one_object" style="white-space: nowrap;">Объект, на котором произошло событие:</label>
-                    <input class="form-control" name="picked_object" type="text"/>
+                    <input class="form-control" name="picked_object" type="text" disabled/>
                     <button class="btn btn-primary" style="white-space: nowrap; min-width: max-content; overflow: hidden; text-overflow: ellipsis;">Выбрать объект</button>
                 </div>
                 <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr;">
                     <span style="grid-column: 1; grid-row: 1; white-space: nowrap;">Список объектов под влиянием события:</span>
                     <button class="btn btn-primary" style="grid-column: 1; grid-row: 2; white-space: nowrap; min-width: max-content;">Добавить/изменить объекты</button>
-                    <textarea class="form-control" style="grid-column: 2; grid-row: 1 / span 2;"></textarea>                           
+                    <textarea class="form-control" style="grid-column: 2; grid-row: 1 / span 2;" disabled></textarea>                           
                 </div>
             </div>
             <div class="external-block">
@@ -149,13 +155,13 @@
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto auto;">
                     <label style="grid-column: 1;">Температура (по Цельсию):</label>
-                    <input class="form-control" type="number" style="grid-column: 2;"/>
+                    <input class="form-control" type="number" min="-273" style="grid-column: 2;" required/>
                     
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto auto auto; ">
                     <label style="grid-column: 1;">Ветер (м/сек):</label>
-                    <input class="form-control" type="number" style="grid-column: 2;"/>
-                    <input class="form-control" type="text" style="grid-column: 3;" disabled/>
+                    <input id="input-wind-speed" class="form-control" type="number" min="0" style="grid-column: 2;" required/>
+                    <input id="output-wind-group" class="form-control" type="text" style="grid-column: 3;" disabled/>
                 </div>
             </div>
             <div class="internal-block" style="display: block;">
@@ -171,7 +177,7 @@
             <div class="external-block">
                 <div class="internal-block" style="display: grid; align-items: center; grid-template-columns: auto 1fr 1fr;">
                     <label>Площадь пожара(га):</label>
-                    <input class="form-control" type="number">
+                    <input class="form-control" type="number" min="0">
                     <input class="form-control" type="text" disabled>
 
                 </div>
@@ -275,7 +281,28 @@
                 <div class="internal-block" style="grid-template-columns: 36.7% 1fr; display: grid;">
                     <div style="display: grid;">
                         <label>Принятые меры:</label>
-                        <button class="btn btn-primary">Добавить принятые меры</button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#measuresModal">Добавить принятые меры</button>
+                        <div id="measuresModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="internal-block" style="display: grid; grid-template-columns: auto auto;align-items: center;">
+                                            <label>Текущее время:</label>
+                                            <input id="measure-date" class="form-control" type="date" style="width:100%; height: auto;"/>
+                                        </div>
+                                        <div class="external-block">
+                                            <label>Принятая мера:</label>
+                                            <textarea id="measure-text" class="form-control" style="width:100%; height: auto;"></textarea>
+                                        </div>
+                                        <div class="internal-block" style="margin-bottom: 0; display: grid;">
+                                            <button id="close-overlay" class="btn btn-danger" style="min-width: 120px; justify-self: start;">Отменить</button>
+                                            <button id="save-measure" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                         <label>Привлечено к устранению: </label>
                         <div style="display: grid;">
                             <div class="internal-block" style="display: grid;  align-items: start; ">
@@ -288,7 +315,7 @@
                             </div>
                         </div>
                     </div>
-                    <textarea class="form-control" name="actions" disabled></textarea>
+                    <textarea class="form-control" id="actions" disabled></textarea>
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: 36.7% 1fr">
                     <label>Название организации: </label>
@@ -305,6 +332,7 @@
             </div>
         </div>
     </div>
+    
     <div class="form-footer" style="
         display: grid; grid-template-columns: 2fr auto 1fr; position: fixed; bottom: 0; left: 0; 
         right: 0; background: #f1f1f1;
@@ -317,74 +345,5 @@
         </div>
         <button class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
     </div>
-    <script>
-        let select = document.getElementById('enviroment-type');
-        let block = document.querySelectorAll('.changing-form');
-        let lastIndex = 0; // После каждой смены опции, сохраняем сюда индекс предыдущего блока
-
-        select.addEventListener('change', function() {
-            block[lastIndex].style.display = "none"; 
-            // Чтобы сразу делать именно его невидимым при следующей смене 
-
-            let index = select.selectedIndex; // Определить индекс выбранной опции
-            block[index].style.display = "block"; // Показать блок с соответствующим индексом
-
-            lastIndex = index; // Обновить сохраненный индекс.
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const select = document.getElementById('select-weather-condition');
-            const prevBtn = select.previousElementSibling;
-            const nextBtn = select.nextElementSibling;
-
-            prevBtn.addEventListener('click', () => {
-                select.selectedIndex = (select.selectedIndex - 1 + select.options.length) % select.options.length;
-                select.dispatchEvent(new Event('change'));
-            });
-
-            nextBtn.addEventListener('click', () => {
-                select.selectedIndex = (select.selectedIndex + 1) % select.options.length;
-                select.dispatchEvent(new Event('change'));
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const select = document.getElementById('select-rainfall');
-            const prevBtn = select.previousElementSibling;
-            const nextBtn = select.nextElementSibling;
-
-            prevBtn.addEventListener('click', () => {
-                select.selectedIndex = (select.selectedIndex - 1 + select.options.length) % select.options.length;
-                select.dispatchEvent(new Event('change'));
-            });
-
-            nextBtn.addEventListener('click', () => {
-                select.selectedIndex = (select.selectedIndex + 1) % select.options.length;
-                select.dispatchEvent(new Event('change'));
-            });
-        });
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkbox = document.getElementById('is_ended');
-        const endDateBlock = document.getElementById('event-end');
-        
-        // Обработчик изменений для чекбокса
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                endDateBlock.style.display = 'grid';
-            } else {
-                endDateBlock.style.display = 'none';
-            }
-        });
-        
-        // Инициализация состояния при загрузке
-        if (checkbox.checked) {
-            endDateBlock.style.display = 'grid';
-        }
-    });
-    </script>
 </body>
 </html>

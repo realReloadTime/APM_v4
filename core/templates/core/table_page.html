@@ -33,7 +33,7 @@
     </nav>
     <main>
         <div class="table-responsive">
-            <table class="table table-primary">
+            <table class="table table-primary table-responsive table-hover">
                 <thead>
                     <tr>
                         <th scope="col" width='10%'>Дата, время возникновения события</th>
@@ -56,7 +56,7 @@
                         <td scope="row">{{lan.4}}</td>
                         <td scope="row">{{lan.5}}</td>
                         <td scope="row">{{lan.6}}</td>
-                        <td scope="row"><input type="checkbox" class="form-check"  id="{{lan.7}}"></td>
+                        <td scope="row"><input type="checkbox" class="form-check"  id="{{lan.7}}" checked></td>
                     </tr>
                     {% empty %}
                     <tr class="">
@@ -67,7 +67,7 @@
                         <td scope="row">4</td>
                         <td scope="row">5</td>
                         <td scope="row">6</td>
-                        <td scope="row"><input class="form-check" type="checkbox" id="0"></td>
+                        <td scope="row"><input class="form-check" type="checkbox" id="0" checked></td>
                     </tr>
                     {% endfor %}
                 </tbody>
