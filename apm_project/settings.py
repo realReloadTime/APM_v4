@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'colorfield',
     'import_export',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 # REST_FRAMEWORK = {

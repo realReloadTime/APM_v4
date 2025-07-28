@@ -19,7 +19,7 @@ for model in [
     Location, ObjectType, Object,
     Event, MeasuresTaken, EquipmentFailure,
     AdverseWeather, FireDanger, GeologicalDanger,
-    HydrologicalDanger, EmergencySituation, OtherDanger
+    HydrologicalDanger, EmergencySituation, OtherDanger, Token
 ]:
     custom_admin_site.register(model)
 

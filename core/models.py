@@ -454,3 +454,16 @@ class OtherDanger(Model):
 
             Index(fields=['source']),
         ]
+
+
+class Token(Model):
+    key = CharField(max_length=40, primary_key=True)
+    user = ForeignKey(
+        User,
+        related_name='auth_tokens',
+        on_delete=CASCADE
+    )
+    created = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.key

@@ -6,6 +6,8 @@ from core.drfutil.requests import AsyncRequest
 from rest_framework.throttling import BaseThrottle
 import asyncio
 
+from core.models import Token
+
 
 async def get_token(model, key):
     try:
@@ -72,22 +74,16 @@ class AsyncAuthentication(BaseAuthentication):
         return auth_creds
 
     async def authenticate_credentials(self, key):
-        model = None
-        if self.model is not None:
-            model = self.model
-        else:
-            from rest_framework.authtoken.models import Token
-            model = Token
         try:
-            token = await get_token(model, key)
-
-        except model.DoesNotExist:
+            # Используем вашу кастомную модель токена
+            token = await Token.objects.select_related('user').aget(key=key)
+        except Token.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
 
-        return (token.user, token)
+        return token.user, token
 
     async def authenticate_header(self, request):
         return self.keyword
