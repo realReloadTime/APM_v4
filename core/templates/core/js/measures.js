@@ -12,7 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Пожалуйста, введите описание меры');
             return;
         }
-        
+        if (!date) {
+            alert('Пожалуйста, введите дату события');
+            return;
+        }
         addMeasureToTextarea(date, text);
         clearModalFields();
         modal.hide();
@@ -43,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function formatDate(dateString) {
-        if (!dateString) return 'дата не указана';
         const [year, month, day] = dateString.split('-');
         return `${day}.${month}.${year}`;
     }
