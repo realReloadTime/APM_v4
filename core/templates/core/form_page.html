@@ -13,6 +13,7 @@
     <script src="js/measures.js"></script>
     <script src="js/wind-speed.js"></script>    
     <script src="js/bootstrap.js"></script>
+    <script src="js/file-upload.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-xl fixed-top bg-primary">
@@ -103,29 +104,36 @@
                 <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr auto;">
                     <label id="one_object" style="white-space: nowrap;">Объект, на котором произошло событие:</label>
                     <input class="form-control" name="picked_object" type="text" disabled/>
-                    <button class="btn btn-primary" style="white-space: nowrap; min-width: max-content; overflow: hidden; text-overflow: ellipsis;" data-bs-toggle="modal" data-bs-target="#oneObjectModal">Выбрать объект</button>
+                    <button class="btn btn-primary" style="white-space: nowrap; min-width: max-content; overflow: hidden; text-overflow: ellipsis;" 
+                            data-bs-toggle="modal" data-bs-target="#oneObjectModal">Выбрать объект</button>
                     <div id="oneObjectModal" class="modal fade modal-lg" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <ul class="nav nav-tabs nav-justified" id="oneObjectTab" role="tablist">
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="type_1_tab" data-bs-toggle="tab" data-bs-target="#type_1" type="button" role="tab" aria-controls="type_1" aria-selected="true">тип1</button>
+                                            <button class="nav-link active" id="type_1_tab" data-bs-toggle="tab" data-bs-target="#type_1" 
+                                                    type="button" role="tab" aria-controls="type_1" aria-selected="true">тип1</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="type_2_tab" data-bs-toggle="tab" data-bs-target="#type_2" type="button" role="tab" aria-controls="type_2" aria-selected="false">тип2</button>
+                                            <button class="nav-link" id="type_2_tab" data-bs-toggle="tab" data-bs-target="#type_2" 
+                                                    type="button" role="tab" aria-controls="type_2" aria-selected="false">тип2</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="type_3_tab" data-bs-toggle="tab" data-bs-target="#type_3" type="button" role="tab" aria-controls="type_3" aria-selected="false">тип3</button>
+                                            <button class="nav-link" id="type_3_tab" data-bs-toggle="tab" data-bs-target="#type_3" 
+                                                    type="button" role="tab" aria-controls="type_3" aria-selected="false">тип3</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="type_4_tab" data-bs-toggle="tab" data-bs-target="#type_4" type="button" role="tab" aria-controls="type_4" aria-selected="false">тип4</button>
+                                            <button class="nav-link" id="type_4_tab" data-bs-toggle="tab" data-bs-target="#type_4" 
+                                                    type="button" role="tab" aria-controls="type_4" aria-selected="false">тип4</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="type_5_tab" data-bs-toggle="tab" data-bs-target="#type_5" type="button" role="tab" aria-controls="type_5" aria-selected="false">тип5</button>
+                                            <button class="nav-link" id="type_5_tab" data-bs-toggle="tab" data-bs-target="#type_5" 
+                                                    type="button" role="tab" aria-controls="type_5" aria-selected="false">тип5</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="type_6_tab" data-bs-toggle="tab" data-bs-target="#type_6" type="button" role="tab" aria-controls="type_6" aria-selected="false">тип6</button>
+                                            <button class="nav-link" id="type_6_tab" data-bs-toggle="tab" data-bs-target="#type_6" 
+                                                    type="button" role="tab" aria-controls="type_6" aria-selected="false">тип6</button>
                                         </li>
                                         <li class="nav-item" role="presentation">
                                             <button class="nav-link" id="search_tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab" aria-controls="search" aria-selected="false">
@@ -490,8 +498,8 @@
                                             <textarea id="measure-text" class="form-control" style="width:100%; height: auto;"></textarea>
                                         </div>
                                         <div class="internal-block" style="margin-bottom: 0; display: grid;">
-                                            <button id="close-overlay" class="btn btn-danger" style="min-width: 120px; justify-self: start;">Отменить</button>
-                                            <button id="save-measure" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
+                                            <button data-bs-dismiss="modal" class="btn btn-danger" style="min-width: 120px; justify-self: start;">Отменить</button>
+                                            <button id="save-measure" data-bs-dismiss="modal" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
                                         </div>
                                     </div>
                                 </div>
@@ -522,7 +530,27 @@
             </div>
             <div class="external-block" style="display: block;">
                 <label class="label-for-textarea" for="attachments">Вложение(пока не сделаны) </label>
-                <textarea class="form-control" name="attachments"> </textarea>
+                <input type="file" multiple class="form-control" id="fileInput">
+                <div id="fileListContainer">
+                    <p class="text-muted">Файлы не выбраны</p>
+                </div>
+            </div>
+            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="modal-title">Подтверждение удаления</label>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Вы уверены, что хотите удалить файл <strong id="fileNameToDelete"></strong>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

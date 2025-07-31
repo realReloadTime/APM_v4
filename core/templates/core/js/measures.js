@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const modal = new bootstrap.Modal(document.getElementById('measuresModal'));
     const saveButton = document.getElementById('save-measure');
-    const cancelButton = document.getElementById('close-overlay');
     const actionsTextarea = document.getElementById('actions');
     
     saveButton.addEventListener('click', function() {
@@ -12,10 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Пожалуйста, введите описание меры');
             return;
         }
-        if (!date) {
-            alert('Пожалуйста, введите дату события');
-            return;
-        }
+        
         addMeasureToTextarea(date, text);
         clearModalFields();
         modal.hide();
