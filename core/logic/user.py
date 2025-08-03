@@ -1,7 +1,11 @@
 from asgiref.sync import sync_to_async
-from core.models import CustomUser
-from core.views.user import UserSerializer
+
 from rest_framework.utils.serializer_helpers import ReturnDict
+
+from django.db.models import QuerySet
+
+from core.models import CustomUser
+from core.serializers import UserSerializer
 
 
 class UserRepository:
@@ -10,7 +14,7 @@ class UserRepository:
         return await CustomUser.objects.create_user(**data)
 
     @staticmethod
-    async def get_user(pk: int | None = None) -> CustomUser | list[CustomUser] | None:
+    async def get_user(pk: int | None = None) -> CustomUser | QuerySet[CustomUser] | None:
         if pk is None:
             return await sync_to_async(CustomUser.objects.all)()
         return await CustomUser.objects.aget(id=pk)

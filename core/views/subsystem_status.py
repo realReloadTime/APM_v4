@@ -1,90 +1,91 @@
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import status
-from rest_framework.response import Response
+from django.http import JsonResponse
 
-from core.logic.subsystem_status import (SubsystemStatusService,
-                                         SubsystemStatusRepository,
-                                         SubsystemStatusSerializer)
+from rest_framework.permissions import IsAuthenticated
+
+from core.logic.subsystem_status import SubsystemStatusRepository, SubsystemStatusService
 from core.models import SubsystemStatus
-from core.drfutil.auth import AsyncIsAuthenticated, AsyncAuthentication
-from core.drfutil.async_apiview import AsyncAPIView
+from core.auth import async_permission_required, async_api_method
 
 
-class SubsystemStatusCRUD(AsyncAPIView):
-    authentication_classes = [AsyncAuthentication, ]
-    permission_classes = [AsyncIsAuthenticated, ]
-    serializer_class = SubsystemStatusSerializer
+async def get_subsystemstatus_service():
+    return SubsystemStatusService(SubsystemStatusRepository())
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.service = SubsystemStatusService(SubsystemStatusRepository())
 
-    @extend_schema(
-        summary="Retrieve subsystem status",
-        description="Fetches a single subsystem status by ID or all statuses if no ID is provided.",
-        parameters=[
-            OpenApiParameter(name='pk', type=int, location='path', required=False, description='Subsystem Status ID')
-        ],
-        responses={
-            200: SubsystemStatusSerializer,
-            404: None
-        }
+@async_api_method(['POST'])
+@async_permission_required([IsAuthenticated])
+async def create_subsystem_status(request):
+    service = await get_subsystemstatus_service()
+
+    try:
+        ss_status = await service.create_subsystem_status(request.body)
+        return JsonResponse(ss_status, status=201)
+
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def get_subsystem_status_list(request):
+    service = await get_subsystemstatus_service()
+
+    try:
+        ss_status = await service.get_subsystem_status()
+        return JsonResponse(ss_status, status=200)
+
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def get_subsystem_status_detail(request, ss_status_id: int):
+    service = await get_subsystemstatus_service()
+
+    try:
+        ss_status = await service.get_subsystem_status(ss_status_id)
+        return JsonResponse(ss_status, status=200)
+
+    except SubsystemStatus.DoesNotExist:
+        return JsonResponse({'error': 'SubsystemStatus not found'}, status=404)
+
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+
+@async_api_method(['PUT'])
+@async_permission_required([IsAuthenticated])
+async def update_subsystem_status(request, ss_status_id: int):
+    service = await get_subsystemstatus_service()
+
+    try:
+        ss_status = await service.update_subsystem_status(ss_status_id, request.body)
+        return JsonResponse(ss_status, status=200)
+
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+
+@async_api_method(['DELETE'])
+@async_permission_required([IsAuthenticated])
+async def delete_subsystem_status(request, ss_status_id: int):
+    service = await get_subsystemstatus_service()
+
+    try:
+        assert await service.delete_subsystem_status(ss_status_id)
+        return JsonResponse(
+        {'msg': 'Successful'},
+        status=204
     )
-    async def get(self, request, pk=None):
-        try:
-            if pk:
-                response = await self.service.get_subsystem_status(pk)
-                return Response(response.data, status=status.HTTP_200_OK)
-            else:
-                response = await self.service.get_subsystem_status(None)
-                return Response(response.data, status=status.HTTP_200_OK)
-        except SubsystemStatus.DoesNotExist:
-            return Response(
-                {"error": "SubsystemStatus not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
 
-    async def post(self, request):
-        try:
-            response = await self.service.create_subsystem_status(request.data)
-            return Response(response.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+    except SubsystemStatus.DoesNotExist:
+        return JsonResponse(
+        {'msg': 'SubsystemStatus not found'},
+        status=404
+    )
 
-    async def put(self, request, pk):
-        try:
-            data = request.data.copy()
-            data['id'] = pk
-            response = await self.service.update_subsystem_status(data)
-
-            if response is None:
-                return Response(
-                    {"error": "SubsystemStatus not found"},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-
-            return Response(response.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-    async def delete(self, request, pk):
-        try:
-            success = await self.service.delete_subsystem_status(pk)
-            if success:
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            else:
-                return Response(
-                    {"error": "SubsystemStatus not found"},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-        except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+    except AssertionError:
+        return JsonResponse(
+        {'error': "Error on SubsystemStatus deletion"},
+        status=404
+    )

@@ -5,6 +5,8 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from django.http import JsonResponse
 
+from core.models import CustomUser
+
 
 async def authenticate_request(request):
     auth = JWTAuthentication()
@@ -41,7 +43,7 @@ def async_permission_required(permission_classes):
 def async_api_method(methods):
     def decorator(view_func):
         async def wrapped_view(request, *args, **kwargs):
-            print(f"User authenticated: {request.user.is_authenticated}")  # ДЛЯ ОТЛАДКИ
+            print(f"User authenticated: {request.user.is_authenticated}")  # ДЛЯ ОТЛАДКИ, УДАЛИТЬ!!
             print(request.user)
             if request.method not in methods:
                 return JsonResponse({'error': 'Method not allowed'}, status=405)
@@ -50,3 +52,8 @@ def async_api_method(methods):
         return wrapped_view
 
     return decorator
+
+
+@sync_to_async
+def check_user_permisssion(user: CustomUser, permission: str = 'read'):  # проверка доступа пользователя к функционалу
+    return user.has_perm(permission)
