@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -18,6 +19,17 @@ class SubsystemStatusCRUD(AsyncAPIView):
         super().__init__(**kwargs)
         self.service = SubsystemStatusService(SubsystemStatusRepository())
 
+    @extend_schema(
+        summary="Retrieve subsystem status",
+        description="Fetches a single subsystem status by ID or all statuses if no ID is provided.",
+        parameters=[
+            OpenApiParameter(name='pk', type=int, location='path', required=False, description='Subsystem Status ID')
+        ],
+        responses={
+            200: SubsystemStatusSerializer,
+            404: None
+        }
+    )
     async def get(self, request, pk=None):
         try:
             if pk:

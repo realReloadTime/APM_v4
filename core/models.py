@@ -1,6 +1,54 @@
-from django.db.models import (Model, CASCADE, SET_NULL, Index,
-                              TextField, DateTimeField, BooleanField, CharField, IntegerField, FloatField,
-                              ForeignKey, ManyToManyField)
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.db.models import (Model, CASCADE, SET_NULL, Index, TextField, DateTimeField,
+                              BooleanField, CharField, IntegerField, FloatField,
+                              ForeignKey, ManyToManyField, EmailField)
+
+
+class CustomUserManager(BaseUserManager):
+    async def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        await user.asave(using=self._db)
+        return user
+
+    async def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return await self.create_user(email, password, **extra_fields)
+
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = EmailField(unique=True)
+    first_name = CharField(max_length=30, blank=True)
+    last_name = CharField(max_length=30, blank=True)
+    is_active = BooleanField(default=True)
+    is_staff = BooleanField(default=False)
+    created_at = DateTimeField(auto_now_add=True)
+    updated_at = DateTimeField(auto_now=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email
+
+
+class Token(Model):
+    key = CharField(max_length=40, primary_key=True)
+    user = ForeignKey(
+        'CustomUser',
+        related_name='auth_tokens',
+        on_delete=CASCADE
+    )
+    created = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.key
 
 
 class SubsystemStatus(Model):
@@ -19,11 +67,10 @@ class System(Model):
 
 class Subsystem(Model):
     name = CharField(max_length=255)
-
     system = ForeignKey(
         System,
-        on_delete=CASCADE,  # удаление устройств при удалении всей компании
-        related_name='subsystems'  # system.subsystems.all()
+        on_delete=CASCADE,
+        related_name='subsystems'
     )
 
     def __str__(self):
@@ -51,53 +98,24 @@ class Source(Model):
         return self.name
 
 
-class User(Model):
-    name = CharField(max_length=255)
-
-    read = BooleanField(default=True)
-
-    edit = BooleanField(default=False)
-
-    admin = BooleanField(default=False)
-
-    created_at = DateTimeField(auto_now_add=True)
-
-    updated_at = DateTimeField(auto_now=True)
-
-    class Meta:
-        indexes = [
-            # ускорение авторизации/поиска по имени
-            Index(fields=['name']),
-
-            # быстрая фильтрация по уровню доступа
-            Index(fields=['admin', 'edit']),
-        ]
-
-
 class Attachment(Model):
     name = CharField(max_length=255)
-
     created_at = DateTimeField(auto_now_add=True)
-
     author = ForeignKey(
-        User,
+        'CustomUser',
         on_delete=CASCADE,
         related_name='attachments'
     )
 
     class Meta:
         indexes = [
-            # поиск вложений по автору
             Index(fields=['author']),
-
-            # сортировка по дате создания
             Index(fields=['-created_at']),
         ]
 
 
 class Category(Model):
     name = CharField(max_length=255)
-
     table_name = CharField(max_length=255)
 
 
@@ -124,9 +142,7 @@ class Location(Model):
         LocationType,
         on_delete=CASCADE
     )
-
     name = CharField(max_length=255)
-
     loa = ForeignKey(
         LOA,
         on_delete=CASCADE,
@@ -135,9 +151,7 @@ class Location(Model):
 
     class Meta:
         indexes = [
-            # поиск мест по ЛПУ
             Index(fields=['loa']),
-
             Index(fields=['location_type']),
         ]
 
@@ -161,17 +175,13 @@ class Object(Model):
 
     class Meta:
         indexes = [
-            # фильтрация объектов по ЛПУ
             Index(fields=['loa']),
-
-            # поиск по типу объекта
             Index(fields=['type']),
         ]
 
 
 class Event(Model):
     begin = DateTimeField(auto_now_add=True)
-
     loa = ForeignKey(
         LOA,
         on_delete=CASCADE,
@@ -182,25 +192,17 @@ class Event(Model):
         on_delete=CASCADE,
         related_name='category_events'
     )
-
     location = ForeignKey(
         Location,
         on_delete=CASCADE,
         related_name='location_events'
     )
-
     consequences = TextField()
-
     personnel_count = IntegerField(default=0)
-
     technic_count = IntegerField(default=0)
-
     organization_name = CharField(max_length=255)
-
     note = TextField()
-
     end = DateTimeField()
-
     attachments = ManyToManyField(
         'Attachment',
         related_name='attached_for_events',
@@ -209,16 +211,9 @@ class Event(Model):
 
     class Meta:
         indexes = [
-            # для быстрого поиска событий по времени
             Index(fields=['begin']),
-
-            # для фильтрации по ЛПУ + категории
             Index(fields=['loa', 'category']),
-
-            # для выборки по месту события
             Index(fields=['location']),
-
-            # для отчетов по временным диапазонам
             Index(fields=['end']),
         ]
 
@@ -229,16 +224,12 @@ class MeasuresTaken(Model):
         on_delete=CASCADE,
         related_name='event_measures'
     )
-
     adopted_at = DateTimeField()
     description = TextField()
 
     class Meta:
         indexes = [
-            # фильтрация мер по событию
             Index(fields=['event']),
-
-            # аналитика по времени принятия мер
             Index(fields=['adopted_at']),
         ]
 
@@ -248,46 +239,33 @@ class EquipmentFailure(Model):
         Event,
         on_delete=CASCADE,
     )
-
     object = ForeignKey(
         Object,
         on_delete=CASCADE,
     )
-
     influenced_objects = ManyToManyField(
         'Object',
         related_name='influenced_by_failures',
-        blank=True  # необязательно будут
+        blank=True
     )
-
     additional_info = TextField()
-
     subsystem = ForeignKey(
         Subsystem,
         on_delete=CASCADE
     )
-
     subsystem_info = TextField()
-
     subsystem_status = ForeignKey(
         SubsystemStatus,
         on_delete=SET_NULL,
-        null=True  # статус будет просто не определен
+        null=True
     )
-
     description = TextField()
 
     class Meta:
         indexes = [
-            # поиск по связанному объекту
             Index(fields=['object']),
-
             Index(fields=['event']),
-
-            # фильтрация по статусу подсистемы
             Index(fields=['subsystem_status']),
-
-            # комбинированный индекс для аналитики
             Index(fields=['subsystem', 'subsystem_status']),
         ]
 
@@ -297,35 +275,27 @@ class AdverseWeather(Model):
         Event,
         on_delete=CASCADE,
     )
-
     source = ForeignKey(
         Source,
         on_delete=SET_NULL,
         null=True
     )
-
     geography = TextField()
-
     condition = ForeignKey(
         Condition,
         on_delete=CASCADE
     )
-
     precipitation = ForeignKey(
         Precipitation,
         on_delete=CASCADE
     )
-
     temperature = FloatField()
-
     wind = FloatField()
-
     description = TextField()
 
     class Meta:
         indexes = [
             Index(fields=['event']),
-
             Index(fields=['source']),
         ]
 
@@ -335,23 +305,18 @@ class FireDanger(Model):
         Event,
         on_delete=CASCADE,
     )
-
     source = ForeignKey(
         Source,
         on_delete=SET_NULL,
         null=True
     )
-
     area = FloatField()
-
     direction = CharField(max_length=255)
-
     description = TextField()
 
     class Meta:
         indexes = [
             Index(fields=['event']),
-
             Index(fields=['source']),
         ]
 
@@ -361,25 +326,19 @@ class GeologicalDanger(Model):
         Event,
         on_delete=CASCADE
     )
-
     source = ForeignKey(
         Source,
         on_delete=SET_NULL,
         null=True
     )
-
     geography = TextField()
-
     epicenter = TextField()
-
     magnitude = IntegerField()
-
     description = TextField()
 
     class Meta:
         indexes = [
             Index(fields=['event']),
-
             Index(fields=['source']),
         ]
 
@@ -389,23 +348,18 @@ class HydrologicalDanger(Model):
         Event,
         on_delete=CASCADE
     )
-
     source = ForeignKey(
         Source,
         on_delete=SET_NULL,
         null=True
     )
-
     water_name = CharField(max_length=255)
-
     height = FloatField()
-
     description = TextField()
 
     class Meta:
         indexes = [
             Index(fields=['event']),
-
             Index(fields=['source']),
         ]
 
@@ -415,21 +369,17 @@ class EmergencySituation(Model):
         Event,
         on_delete=CASCADE
     )
-
     source = ForeignKey(
         Source,
         on_delete=SET_NULL,
         null=True
     )
-
     geography = TextField()
-
     description = TextField()
 
     class Meta:
         indexes = [
             Index(fields=['event']),
-
             Index(fields=['source']),
         ]
 
@@ -439,31 +389,15 @@ class OtherDanger(Model):
         Event,
         on_delete=CASCADE
     )
-
     source = ForeignKey(
         Source,
         on_delete=SET_NULL,
         null=True
     )
-
     description = TextField()
 
     class Meta:
         indexes = [
             Index(fields=['event']),
-
             Index(fields=['source']),
         ]
-
-
-class Token(Model):
-    key = CharField(max_length=40, primary_key=True)
-    user = ForeignKey(
-        User,
-        related_name='auth_tokens',
-        on_delete=CASCADE
-    )
-    created = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.key

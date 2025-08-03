@@ -4,6 +4,7 @@ django-import-export
 django-admin-interface
 django-jet-reboot
 django-extensions
+drf-spectacular
 channels
 asyncpg
 psycopg2-binary
