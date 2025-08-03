@@ -1,7 +1,8 @@
 from asgiref.sync import sync_to_async
-from rest_framework.response import Response
 from core.models import CustomUser
 from core.views.user import UserSerializer
+from rest_framework.utils.serializer_helpers import ReturnDict
+
 
 class UserRepository:
     @staticmethod
@@ -9,51 +10,50 @@ class UserRepository:
         return await CustomUser.objects.create_user(**data)
 
     @staticmethod
-    async def get_user(pk: int | None) -> CustomUser:
+    async def get_user(pk: int | None = None) -> CustomUser | list[CustomUser] | None:
         if pk is None:
             return await sync_to_async(CustomUser.objects.all)()
         return await CustomUser.objects.aget(id=pk)
 
     @staticmethod
-    async def update_user(data: dict) -> CustomUser | None:
-        updated = await CustomUser.objects.filter(id=data['id']).aupdate(**data)
+    async def update_user(pk: int, data: dict) -> CustomUser | None:
+        updated = await CustomUser.objects.filter(id=pk).aupdate(**data)
         if not updated:
             return None
-        return await CustomUser.objects.aget(id=data['id'])
+        return await CustomUser.objects.aget(id=pk)
 
     @staticmethod
     async def delete_user(pk: int) -> bool:
         result = await CustomUser.objects.filter(id=pk).adelete()
         return bool(result)
 
+
 class UserService:
     def __init__(self, repository: UserRepository):
         self.repository = repository
 
-    async def create_user(self, data: dict) -> Response:
+    async def create_user(self, data: dict):
         result = await self.repository.create_user(data)
         return await self.serialize_user(result)
 
-    async def get_user(self, pk: int | None) -> Response:
+    async def get_user(self, pk: int | None = None):
         result = await self.repository.get_user(pk)
         return await self.serialize_user(result)
 
-    async def update_user(self, data: dict) -> Response:
-        if 'id' not in data:
+    async def update_user(self, user_id: int, data: dict):
+        if user_id is None or user_id < 1:
             raise ValueError("Can't update without ID key.")
-        result = await self.repository.update_user(data)
+        result = await self.repository.update_user(user_id, data)
         return await self.serialize_user(result)
+
 
     async def delete_user(self, pk: int) -> bool:
         return await self.repository.delete_user(pk)
 
     @staticmethod
-    async def serialize_user(result) -> Response:
-        async def _serialize():
-            if isinstance(result, list):
-                serializer = UserSerializer(result, many=True)
-            else:
-                serializer = UserSerializer(result)
-            return serializer.data
-        data = await _serialize()
-        return Response(data)
+    async def serialize_user(result) -> ReturnDict:
+        if isinstance(result, list):
+            serializer = UserSerializer(result, many=True)
+        else:
+            serializer = UserSerializer(result)
+        return serializer.data

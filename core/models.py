@@ -1,54 +1,51 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db.models import (Model, CASCADE, SET_NULL, Index, TextField, DateTimeField,
                               BooleanField, CharField, IntegerField, FloatField,
                               ForeignKey, ManyToManyField, EmailField)
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
 class CustomUserManager(BaseUserManager):
-    async def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        await user.asave(using=self._db)
+        user.save(using=self._db)
         return user
 
-    async def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        return await self.create_user(email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = EmailField(unique=True)
-    first_name = CharField(max_length=30, blank=True)
-    last_name = CharField(max_length=30, blank=True)
-    is_active = BooleanField(default=True)
+    name = CharField(max_length=255, blank=True)
+
+    is_active = BooleanField(default=True)  # поля для доступа к админке (обязательные для PermissionsMixin)
     is_staff = BooleanField(default=False)
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
+    is_superuser = BooleanField(default=False)
+
+    read = BooleanField(default=True)
+    edit = BooleanField(default=False)
 
     objects = CustomUserManager()
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email
 
-
-class Token(Model):
-    key = CharField(max_length=40, primary_key=True)
-    user = ForeignKey(
-        'CustomUser',
-        related_name='auth_tokens',
-        on_delete=CASCADE
-    )
-    created = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.key
+    def has_perm(self, perm: str, obj=None):
+        if self.is_superuser:  # Если пользователь админ, даём все права
+            return True
+        if perm.endswith('_read') and self.read:
+            return True
+        if perm.endswith('_edit') and self.edit:
+            return True
+        return False
 
 
 class SubsystemStatus(Model):
@@ -207,6 +204,12 @@ class Event(Model):
         'Attachment',
         related_name='attached_for_events',
         blank=True
+    )
+    created_by = ForeignKey(
+        CustomUser,
+        on_delete=CASCADE,
+        related_name='created_events',
+        null=True
     )
 
     class Meta:

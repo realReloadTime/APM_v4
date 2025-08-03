@@ -1,137 +1,127 @@
-from rest_framework import status
-from rest_framework.response import Response
-from core.drfutil.async_apiview import AsyncAPIView
-from core.drfutil.auth import AsyncAuthentication, AsyncIsAuthenticated
-from core.models import CustomUser, Token
-from rest_framework.serializers import Serializer, EmailField, CharField
-import uuid
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from core.logic.user import UserService, UserRepository
 from asgiref.sync import sync_to_async
 
-class RegisterSerializer(Serializer):
-    email = EmailField()
-    password = CharField(write_only=True)
-    first_name = CharField(max_length=30, allow_blank=True)
-    last_name = CharField(max_length=30, allow_blank=True)
+from django.http import JsonResponse
 
-class UserSerializer(Serializer):
-    id = CharField(read_only=True)
-    email = EmailField()
-    first_name = CharField(max_length=30, allow_blank=True)
-    last_name = CharField(max_length=30, allow_blank=True)
-    is_active = CharField(read_only=True)
-    is_staff = CharField(read_only=True)
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 
-class RegisterView(AsyncAPIView):
-    @extend_schema(
-        summary="Register a new user",
-        description="Creates a new user and returns a token.",
-        responses={201: UserSerializer}
-    )
-    async def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-            try:
-                user = await CustomUser.objects.create_user(
-                    email=data['email'],
-                    password=data['password'],
-                    first_name=data.get('first_name', ''),
-                    last_name=data.get('last_name', ''),
-                )
-                token = await Token.objects.acreate(key=str(uuid.uuid4()), user=user)
-                return Response({
-                    'token': token.key,
-                    'user': UserSerializer(user).data
-                }, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+import json
 
-class LoginView(AsyncAPIView):
-    @extend_schema(
-        summary="Login a user",
-        description="Authenticates a user and returns a token.",
-        responses={200: UserSerializer}
-    )
-    async def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        try:
-            user = await CustomUser.objects.aget(email=email)
-            if await sync_to_async(user.check_password)(password):
-                token, _ = await Token.objects.aget_or_create(user=user)
-                return Response({
-                    'token': token.key,
-                    'user': UserSerializer(user).data
-                })
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+from core.logic.user import UserService, UserRepository
+from core.models import CustomUser
+from core.serializers import RegisterSerializer
+from core.auth import async_permission_required, async_api_method
 
-class UserCRUD(AsyncAPIView):
-    authentication_classes = [AsyncAuthentication]
-    permission_classes = [AsyncIsAuthenticated]
-    serializer_class = UserSerializer
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.service = UserService(UserRepository())
+async def get_user_service():
+    return UserService(UserRepository())
 
-    @extend_schema(
-        summary="Retrieve user",
-        description="Fetches a single user by ID or all users if no ID is provided.",
-        parameters=[OpenApiParameter(name='pk', type=int, location='path', required=False, description='User ID')],
-        responses={200: UserSerializer, 404: None}
-    )
-    async def get(self, request, pk=None):
-        try:
-            response = await self.service.get_user(pk)
-            return Response(response.data, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    @extend_schema(
-        summary="Create user",
-        description="Creates a new user.",
-        responses={201: UserSerializer}
-    )
-    async def post(self, request):
-        try:
-            response = await self.service.create_user(request.data)
-            return Response(response.data, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+# регистрация (email, password)
+@async_api_method(['POST'])
+async def register(request):
+    data = json.loads(request.body)
+    serializer = RegisterSerializer(data=data)
 
-    @extend_schema(
-        summary="Update user",
-        description="Updates an existing user.",
-        parameters=[OpenApiParameter(name='pk', type=int, location='path', required=True, description='User ID')],
-        responses={200: UserSerializer, 404: None}
-    )
-    async def put(self, request, pk):
-        try:
-            data = request.data.copy()
-            data['id'] = pk
-            response = await self.service.update_user(data)
-            if response is None:
-                return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-            return Response(response.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    if await sync_to_async(serializer.is_valid)():
+        user = await sync_to_async(serializer.save)()
+        refresh = await sync_to_async(RefreshToken.for_user)(user)
+        return JsonResponse({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=201)
 
-    @extend_schema(
-        summary="Delete user",
-        description="Deletes a user.",
-        parameters=[OpenApiParameter(name='pk', type=int, location='path', required=True, description='User ID')],
-        responses={204: None, 404: None}
-    )
-    async def delete(self, request, pk):
-        try:
-            success = await self.service.delete_user(pk)
-            if success:
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse(serializer.errors, status=400)
+
+
+# авторизация (email, password)
+@async_api_method(['POST'])
+async def login(request):
+    data = json.loads(request.body)
+    email = data.get('email')
+    password = data.get('password')
+
+    try:
+        user = await CustomUser.objects.aget(email=email)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'Invalid credentials'}, status=401)
+
+    if await sync_to_async(user.check_password)(password):
+        refresh = await sync_to_async(RefreshToken.for_user)(user)
+        return JsonResponse({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        })
+
+    return JsonResponse({'error': 'Invalid credentials'}, status=401)
+
+
+# получение пользователя по ID
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def user_detail(request, user_id):
+    service = await get_user_service()
+    try:
+        user = await service.get_user(user_id)
+        return JsonResponse(user)
+
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+
+# cписок всех пользователей
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def user_list(request):
+    service = await get_user_service()
+
+    try:
+        users = await service.get_user()
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+    return JsonResponse(users, safe=False)
+
+
+# обновление пользователя
+@async_api_method(['PUT'])
+@async_permission_required([IsAuthenticated])
+async def user_update(request, user_id: int):
+    service = await get_user_service()
+
+    try:
+        user = await service.update_user(user_id, request.body)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    except Exception as other_err:
+        return JsonResponse({'error': other_err}, status=404)
+
+    return JsonResponse(user)
+
+
+# удаление пользователя
+@async_api_method(['DELETE'])
+@async_permission_required([IsAuthenticated])
+async def user_delete(request, user_id):
+    service = await get_user_service()
+    try:
+        assert await service.delete_user(user_id)
+        return JsonResponse(
+            {'msg': 'Successful'},
+            status=204
+        )
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {'msg': 'User not found'},
+            status=404
+        )
+
+    except AssertionError:
+        return JsonResponse(
+            {'error': "Error on user deletion"},
+            status=404
+        )

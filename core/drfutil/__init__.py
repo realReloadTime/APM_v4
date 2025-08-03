@@ -1,1 +1,0 @@
-# код взят из https://dev.to/domincs/async-api-calls-unleashed-exploring-django-4-and-django-rest-framework-33c7

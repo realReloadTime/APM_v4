@@ -1,16 +1,10 @@
 from asgiref.sync import sync_to_async
 
 from django.db.models import QuerySet
-from rest_framework.serializers import ModelSerializer
 from rest_framework.response import Response
 
 from core.models import SubsystemStatus
-
-
-class SubsystemStatusSerializer(ModelSerializer):  # ExampleSerializer(example) -> JSON response
-    class Meta:
-        model = SubsystemStatus
-        fields = '__all__'
+from core.serializers import SubsystemStatusSerializer
 
 
 class SubsystemStatusRepository:  # CRUD логика чистой работы с БД
