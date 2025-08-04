@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition
+from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -52,4 +52,10 @@ class SubsystemSerializer(serializers.ModelSerializer):
 class ConditionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condition
+        fields = '__all__'
+
+
+class PrecipitationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Precipitation
         fields = '__all__'

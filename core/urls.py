@@ -4,8 +4,11 @@ from core.views.user import register, login, user_list, user_detail, user_update
 from core.views.subsystem_status import get_post_subsystem_status, get_subsystem_status_detail, \
     update_subsystem_status, delete_subsystem_status
 from core.views.system import get_post_system, get_system_detail, update_system, delete_system
-from core.views.subsystem import get_post_subsystem, subsystem_detail, subsystems_by_system, subsystem_update, subsystem_delete
+from core.views.subsystem import get_post_subsystem, subsystem_detail, subsystems_by_system, subsystem_update, \
+    subsystem_delete
 from core.views.condition import get_post_condition, get_condition_detail, update_condition, delete_condition
+from core.views.precipitation import get_post_precipitation, get_precipitation_detail, update_precipitation, \
+    delete_precipitation
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -35,4 +38,9 @@ urlpatterns = [
     path('conditions/<int:condition_id>/', get_condition_detail, name='condition-detail'),
     path('conditions/<int:condition_id>/update/', update_condition, name='condition-update'),
     path('conditions/<int:condition_id>/delete/', delete_condition, name='condition-delete'),
+
+    path('precipitations/', get_post_precipitation, name='precipitation-get-post'),
+    path('precipitations/<int:precipitation_id>/', get_precipitation_detail, name='precipitation-detail'),
+    path('precipitations/<int:precipitation_id>/update/', update_precipitation, name='precipitation-update'),
+    path('precipitations/<int:precipitation_id>/delete/', delete_precipitation, name='precipitation-delete'),
 ]
