@@ -1,6 +1,6 @@
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from core.models import Subsystem
+from core.models import Subsystem, System
 from core.serializers import SubsystemSerializer
 from core.logic.system import SystemRepository
 
@@ -26,6 +26,13 @@ class SubsystemRepository:
             return await Subsystem.objects.select_related('system').aget(id=pk)
         except Subsystem.DoesNotExist:
             raise ValueError(f"Subsystem с ID {pk} не существует")
+
+    @staticmethod
+    async def get_subsystems_by_system(system_id: int) -> list[Subsystem]:
+        await SystemRepository.get_system(system_id)  # проверка существования системы
+        # возврат подсистем, связанных с системой
+        return [subsystem async for subsystem in
+                Subsystem.objects.select_related('system').filter(system_id=system_id)]
 
     @staticmethod
     async def update_subsystem(pk: int, data: dict) -> Subsystem | None:
@@ -56,6 +63,10 @@ class SubsystemService:
 
     async def get_subsystem(self, pk: int | None = None) -> ReturnDict:
         result = await self.repository.get_subsystem(pk)
+        return await self.serialize_subsystem(result)
+
+    async def get_subsystems_by_system(self, system_id: int) -> ReturnDict:
+        result = await self.repository.get_subsystems_by_system(system_id)
         return await self.serialize_subsystem(result)
 
     async def update_subsystem(self, subsystem_id: int, data: dict) -> ReturnDict:

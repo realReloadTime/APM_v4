@@ -4,7 +4,7 @@ from core.views.user import register, login, user_list, user_detail, user_update
 from core.views.subsystem_status import get_post_subsystem_status, get_subsystem_status_detail, \
     update_subsystem_status, delete_subsystem_status
 from core.views.system import get_post_system, get_system_detail, update_system, delete_system
-from core.views.subsystem import get_post_subsystem, subsystem_detail, subsystem_update, subsystem_delete
+from core.views.subsystem import get_post_subsystem, subsystem_detail, subsystems_by_system, subsystem_update, subsystem_delete
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -26,6 +26,7 @@ urlpatterns = [
 
     path('subsystems/', get_post_subsystem, name='get-post-subsystem'),
     path('subsystems/<int:subsystem_id>/', subsystem_detail, name='subsystem-detail'),
+    path('subsystems/by-system/<int:system_id>/', subsystems_by_system, name='subsystems-by-system'),
     path('subsystems/<int:subsystem_id>/update/', subsystem_update, name='subsystem-update'),
     path('subsystems/<int:subsystem_id>/delete/', subsystem_delete, name='subsystem-delete'),
 ]
