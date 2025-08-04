@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import CustomUser, SubsystemStatus
+from core.models import CustomUser, SubsystemStatus, System
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -27,4 +27,10 @@ class UserSerializer(serializers.ModelSerializer):
 class SubsystemStatusSerializer(serializers.ModelSerializer):  # ExampleSerializer(example) -> JSON response
     class Meta:
         model = SubsystemStatus
+        fields = '__all__'
+
+
+class SystemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = System
         fields = '__all__'

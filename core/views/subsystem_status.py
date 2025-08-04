@@ -14,7 +14,7 @@ async def get_subsystemstatus_service():
 
 @async_api_method(['GET', 'POST'])  # Разрешаем GET и POST
 @async_permission_required([IsAuthenticated])
-async def get_subsystem_status_list(request):
+async def get_post_subsystem_status(request):
     service = await get_subsystemstatus_service()
 
     try:
