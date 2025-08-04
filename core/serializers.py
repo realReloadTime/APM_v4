@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import CustomUser, SubsystemStatus, System, Subsystem
+from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -47,3 +47,9 @@ class SubsystemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subsystem
         fields = ['id', 'name', 'system_id', 'system']
+
+
+class ConditionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Condition
+        fields = '__all__'
