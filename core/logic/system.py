@@ -13,7 +13,10 @@ class SystemRepository:
     async def get_system(pk: int | None) -> System | list[System]:
         if pk is None:
             return [system async for system in System.objects.all()]
-        return await System.objects.aget(id=pk)
+        try:
+            return await System.objects.aget(id=pk)
+        except System.DoesNotExist:
+            raise ValueError(f"System с ID {pk} не существует")
 
     @staticmethod
     async def update_system(pk: int, data: dict) -> System | None:

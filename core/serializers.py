@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import CustomUser, SubsystemStatus, System
+from core.models import CustomUser, SubsystemStatus, System, Subsystem
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -34,3 +34,16 @@ class SystemSerializer(serializers.ModelSerializer):
     class Meta:
         model = System
         fields = '__all__'
+
+
+class SubsystemSerializer(serializers.ModelSerializer):
+    system_id = serializers.PrimaryKeyRelatedField(
+        queryset=System.objects.all(),
+        source='system',
+        write_only=True
+    )
+    system = serializers.StringRelatedField(read_only=True)  # Для вывода имени системы
+
+    class Meta:
+        model = Subsystem
+        fields = ['id', 'name', 'system_id', 'system']
