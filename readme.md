@@ -26,7 +26,9 @@ https://www.postgresql.org/download/windows/
 <code>python manage.py collectstatic</code>
 <br><br>
 #### Загрузить данные из фикстур:
-<code>python manage.py loaddata systems subsystems subsystem_statuses sources regions precipitations conditions objecttypes locationtypes categories loas</code>
+<code>python manage.py loadallfixtures</code>
+<br><br>
+При возникновении ошибок во время переноса (например, не найден ключ элемента таблицы, используемый в другой таблице) перезапустить скрипт.
 
 ### Запуск проекта
 <code>uvicorn apm_project.asgi:application --reload --port 8000</code>

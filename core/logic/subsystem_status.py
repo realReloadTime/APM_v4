@@ -14,9 +14,9 @@ class SubsystemStatusRepository:  # CRUD логика чистой работы 
         return await SubsystemStatus.objects.acreate(**data)
 
     @staticmethod
-    async def get_subsystem_status(pk: int | None) -> SubsystemStatus | QuerySet[SubsystemStatus]:
+    async def get_subsystem_status(pk: int | None) -> SubsystemStatus | list[SubsystemStatus]:
         if pk is None:
-            return await sync_to_async(SubsystemStatus.objects.all)()
+            return [ss_status async for ss_status in SubsystemStatus.objects.all()]
         return await SubsystemStatus.objects.aget(id=pk)
 
     @staticmethod

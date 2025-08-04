@@ -91,9 +91,9 @@ async def user_list(request):
 @async_permission_required([IsAuthenticated])
 async def user_update(request, user_id: int):
     service = await get_user_service()
-
+    data = json.loads(request.body)
     try:
-        user = await service.update_user(user_id, request.body)
+        user = await service.update_user(user_id, data)
     except CustomUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
 

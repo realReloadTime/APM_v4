@@ -14,9 +14,9 @@ class UserRepository:
         return await CustomUser.objects.create_user(**data)
 
     @staticmethod
-    async def get_user(pk: int | None = None) -> CustomUser | QuerySet[CustomUser] | None:
+    async def get_user(pk: int | None = None) -> CustomUser | list[CustomUser] | None:
         if pk is None:
-            return await sync_to_async(CustomUser.objects.all)()
+            return [user async for user in CustomUser.objects.all()]
         return await CustomUser.objects.aget(id=pk)
 
     @staticmethod

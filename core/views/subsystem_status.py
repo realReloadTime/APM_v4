@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 
 from rest_framework.permissions import IsAuthenticated
@@ -11,30 +12,25 @@ async def get_subsystemstatus_service():
     return SubsystemStatusService(SubsystemStatusRepository())
 
 
-@async_api_method(['POST'])
-@async_permission_required([IsAuthenticated])
-async def create_subsystem_status(request):
-    service = await get_subsystemstatus_service()
-
-    try:
-        ss_status = await service.create_subsystem_status(request.body)
-        return JsonResponse(ss_status, status=201)
-
-    except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
-
-
-@async_api_method(['GET'])
+@async_api_method(['GET', 'POST'])  # Разрешаем GET и POST
 @async_permission_required([IsAuthenticated])
 async def get_subsystem_status_list(request):
     service = await get_subsystemstatus_service()
 
     try:
-        ss_status = await service.get_subsystem_status()
-        return JsonResponse(ss_status, status=200)
+        if request.method == 'POST':
+            # обработка POST SubsystemStatus
+            data = json.loads(request.body)
+            ss_status = await service.create_subsystem_status(data)
+            return JsonResponse(ss_status, status=201)
+        else:  # GET
+            ss_status = await service.get_subsystem_status()
+            return JsonResponse(ss_status, status=200, safe=False)
 
+    except SubsystemStatus.DoesNotExist:
+        return JsonResponse({'error': 'SubsystemStatus not found'}, status=404)
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=400)
 
 
 @async_api_method(['GET'])
@@ -57,9 +53,9 @@ async def get_subsystem_status_detail(request, ss_status_id: int):
 @async_permission_required([IsAuthenticated])
 async def update_subsystem_status(request, ss_status_id: int):
     service = await get_subsystemstatus_service()
-
+    data = json.loads(request.body)
     try:
-        ss_status = await service.update_subsystem_status(ss_status_id, request.body)
+        ss_status = await service.update_subsystem_status(ss_status_id, data)
         return JsonResponse(ss_status, status=200)
 
     except Exception as other_err:
