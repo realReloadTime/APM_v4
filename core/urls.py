@@ -9,6 +9,7 @@ from core.views.subsystem import get_post_subsystem, subsystem_detail, subsystem
 from core.views.condition import get_post_condition, get_condition_detail, update_condition, delete_condition
 from core.views.precipitation import get_post_precipitation, get_precipitation_detail, update_precipitation, \
     delete_precipitation
+from core.views.source import get_post_source, get_source_detail, update_source, delete_source
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -43,4 +44,9 @@ urlpatterns = [
     path('precipitations/<int:precipitation_id>/', get_precipitation_detail, name='precipitation-detail'),
     path('precipitations/<int:precipitation_id>/update/', update_precipitation, name='precipitation-update'),
     path('precipitations/<int:precipitation_id>/delete/', delete_precipitation, name='precipitation-delete'),
+
+    path('sources/', get_post_source, name='source-get-post'),
+    path('sources/<int:source_id>/', get_source_detail, name='source-detail'),
+    path('sources/<int:source_id>/update/', update_source, name='source-update'),
+    path('sources/<int:source_id>/delete/', delete_source, name='source-delete'),
 ]
