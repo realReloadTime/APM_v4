@@ -43,8 +43,6 @@ def async_permission_required(permission_classes):
 def async_api_method(methods):
     def decorator(view_func):
         async def wrapped_view(request, *args, **kwargs):
-            print(f"User authenticated: {request.user.is_authenticated}")  # ДЛЯ ОТЛАДКИ, УДАЛИТЬ!!
-            print(request.user)
             if request.method not in methods:
                 return JsonResponse({'error': 'Method not allowed'}, status=405)
             return await view_func(request, *args, **kwargs)

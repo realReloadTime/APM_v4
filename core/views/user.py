@@ -1,6 +1,6 @@
 from asgiref.sync import sync_to_async
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
@@ -110,10 +110,7 @@ async def user_delete(request, user_id):
     service = await get_user_service()
     try:
         assert await service.delete_user(user_id)
-        return JsonResponse(
-            {'msg': 'Successful'},
-            status=204
-        )
+        return HttpResponse(status=204)
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {'msg': 'User not found'},

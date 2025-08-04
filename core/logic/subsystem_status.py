@@ -1,7 +1,3 @@
-from asgiref.sync import sync_to_async
-
-from django.db.models import QuerySet
-
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from core.models import SubsystemStatus

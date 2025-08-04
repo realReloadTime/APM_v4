@@ -1,5 +1,5 @@
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -69,10 +69,7 @@ async def delete_subsystem_status(request, ss_status_id: int):
 
     try:
         assert await service.delete_subsystem_status(ss_status_id)
-        return JsonResponse(
-        {'msg': 'Successful'},
-        status=204
-    )
+        return HttpResponse(status=204)
 
     except SubsystemStatus.DoesNotExist:
         return JsonResponse(

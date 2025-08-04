@@ -1,8 +1,4 @@
-from asgiref.sync import sync_to_async
-
 from rest_framework.utils.serializer_helpers import ReturnDict
-
-from django.db.models import QuerySet
 
 from core.models import CustomUser
 from core.serializers import UserSerializer
