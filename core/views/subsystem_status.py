@@ -46,7 +46,7 @@ async def get_subsystem_status_detail(request, ss_status_id: int):
         return JsonResponse({'error': 'SubsystemStatus not found'}, status=404)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
 
 @async_api_method(['PUT'])
@@ -59,7 +59,7 @@ async def update_subsystem_status(request, ss_status_id: int):
         return JsonResponse(ss_status, status=200)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
 
 @async_api_method(['DELETE'])

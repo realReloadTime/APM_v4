@@ -26,10 +26,10 @@ async def get_post_subsystem(request):
             return JsonResponse(subsystems, safe=False, status=200)
 
     except ValueError as ve:
-        return JsonResponse({'error': ve}, status=400)
+        return JsonResponse({'error': str(ve)}, status=400)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=400)
+        return JsonResponse({'error': str(other_err)}, status=400)
 
 
 @async_api_method(['GET'])
@@ -41,10 +41,10 @@ async def subsystem_detail(request, subsystem_id: int):
         return JsonResponse(subsystem, status=200)
 
     except ValueError as ve:
-        return JsonResponse({'error': ve}, status=404)
+        return JsonResponse({'error': str(ve)}, status=404)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=400)
+        return JsonResponse({'error': str(other_err)}, status=400)
 
 
 @async_api_method(['GET'])
@@ -55,9 +55,9 @@ async def subsystems_by_system(request, system_id: int):
         subsystems = await service.get_subsystems_by_system(system_id)
         return JsonResponse(subsystems, safe=False, status=200)
     except ValueError as ve:
-        return JsonResponse({'error': ve}, status=404)
+        return JsonResponse({'error': str(ve)}, status=404)
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=400)
+        return JsonResponse({'error': str(other_err)}, status=400)
 
 
 @async_api_method(['PUT'])
@@ -70,10 +70,10 @@ async def subsystem_update(request, subsystem_id: int):
         return JsonResponse(subsystem, status=200)
 
     except ValueError as ve:
-        return JsonResponse({'error': ve}, status=400)
+        return JsonResponse({'error': str(ve)}, status=400)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=400)
+        return JsonResponse({'error': str(other_err)}, status=400)
 
 
 @async_api_method(['DELETE'])
@@ -87,4 +87,4 @@ async def subsystem_delete(request, subsystem_id: int):
         return HttpResponse(status=204)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=400)
+        return JsonResponse({'error': str(other_err)}, status=400)

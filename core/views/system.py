@@ -46,7 +46,7 @@ async def get_system_detail(request, system_id: int):
         return JsonResponse({'error': 'System not found'}, status=404)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
 
 @async_api_method(['PUT'])
@@ -59,7 +59,7 @@ async def update_system(request, system_id: int):
         return JsonResponse(system, status=200)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
 
 @async_api_method(['DELETE'])

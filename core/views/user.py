@@ -69,7 +69,7 @@ async def user_detail(request, user_id):
         return JsonResponse({'error': 'User not found'}, status=404)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
 
 # cписок всех пользователей
@@ -81,7 +81,7 @@ async def user_list(request):
     try:
         users = await service.get_user()
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
     return JsonResponse(users, safe=False)
 
@@ -98,7 +98,7 @@ async def user_update(request, user_id: int):
         return JsonResponse({'error': 'User not found'}, status=404)
 
     except Exception as other_err:
-        return JsonResponse({'error': other_err}, status=404)
+        return JsonResponse({'error': str(other_err)}, status=404)
 
     return JsonResponse(user)
 
