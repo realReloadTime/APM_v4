@@ -12,6 +12,7 @@ from core.views.precipitation import get_post_precipitation, get_precipitation_d
 from core.views.source import get_post_source, get_source_detail, update_source, delete_source
 from core.views.attachment import get_post_attachment, attachment_detail, attachment_download, attachment_delete
 from core.views.category import get_post_category, get_category_detail, update_category, delete_category
+from core.views.location_type import get_post_location_type, get_location_type_detail, update_location_type, delete_location_type
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -61,4 +62,9 @@ urlpatterns = [
     path('categories/<int:category_id>/', get_category_detail, name='category-detail'),
     path('categories/<int:category_id>/update/', update_category, name='category-update'),
     path('categories/<int:category_id>/delete/', delete_category, name='category-delete'),
+
+    path('location_types/', get_post_location_type, name='location-type-get-post'),
+    path('location_types/<int:location_type_id>/', get_location_type_detail, name='location-type-detail'),
+    path('location_types/<int:location_type_id>/update/', update_location_type, name='location-type-update'),
+    path('location_types/<int:location_type_id>/delete/', delete_location_type, name='location-type-delete'),
 ]
