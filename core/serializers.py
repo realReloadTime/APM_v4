@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment
 
-import uuid
-import os
-
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
