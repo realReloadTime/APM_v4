@@ -13,6 +13,7 @@ from core.views.source import get_post_source, get_source_detail, update_source,
 from core.views.attachment import get_post_attachment, attachment_detail, attachment_download, attachment_delete
 from core.views.category import get_post_category, get_category_detail, update_category, delete_category
 from core.views.location_type import get_post_location_type, get_location_type_detail, update_location_type, delete_location_type
+from core.views.region import get_post_region, get_region_detail, update_region, delete_region
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -67,4 +68,9 @@ urlpatterns = [
     path('location_types/<int:location_type_id>/', get_location_type_detail, name='location-type-detail'),
     path('location_types/<int:location_type_id>/update/', update_location_type, name='location-type-update'),
     path('location_types/<int:location_type_id>/delete/', delete_location_type, name='location-type-delete'),
+
+    path('regions/', get_post_region, name='region-get-post'),
+    path('regions/<int:region_id>/', get_region_detail, name='region-detail'),
+    path('regions/<int:region_id>/update/', update_region, name='region-update'),
+    path('regions/<int:region_id>/delete/', delete_region, name='region-delete'),
 ]

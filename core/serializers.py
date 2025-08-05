@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment, \
-    Category, LocationType
+    Category, LocationType, Region
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -92,4 +92,10 @@ class CategorySerializer(serializers.ModelSerializer):
 class LocationTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = LocationType
+        fields = '__all__'
+
+
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
         fields = '__all__'
