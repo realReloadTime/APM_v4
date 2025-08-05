@@ -31,8 +31,9 @@ DB_PASSWORD='пароль-базы_данных'
 #### Опционально - создать суперпользователя:
 <code>python manage.py createsuperuser</code>
 
-#### Собрать статику:
-<code>python manage.py collectstatic</code>
+[//]: # (#### Собрать статику:)
+
+[//]: # (<code>python manage.py collectstatic</code>)
 
 #### Загрузить данные из фикстур:
 <code>python manage.py loadallfixtures</code>
