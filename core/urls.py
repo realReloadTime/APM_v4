@@ -12,8 +12,10 @@ from core.views.precipitation import get_post_precipitation, get_precipitation_d
 from core.views.source import get_post_source, get_source_detail, update_source, delete_source
 from core.views.attachment import get_post_attachment, attachment_detail, attachment_download, attachment_delete
 from core.views.category import get_post_category, get_category_detail, update_category, delete_category
-from core.views.location_type import get_post_location_type, get_location_type_detail, update_location_type, delete_location_type
+from core.views.location_type import get_post_location_type, get_location_type_detail, update_location_type, \
+    delete_location_type
 from core.views.region import get_post_region, get_region_detail, update_region, delete_region
+from core.views.loa import get_post_loa, loa_detail, loas_by_region, loa_update, loa_delete
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -73,4 +75,10 @@ urlpatterns = [
     path('regions/<int:region_id>/', get_region_detail, name='region-detail'),
     path('regions/<int:region_id>/update/', update_region, name='region-update'),
     path('regions/<int:region_id>/delete/', delete_region, name='region-delete'),
+
+    path('loas/', get_post_loa, name='get-post-loa'),
+    path('loas/<int:loa_id>/', loa_detail, name='loa-detail'),
+    path('loas/by-region/<int:region_id>/', loas_by_region, name='loas-by-region'),
+    path('loas/<int:loa_id>/update/', loa_update, name='loa-update'),
+    path('loas/<int:loa_id>/delete/', loa_delete, name='loa-delete'),
 ]

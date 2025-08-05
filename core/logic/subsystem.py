@@ -1,6 +1,6 @@
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from core.models import Subsystem, System
+from core.models import Subsystem
 from core.serializers import SubsystemSerializer
 from core.logic.system import SystemRepository
 

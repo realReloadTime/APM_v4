@@ -123,6 +123,9 @@ class LocationType(Model):
 class Region(Model):
     name = CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class LOA(Model):
     name = CharField(max_length=255)

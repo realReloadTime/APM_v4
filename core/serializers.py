@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment, \
-    Category, LocationType, Region
+    Category, LocationType, Region, LOA
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -99,3 +99,16 @@ class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
         fields = '__all__'
+
+
+class LOASerializer(serializers.ModelSerializer):
+    region_id = serializers.PrimaryKeyRelatedField(
+        queryset=Region.objects.all(),
+        source='region',
+        write_only=True
+    )
+    region = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = LOA
+        fields = ['id', 'name', 'region_id', 'region']
