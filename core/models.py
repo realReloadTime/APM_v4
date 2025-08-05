@@ -96,7 +96,7 @@ class Source(Model):
 
 
 class Attachment(Model):
-    name = CharField(max_length=255)
+    name = CharField(max_length=255, unique=True)
     created_at = DateTimeField(auto_now_add=True)
     author = ForeignKey(
         'CustomUser',

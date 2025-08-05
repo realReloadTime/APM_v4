@@ -10,6 +10,7 @@ from core.views.condition import get_post_condition, get_condition_detail, updat
 from core.views.precipitation import get_post_precipitation, get_precipitation_detail, update_precipitation, \
     delete_precipitation
 from core.views.source import get_post_source, get_source_detail, update_source, delete_source
+from core.views.attachment import get_post_attachment, attachment_detail, attachment_download, attachment_delete
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -49,4 +50,9 @@ urlpatterns = [
     path('sources/<int:source_id>/', get_source_detail, name='source-detail'),
     path('sources/<int:source_id>/update/', update_source, name='source-update'),
     path('sources/<int:source_id>/delete/', delete_source, name='source-delete'),
+
+    path('attachments/', get_post_attachment, name='attachment-get-post'),
+    path('attachments/<int:attachment_id>/', attachment_detail, name='attachment-detail'),
+    path('attachments/<int:attachment_id>/download/', attachment_download, name='attachment-download'),
+    path('attachments/<int:attachment_id>/delete/', attachment_delete, name='attachment-delete'),
 ]

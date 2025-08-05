@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source
+from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment
+
+import uuid
+import os
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -65,3 +68,18 @@ class SourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Source
         fields = '__all__'
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    author_id = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all(),
+        source='author',
+        write_only=True
+    )
+    author = serializers.StringRelatedField(read_only=True)
+    file = serializers.FileField(write_only=True)  # поле для загрузки файла
+
+    class Meta:
+        model = Attachment
+        fields = ['id', 'name', 'created_at', 'author_id', 'author', 'file']
+        read_only_fields = ['name', 'created_at', 'author']

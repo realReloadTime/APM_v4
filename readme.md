@@ -10,7 +10,7 @@ https://www.postgresql.org/download/windows/
 
 ### Создать и активировать виртуальное окружение в проекте
 <code>python -m venv venv</code>
-<br><br>
+<br>
 <code>.\venv\Scripts\activate</code>
 
 ### Установить зависимости
@@ -19,13 +19,13 @@ https://www.postgresql.org/download/windows/
 ### Мигрировать с помощью manage.py
 #### Применение миграций:
 <code>python manage.py migrate</code>
-<br><br>
+
 #### Опционально - создать суперпользователя:
 <code>python manage.py createsuperuser</code>
-<br><br>
+
 #### Собрать статику:
 <code>python manage.py collectstatic</code>
-<br><br>
+
 #### Загрузить данные из фикстур:
 <code>python manage.py loadallfixtures</code>
 <br><br>
@@ -33,3 +33,7 @@ https://www.postgresql.org/download/windows/
 
 ### Запуск проекта
 <code>uvicorn apm_project.asgi:application --reload --port 8000</code>
+
+Параметры:
+* <i><code>--reload</code> опционален, автоматически перезапускает проект при изменении кода<br>
+* <code>--port</code> опционален, имеет значение по-умолчанию 8000</i>
