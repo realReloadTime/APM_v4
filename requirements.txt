@@ -6,3 +6,4 @@ django-cors-headers
 asyncpg
 psycopg2
 uvicorn
+uuid
