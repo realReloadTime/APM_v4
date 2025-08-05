@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const modal = new bootstrap.Modal(document.getElementById('measuresModal'));
+    const modalEl = document.getElementById('measuresModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     const saveButton = document.getElementById('save-measure');
     const actionsTextarea = document.getElementById('actions');
     
@@ -11,17 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Пожалуйста, введите описание меры');
             return;
         }
-        
+        if (!date.trim()) {
+            alert('Пожалуйста, введите дату');
+            return;
+        }
         addMeasureToTextarea(date, text);
         clearModalFields();
         modal.hide();
+        return false;
     });
-    
-    cancelButton.addEventListener('click', function() {
-        clearModalFields();
-        modal.hide();
-    });
-    
+        
     document.getElementById('measuresModal').addEventListener('show.bs.modal', function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('measure-date').value = today || '';
@@ -42,11 +42,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function formatDate(dateString) {
+        if (!dateString) return 'дата не указана';
         const [year, month, day] = dateString.split('-');
         return `${day}.${month}.${year}`;
     }
     
     function clearModalFields() {
         document.getElementById('measure-text').value = '';
+        document.getElementById('measure-date').value = '';
     }
 });
