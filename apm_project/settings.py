@@ -1,9 +1,12 @@
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()  # !!! ДОБАВИТЬ .env в директорию apm_project
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'django-insecure-d51t3l0x6)$@!rkxm-@cd$&seuhs29&hzo!4^odke5f(lo)m_w'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -56,9 +59,9 @@ ASGI_APPLICATION = 'apm_project.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'apm_db',
-        'USER': 'apm_db_user',
-        'PASSWORD': '8+Y wDB*(ZUPJo_#kgtq',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST': 'localhost',
         'PORT': '5432',
     }
