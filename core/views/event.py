@@ -20,6 +20,8 @@ async def get_post_event(request):
     try:
         if request.method == 'POST':
             data = json.loads(request.body)
+            data['created_by'] = request.user
+
             event = await service.create_event(data)
             return JsonResponse(event, status=201)
         else:
@@ -29,8 +31,8 @@ async def get_post_event(request):
     except Event.DoesNotExist:
         return JsonResponse({'error': 'Event not found'}, status=404)
 
-    # except Exception as other_err:
-    #     return JsonResponse({'error': str(other_err)}, status=400)
+    except Exception as other_err:
+        return JsonResponse({'error': str(other_err)}, status=400)
 
 
 @async_api_method(['GET'])
