@@ -16,6 +16,7 @@ from core.views.location_type import get_post_location_type, get_location_type_d
     delete_location_type
 from core.views.region import get_post_region, get_region_detail, update_region, delete_region
 from core.views.loa import get_post_loa, loa_detail, loas_by_region, loa_update, loa_delete
+from core.views.location import get_post_location, location_detail, location_update, location_delete
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -81,4 +82,9 @@ urlpatterns = [
     path('loas/by-region/<int:region_id>/', loas_by_region, name='loas-by-region'),
     path('loas/<int:loa_id>/update/', loa_update, name='loa-update'),
     path('loas/<int:loa_id>/delete/', loa_delete, name='loa-delete'),
+
+    path('locations/', get_post_location, name='get-post-location'),
+    path('locations/<int:location_id>/', location_detail, name='location-detail'),
+    path('locations/<int:location_id>/update/', location_update, name='location-update'),
+    path('locations/<int:location_id>/delete/', location_delete, name='location-delete'),
 ]

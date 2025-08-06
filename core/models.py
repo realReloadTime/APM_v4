@@ -154,7 +154,7 @@ class Location(Model):
         LocationType,
         on_delete=CASCADE
     )
-    name = CharField(max_length=255)
+    name = CharField(max_length=255, blank=False)
     loa = ForeignKey(
         LOA,
         on_delete=CASCADE,
@@ -212,6 +212,9 @@ class MeasuresTaken(Model):
             Index(fields=['adopted_at']),
         ]
 
+    def __str__(self):
+        return self.adopted_at
+
 
 class Event(Model):
     begin = DateTimeField(auto_now_add=True)
@@ -252,6 +255,9 @@ class Event(Model):
         related_name='created_events',
         null=True
     )
+
+    def __str__(self):
+        return self.begin
 
     class Meta:
         indexes = [

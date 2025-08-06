@@ -9,6 +9,7 @@ class SubsystemRepository:
     @staticmethod
     async def create_subsystem(data: dict) -> Subsystem:
         system_id = data.get('system_id')
+
         if system_id:
             system = await SystemRepository.get_system(system_id)
             data['system'] = system
@@ -41,6 +42,7 @@ class SubsystemRepository:
         if system_id:
             system = await SystemRepository.get_system(system_id)
             data['system'] = system
+
         data.pop('system_id', None)
         updated = await Subsystem.objects.filter(id=pk).aupdate(**data)
         if not updated:
@@ -72,6 +74,7 @@ class SubsystemService:
     async def update_subsystem(self, subsystem_id: int, data: dict) -> ReturnDict:
         if subsystem_id is None or subsystem_id < 1:
             raise ValueError("Can't update without ID key.")
+
         result = await self.repository.update_subsystem(subsystem_id, data)
         if result is None:
             raise ValueError("Subsystem not found")
