@@ -56,6 +56,16 @@ async def login(request):
     return JsonResponse({'error': 'Invalid credentials'}, status=401)
 
 
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def get_user_self(request):
+    service = await get_user_service()
+
+    try:
+        return JsonResponse(await service.get_me_as_user(request.user))
+    except Exception as err:
+        return JsonResponse({'error': str(err)}, status=400)
+
 # получение пользователя по ID
 @async_api_method(['GET'])
 @async_permission_required([IsAuthenticated])

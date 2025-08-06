@@ -257,7 +257,6 @@ class Event(Model):
     )
 
     def __str__(self):
-        import datetime
         return str(self.begin)
 
     class Meta:

@@ -1,4 +1,5 @@
 from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework_simplejwt.utils import aware_utcnow
 
 from core.models import CustomUser
 from core.serializers import UserSerializer
@@ -35,6 +36,9 @@ class UserService:
     async def create_user(self, data: dict):
         result = await self.repository.create_user(data)
         return await self.serialize_user(result)
+
+    async def get_me_as_user(self, user: CustomUser):
+        return await self.serialize_user(user)
 
     async def get_user(self, pk: int | None = None):
         result = await self.repository.get_user(pk)
