@@ -22,6 +22,8 @@ from core.views.object import get_post_object, object_detail, object_update, obj
 from core.views.measures_taken import get_post_measures_taken, get_measures_taken_detail, update_measures_taken, \
     delete_measures_taken
 from core.views.event import get_post_event, get_event_detail, update_event, delete_event
+from core.views.equipment_failure import get_post_equipment_failure, get_equipment_failure_detail, \
+    update_equipment_failure, delete_equipment_failure
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -108,8 +110,16 @@ urlpatterns = [
     path('measures/<int:measures_taken_id>/update/', update_measures_taken, name='measures_taken-update'),
     path('measures/<int:measures_taken_id>/delete/', delete_measures_taken, name='measures_taken-delete'),
 
-path('events/', get_post_event, name='event-get-post'),
+    path('events/', get_post_event, name='event-get-post'),
     path('events/<int:event_id>/', get_event_detail, name='event-detail'),
     path('events/<int:event_id>/update/', update_event, name='event-update'),
     path('events/<int:event_id>/delete/', delete_event, name='event-delete'),
+
+    path('equipment_failures/', get_post_equipment_failure, name='equipment_failure-get-post'),
+    path('equipment_failures/<int:failure_id>/', get_equipment_failure_detail,
+         name='equipment_failure-detail'),
+    path('equipment_failures/<int:failure_id>/update/', update_equipment_failure,
+         name='equipment_failure-update'),
+    path('equipment_failures/<int:failure_id>/delete/', delete_equipment_failure,
+         name='equipment_failure-delete'),
 ]
