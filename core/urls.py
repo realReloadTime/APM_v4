@@ -19,6 +19,8 @@ from core.views.loa import get_post_loa, loa_detail, loas_by_region, loa_update,
 from core.views.location import get_post_location, location_detail, location_update, location_delete
 from core.views.object_type import get_post_object_type, get_object_type_detail, update_object_type, delete_object_type
 from core.views.object import get_post_object, object_detail, object_update, object_delete
+from core.views.measures_taken import get_post_measures_taken, get_measures_taken_detail, update_measures_taken, \
+    delete_measures_taken
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -99,4 +101,9 @@ urlpatterns = [
     path('objects/<int:object_id>/', object_detail, name='object-detail'),
     path('objects/<int:object_id>/update/', object_update, name='object-update'),
     path('objects/<int:object_id>/delete/', object_delete, name='object-delete'),
+
+    path('measures/', get_post_measures_taken, name='measures_taken-get-post'),
+    path('measures/<int:measures_taken_id>/', get_measures_taken_detail, name='measures_taken-detail'),
+    path('measures/<int:measures_taken_id>/update/', update_measures_taken, name='measures_taken-update'),
+    path('measures/<int:measures_taken_id>/delete/', delete_measures_taken, name='measures_taken-delete'),
 ]
