@@ -10,8 +10,8 @@ https://www.postgresql.org/download/windows/
 БД можно создать через терминал и psql, либо с помощью UI pgAdmin.
 
 ### Добавить .env в /apm_project
-Определить переменные окружения:<code><br><br>
-DJANGO_SECRET_KEY='любая-строка'<br>
+Определить переменные окружения:<br><br>
+<code>DJANGO_SECRET_KEY='любая-строка'<br>
 DB_NAME='название_базы_данных'<br>
 DB_USER='название_пользователя_базы_данных'<br>
 DB_PASSWORD='пароль-базы_данных'

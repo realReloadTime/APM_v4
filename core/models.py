@@ -104,6 +104,9 @@ class Attachment(Model):
         related_name='attachments'
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         indexes = [
             Index(fields=['author']),
@@ -115,9 +118,15 @@ class Category(Model):
     name = CharField(max_length=255)
     table_name = CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class LocationType(Model):
     name = CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class Region(Model):
@@ -136,6 +145,9 @@ class LOA(Model):
         null=True
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Location(Model):
     location_type = ForeignKey(
@@ -149,15 +161,22 @@ class Location(Model):
         related_name='loa_locations'
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         indexes = [
             Index(fields=['loa']),
             Index(fields=['location_type']),
+            Index(fields=['name']),
         ]
 
 
 class ObjectType(Model):
     name = CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class Object(Model):
@@ -173,10 +192,24 @@ class Object(Model):
         related_name='loa_objects'
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         indexes = [
             Index(fields=['loa']),
             Index(fields=['type']),
+            Index(fields=['name']),
+        ]
+
+
+class MeasuresTaken(Model):
+    adopted_at = DateTimeField()
+    description = TextField()
+
+    class Meta:
+        indexes = [
+            Index(fields=['adopted_at']),
         ]
 
 
@@ -198,6 +231,11 @@ class Event(Model):
         related_name='location_events'
     )
     consequences = TextField()
+    measures = ManyToManyField(
+        'MeasuresTaken',
+        related_name='measure_events',
+        blank=True
+    )
     personnel_count = IntegerField(default=0)
     technic_count = IntegerField(default=0)
     organization_name = CharField(max_length=255)
@@ -221,22 +259,6 @@ class Event(Model):
             Index(fields=['loa', 'category']),
             Index(fields=['location']),
             Index(fields=['end']),
-        ]
-
-
-class MeasuresTaken(Model):
-    event = ForeignKey(
-        Event,
-        on_delete=CASCADE,
-        related_name='event_measures'
-    )
-    adopted_at = DateTimeField()
-    description = TextField()
-
-    class Meta:
-        indexes = [
-            Index(fields=['event']),
-            Index(fields=['adopted_at']),
         ]
 
 
