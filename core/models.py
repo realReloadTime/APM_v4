@@ -217,7 +217,7 @@ class MeasuresTaken(Model):
 
 
 class Event(Model):
-    begin = DateTimeField(auto_now_add=True)
+    begin = DateTimeField(auto_now_add=True, editable=False)
     loa = ForeignKey(
         LOA,
         on_delete=CASCADE,
@@ -241,9 +241,9 @@ class Event(Model):
     )
     personnel_count = IntegerField(default=0)
     technic_count = IntegerField(default=0)
-    organization_name = CharField(max_length=255)
-    note = TextField()
-    end = DateTimeField()
+    organization_name = CharField(max_length=255, blank=True)
+    note = TextField(blank=True)
+    end = DateTimeField(blank=True, null=True)
     attachments = ManyToManyField(
         'Attachment',
         related_name='attached_for_events',

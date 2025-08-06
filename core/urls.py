@@ -21,6 +21,7 @@ from core.views.object_type import get_post_object_type, get_object_type_detail,
 from core.views.object import get_post_object, object_detail, object_update, object_delete
 from core.views.measures_taken import get_post_measures_taken, get_measures_taken_detail, update_measures_taken, \
     delete_measures_taken
+from core.views.event import get_post_event, get_event_detail, update_event, delete_event
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -106,4 +107,9 @@ urlpatterns = [
     path('measures/<int:measures_taken_id>/', get_measures_taken_detail, name='measures_taken-detail'),
     path('measures/<int:measures_taken_id>/update/', update_measures_taken, name='measures_taken-update'),
     path('measures/<int:measures_taken_id>/delete/', delete_measures_taken, name='measures_taken-delete'),
+
+path('events/', get_post_event, name='event-get-post'),
+    path('events/<int:event_id>/', get_event_detail, name='event-detail'),
+    path('events/<int:event_id>/update/', update_event, name='event-update'),
+    path('events/<int:event_id>/delete/', delete_event, name='event-delete'),
 ]
