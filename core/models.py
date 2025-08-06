@@ -180,7 +180,7 @@ class ObjectType(Model):
 
 
 class Object(Model):
-    type = ForeignKey(
+    object_type = ForeignKey(
         ObjectType,
         on_delete=CASCADE,
         related_name='type_objects'
@@ -198,7 +198,7 @@ class Object(Model):
     class Meta:
         indexes = [
             Index(fields=['loa']),
-            Index(fields=['type']),
+            Index(fields=['object_type']),
             Index(fields=['name']),
         ]
 

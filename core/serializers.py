@@ -142,9 +142,9 @@ class ObjectTypeSerializer(serializers.ModelSerializer):
 
 
 class ObjectSerializer(serializers.ModelSerializer):
-    type_id = serializers.PrimaryKeyRelatedField(
+    object_type_id = serializers.PrimaryKeyRelatedField(
         queryset=ObjectType.objects.all(),
-        source='type',
+        source='object_type',
         write_only=True
     )
 
@@ -154,12 +154,12 @@ class ObjectSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    type = serializers.StringRelatedField(read_only=True)
+    object_type = serializers.StringRelatedField(read_only=True)
     loa = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Object
-        fields = ['id', 'name', 'type', 'type_id', 'loa', 'loa_id']
+        fields = ['id', 'name', 'object_type', 'object_type_id', 'loa', 'loa_id']
 
 
 class MeasuresTakenSerializer(serializers.ModelSerializer):
