@@ -2,21 +2,30 @@ html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-size: 16px;
 }
-@media (min-width: 768px) {
+@media (min-width: 1200px) {
     html {
         font-size: 16px;
     }
     .main-form{
-        grid-template-columns: 50% 50%; 
+        grid-template-columns: 48.2% 48.2%; 
+        column-gap: 3.57%;
     }
     .stable-form{
         grid-row: 1;
         grid-column: 2;
     }
+     .navbar {
+        height: 80px;
+    }
+    .form-top-container {
+        display: grid; 
+        grid-template-columns: 48.2% 48.2%; 
+        width:100%;
+        column-gap: 3.57%;
+    }
 }
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     body {
         font-size: 14px;
     }
@@ -28,17 +37,38 @@ html {
         grid-column: 1;
         gap:30px
     }
+    #main-navbar {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background-color: #0d6efd; 
+        padding: 15px;
+        margin-top: 0;
+        border-radius: 0 0 5px 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .form-top-container {
+        display: block; 
+        width:100%;
+    }
 }
-.form-footer {
-    background-color: #f1f1f1;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    padding: 0.25%;
+@media (min-width: 768px){
+    .internal-block.responsive-block{
+        display: grid; 
+        grid-template-columns: 43% 1fr;
+        column-gap: 14%;
+    } 
+}
+@media (max-width: 768px){
+    .internal-block.responsive-block{
+        display: block;
+    }
 }
 body{
     overflow-x: hidden;
+    padding-bottom: 50px;
 }
 table {
     border:3px solid rgb(195, 195, 243);
@@ -48,39 +78,30 @@ a {
     text-decoration: none;
 } 
 
-.form-top-container {
-    display: grid; 
-    grid-template-columns: 80% 20%; 
-    grid-template-rows: auto auto; 
-    gap: 10px; 
-    width:100%;
-    padding-top: 0.25%;
-    padding-left: 0.14%;
-    padding-right: 0.14%;
-}
-.form-section{
-    grid-column: 1; 
-    grid-row: 1; 
-    display: grid; 
-    grid-template-rows: auto auto; 
-    gap: 10px;
-}
+
 .main-form{
     display: grid; 
-    gap: 10px; 
     width: 100%;
     padding-top: 1.5%;
-    padding-bottom: 1.5%;
     padding-left: 2.5%;
     padding-right: 2.5%;
+    
 }
 .changing-form{
-    display: none; gap: 10px;
+    display: none;
 }
 .internal-block{
     width: 100%;
+    margin-bottom: 1.27%;
+    padding: 0%;
+    column-gap: 1.42%;
+    grid-template-columns: auto 1fr;
+}
+.external-block{
+    width: 100%;
     margin-bottom: 3.17%;
     padding: 0%;
+    row-gap: 10px;
 }
 main{
     padding-top: 1.5%;
@@ -88,3 +109,16 @@ main{
     padding-left: 2.5%;
     padding-right: 2.5%;
 }
+.label-for-textarea{
+    padding-bottom: 0.5%;
+}
+input.form-control,
+select.form-select,
+button.btn-primary,
+textarea.form-control,
+button.btn-danger{
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+

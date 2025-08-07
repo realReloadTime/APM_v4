@@ -5,13 +5,27 @@
     <title>Базовая страница</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <script src="js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-xxl navbar-dark bg-primary justify-content-center">
+    <nav class="navbar navbar-expand-xl fixed-top bg-primary">
         <div class="container fluid">
-            <ul class="nav me-auto ">
+            <button class="navbar-toggler"
+                    type="button" data-bs-toggle="collapse"
+                    data-bs-target="#main-navbar"
+                    aria-controls="main-navbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                    style="padding: 2%;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="navbar-brand">
+                <h1><a class="nav-link link-light" href="table_page.html">АРМ СиОО</a></h1>
+            </div>
+            <div class="collapse navbar-collapse" id="main-navbar">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item ">
-                    <a class="nav-link link-light" href="form_page base.html" aria-current="page">Добавить</a>
+                    <a class="nav-link link-light" href="form_page.html" aria-current="page">Добавить</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link link-light" href="#">Отфильтровать значения</a>
@@ -26,14 +40,15 @@
                     <a class="nav-link link-light" href="#">Обратная связь</a>
                 </li>
             </ul>
+            </div>
             <div class="navbar-text ms-auto">
                  {{ role }} {{ name }}
             </div>
         </div>
     </nav>
-    <main>
+    <main style="padding-top: 90px;">
         <div class="table-responsive">
-            <table class="table table-primary">
+            <table class="table table-primary table-responsive table-hover">
                 <thead>
                     <tr>
                         <th scope="col" width='10%'>Дата, время возникновения события</th>
@@ -56,7 +71,7 @@
                         <td scope="row">{{lan.4}}</td>
                         <td scope="row">{{lan.5}}</td>
                         <td scope="row">{{lan.6}}</td>
-                        <td scope="row"><input type="checkbox" class="form-check"  id="{{lan.7}}"></td>
+                        <td scope="row"><input type="checkbox" class="form-check"  id="{{lan.7}}" checked></td>
                     </tr>
                     {% empty %}
                     <tr class="">
@@ -67,12 +82,13 @@
                         <td scope="row">4</td>
                         <td scope="row">5</td>
                         <td scope="row">6</td>
-                        <td scope="row"><input class="form-check" type="checkbox" id="0"></td>
+                        <td scope="row"><input class="form-check" type="checkbox" id="0" checked></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <label>Надо ли делить таблицу на страницы (ну типа отображение по высоте экрана или по 25/50 записей)</label>
     </main>
     <footer class="fixed-bottom bg-light p-2">
         <div class="container-fluid">
