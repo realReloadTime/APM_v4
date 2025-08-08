@@ -69,18 +69,22 @@ class SourceSerializer(serializers.ModelSerializer):
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
     author_id = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all(),
-        source='author',
-        
+        source='author'
     )
     author = serializers.StringRelatedField(read_only=True)
     file = serializers.FileField(write_only=True)  # поле для загрузки файла
+    event = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Attachment
-        fields = ['id', 'name', 'created_at', 'author_id', 'author', 'file']
-        read_only_fields = ['name', 'created_at', 'author']
+        fields = ['id', 'name', 'created_at', 'author_id', 'author', 'file', 'event', 'event_id']
+        read_only_fields = ['name', 'created_at', 'author', 'event']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -163,9 +167,16 @@ class ObjectSerializer(serializers.ModelSerializer):
 
 
 class MeasuresTakenSerializer(serializers.ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event',
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+
     class Meta:
         model = MeasuresTaken
-        fields = '__all__'
+        fields = ['id', 'event', 'event_id', 'adopted_at', 'description']
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -181,18 +192,6 @@ class EventSerializer(serializers.ModelSerializer):
         queryset=Location.objects.all(),
         source='location',
     )
-    measures_id = serializers.PrimaryKeyRelatedField(
-        queryset=MeasuresTaken.objects.all(),
-        source='measures',
-        many=True,
-        required=False
-    )
-    attachments_id = serializers.PrimaryKeyRelatedField(
-        queryset=Attachment.objects.all(),
-        source='attachments',
-        many=True,
-        required=False
-    )
     created_by_id = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all(),
         source='created_by',
@@ -201,16 +200,14 @@ class EventSerializer(serializers.ModelSerializer):
     loa = serializers.StringRelatedField(read_only=True)
     category = serializers.StringRelatedField(read_only=True)
     location = serializers.StringRelatedField(read_only=True)
-    measures = serializers.StringRelatedField(read_only=True, many=True)
-    attachments = serializers.StringRelatedField(read_only=True, many=True)
     created_by = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Event
         fields = ['id', 'begin', 'loa', 'loa_id', 'category', 'category_id', 'location', 'location_id', 'consequences',
-                  'measures', 'measures_id', 'personnel_count', 'technic_count', 'organization_name', 'note',
-                  'attachments', 'attachments_id', 'created_by', 'created_by_id', 'end']
-        read_only_fields = ['id', 'begin', 'loa', 'category', 'location', 'measures', 'attachments', 'created_by',
+                  'personnel_count', 'technic_count', 'organization_name', 'note',
+                  'created_by', 'created_by_id', 'end']
+        read_only_fields = ['id', 'begin', 'loa', 'category', 'location', 'created_by',
                             'end']
 
 

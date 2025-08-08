@@ -1,5 +1,4 @@
 from asgiref.sync import sync_to_async
-from attr.filters import exclude
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from core.models import Event
@@ -71,7 +70,6 @@ class EventRepository:
                 attachment = await AttachmentRepository.get_attachment(attachment_pk)
                 attachments.append(attachment)
             await new_object.attachments.aset(attachments)
-
         await new_object.asave()
 
         return new_object

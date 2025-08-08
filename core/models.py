@@ -95,25 +95,6 @@ class Source(Model):
         return self.name
 
 
-class Attachment(Model):
-    name = CharField(max_length=255, unique=True)
-    created_at = DateTimeField(auto_now_add=True)
-    author = ForeignKey(
-        'CustomUser',
-        on_delete=CASCADE,
-        related_name='attachments'
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        indexes = [
-            Index(fields=['author']),
-            Index(fields=['-created_at']),
-        ]
-
-
 class Category(Model):
     name = CharField(max_length=255)
     table_name = CharField(max_length=255)
@@ -203,19 +184,6 @@ class Object(Model):
         ]
 
 
-class MeasuresTaken(Model):
-    adopted_at = DateTimeField()
-    description = TextField()
-
-    class Meta:
-        indexes = [
-            Index(fields=['adopted_at']),
-        ]
-
-    def __str__(self):
-        return str(self.adopted_at)
-
-
 class Event(Model):
     begin = DateTimeField(auto_now_add=True, editable=False)
     loa = ForeignKey(
@@ -234,21 +202,12 @@ class Event(Model):
         related_name='location_events'
     )
     consequences = TextField()
-    measures = ManyToManyField(
-        'MeasuresTaken',
-        related_name='measure_events',
-        blank=True
-    )
     personnel_count = IntegerField(default=0)
     technic_count = IntegerField(default=0)
     organization_name = CharField(max_length=255, blank=True)
     note = TextField(blank=True)
     end = DateTimeField(blank=True, null=True)
-    attachments = ManyToManyField(
-        'Attachment',
-        related_name='attached_for_events',
-        blank=True
-    )
+
     created_by = ForeignKey(
         CustomUser,
         on_delete=CASCADE,
@@ -266,6 +225,49 @@ class Event(Model):
             Index(fields=['location']),
             Index(fields=['end']),
         ]
+
+
+class Attachment(Model):
+    event = ForeignKey(
+        Event,
+        on_delete=CASCADE,
+        related_name='event_attachments'
+    )
+    name = CharField(max_length=255, unique=True)
+    created_at = DateTimeField(auto_now_add=True)
+    author = ForeignKey(
+        'CustomUser',
+        on_delete=CASCADE,
+        related_name='attachments'
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        indexes = [
+            Index(fields=['author']),
+            Index(fields=['-created_at']),
+        ]
+
+
+class MeasuresTaken(Model):
+    event = ForeignKey(   # many Measure : 1 Event
+        Event,
+        on_delete=CASCADE,
+        related_name='event_measures',
+        blank=False
+    )
+    adopted_at = DateTimeField()
+    description = TextField()
+
+    class Meta:
+        indexes = [
+            Index(fields=['adopted_at']),
+        ]
+
+    def __str__(self):
+        return str(self.adopted_at)
 
 
 class EquipmentFailure(Model):

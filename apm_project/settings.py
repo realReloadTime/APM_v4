@@ -1,5 +1,7 @@
 import os
 from datetime import timedelta
+
+from django.conf.global_settings import SECURE_CROSS_ORIGIN_OPENER_POLICY
 from dotenv import load_dotenv
 
 load_dotenv()  # !!! ДОБАВИТЬ .env в директорию apm_project
@@ -9,6 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = True
 
+SECURE_CROSS_ORIGIN_OPENER_POLICY = False
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
