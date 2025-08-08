@@ -12,9 +12,8 @@ class MeasuresTakenRepository:
         event_id = data.get('event_id')
         if event_id:
             data['event'] = await EventRepository.get_event(event_id)
-        else:
-            raise ValueError('event_id обязательное поле для создания MeasuresTaken')
         data.pop('event_id', None)
+
         return await MeasuresTaken.objects.acreate(**data)
 
     @staticmethod

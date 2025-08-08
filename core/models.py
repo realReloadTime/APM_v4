@@ -258,7 +258,8 @@ class MeasuresTaken(Model):
         Event,
         on_delete=CASCADE,
         related_name='event_measures',
-        blank=False
+        blank=True,
+        null=True
     )
     adopted_at = DateTimeField()
     description = TextField()

@@ -171,6 +171,7 @@ class MeasuresTakenSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(
         queryset=Event.objects.all(),
         source='event',
+        allow_null=True
     )
 
     event = serializers.StringRelatedField(read_only=True)
