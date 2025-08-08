@@ -213,7 +213,7 @@ class MeasuresTaken(Model):
         ]
 
     def __str__(self):
-        return self.adopted_at
+        return str(self.adopted_at)
 
 
 class Event(Model):

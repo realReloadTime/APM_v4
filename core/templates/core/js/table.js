@@ -4,27 +4,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventsTableBody = document.getElementById('eventsTableBody');
     const errorContainer = document.getElementById('error-message');
 
-    // if (!accessToken) {
-    //     window.location.href = '/login.html';
-    //     return;
-    // }
+     if (!accessToken) {
+         window.location.href = '/login.html';
+         return;
+     }
 
-    // function handleError(error, status) {
-    // console.error('Ошибка:', error);
-    //     if (status === 401) {
-    //         errorContainer.textContent = 'Сессия истекла. Пожалуйста, войдите снова.';
-    //         localStorage.removeItem('access_token');
-    //         localStorage.removeItem('refresh_token');
-    //         setTimeout(() => window.location.href = '/login.html', 3000);
-    //     } else {
-    //         errorContainer.textContent = error.message || `Ошибка ${status}`;
-    //     }
-    //     errorContainer.style.display = 'block';
-    // }
+     function handleError(error, status) {
+     console.error('Ошибка:', error);
+         if (status === 401) {
+             errorContainer.textContent = 'Сессия истекла. Пожалуйста, войдите снова.';
+             localStorage.removeItem('access_token');
+             localStorage.removeItem('refresh_token');
+             setTimeout(() => window.location.href = '/login.html', 3000);
+         } else {
+             errorContainer.textContent = error.message || `Ошибка ${status}`;
+         }
+         errorContainer.style.display = 'block';
+     }
 
     async function loadUserProfile() {
         try {
-            const response = await fetch('${window.APP_CONFIG.API_BASE_URL}/api/users/me/', {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/users/me/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadEvents() {
         try {
-            const response = await fetch('${window.APP_CONFIG.API_BASE_URL}/api/events/', {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/events/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`

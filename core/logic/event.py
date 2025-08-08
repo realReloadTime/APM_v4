@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from attr.filters import exclude
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from core.models import Event
@@ -48,26 +49,32 @@ class EventRepository:
 
         data.pop('location_id', None)
 
-        if measures_id:
-            data['measures'] = list()
-            for measure_pk in measures_id:
-                measures = await MeasuresTakenRepository.get_measures_taken(measure_pk)
-                data['measures'].append(measures)
-            data.pop('measures_id', None)
-
-        if attachments_id:
-            data['attachments'] = list()
-            for attachment_pk in attachments_id:
-                attachments = await AttachmentRepository.get_attachment(attachment_pk)
-                data['attachments'].append(attachments)
-            data.pop('attachments_id', None)
-
         if created_by_id:
             current_user = await UserRepository.get_user(created_by_id)
             data['created_by'] = current_user
             data.pop('created_by_id')
 
-        return await Event.objects.acreate(**data)
+        data.pop('measures_id', None)
+        data.pop('attachments_id', None)
+        new_object = await Event.objects.acreate(**data)
+
+        if measures_id:
+            measures = list()
+            for measure_pk in measures_id:
+                measure = await MeasuresTakenRepository.get_measures_taken(measure_pk)
+                measures.append(measure)
+            await new_object.measures.aset(measures)
+
+        if attachments_id:
+            attachments = list()
+            for attachment_pk in attachments_id:
+                attachment = await AttachmentRepository.get_attachment(attachment_pk)
+                attachments.append(attachment)
+            await new_object.attachments.aset(attachments)
+
+        await new_object.asave()
+
+        return new_object
 
     @staticmethod
     async def get_event(pk: int | None) -> Event | list[Event]:
