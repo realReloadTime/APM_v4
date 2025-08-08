@@ -1,52 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const accessToken = localStorage.getItem('access_token');
-    const userEmailElement = document.getElementById('username');
     const eventsTableBody = document.getElementById('eventsTableBody');
-    const errorContainer = document.getElementById('error-message');
 
      if (!accessToken) {
          window.location.href = '/login.html';
          return;
      }
-
-     function handleError(error, status) {
-     console.error('Ошибка:', error);
-         if (status === 401) {
-             errorContainer.textContent = 'Сессия истекла. Пожалуйста, войдите снова.';
-             localStorage.removeItem('access_token');
-             localStorage.removeItem('refresh_token');
-             setTimeout(() => window.location.href = '/login.html', 3000);
-         } else {
-             errorContainer.textContent = error.message || `Ошибка ${status}`;
-         }
-         errorContainer.style.display = 'block';
-     }
-
-    async function loadUserProfile() {
-        try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/users/me/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const userData = await response.json();
-            userEmailElement.textContent = userData.email;
-
-            localStorage.setItem('user_permissions', JSON.stringify({
-                edit: userData.edit,
-                read: userData.read
-            }));
-
-        } catch (error) {
-            handleError(error, error.status);
-        }
-    }
 
     async function loadEvents() {
         try {
@@ -110,6 +69,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            loadUserProfile();
             loadEvents();
         });
