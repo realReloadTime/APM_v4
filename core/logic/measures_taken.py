@@ -14,6 +14,10 @@ class MeasuresTakenRepository:
             data['event'] = await EventRepository.get_event(event_id)
         data.pop('event_id', None)
 
+        adopted_at = data.get('adopted_at')
+        if not adopted_at:
+            raise ValueError('adopted_at обязательное поле для записи MeasuresTaken')
+
         return await MeasuresTaken.objects.acreate(**data)
 
     @staticmethod
