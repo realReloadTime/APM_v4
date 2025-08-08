@@ -52,14 +52,47 @@ class EventRepository:
         return await Event.objects.acreate(**data)
 
     @staticmethod
-    async def get_event(pk: int | None) -> Event | list[Event]:
+    async def get_event(
+            pk: int | None = None,
+            filters: dict | None = None,
+            pagination: dict | None = None
+    ) -> Event | dict:
         if pk is None:
-            events = [event async for event in
-                      Event.objects.select_related('loa', 'category', 'location', 'created_by').all()]
+            qs = Event.objects.select_related('loa', 'category', 'location', 'created_by').all()
 
-            # для предварительной загрузки event_attachments и event_measures из ForeignKey связанных таблиц
-            await aprefetch_related_objects(events, 'event_attachments', 'event_measures')
-            return events
+            if filters:
+                orm_filters = {}
+                for key, value in filters.items():
+                    # для полей с диапазоном дат (пока begin)
+                    if key == 'start_date':
+                        orm_filters['begin__gte'] = value
+                    elif key == 'end_date':
+                        orm_filters['begin__lte'] = value
+                    else:
+                        orm_filters[key] = value
+                qs = qs.filter(**orm_filters)
+
+            # применяем пагинацию
+            if pagination:
+                page = pagination.get('page', 1)
+                page_size = pagination.get('page_size', 10)
+                start = (page - 1) * page_size
+                end = start + page_size
+                total = await qs.acount()
+                events = [event async for event in qs[start:end]]
+            else:
+                events = [event async for event in qs]
+                total = len(events)
+
+            if events:
+                await aprefetch_related_objects(events, 'event_attachments', 'event_measures')
+
+            return {
+                'events': events,
+                'total': total,
+                'page': pagination.get('page', 1) if pagination else 1,
+                'page_size': pagination.get('page_size', total) if pagination else total
+            }
         try:
             event = await Event.objects.select_related('loa', 'category', 'location', 'created_by').aget(id=pk)
             await aprefetch_related_objects([event], 'event_attachments', 'event_measures')
@@ -121,8 +154,25 @@ class EventService:
         result = await self.repository.create_event(data)
         return await self.serialize_event(result)
 
-    async def get_event(self, pk: int | None = None) -> ReturnDict:
-        result = await self.repository.get_event(pk)
+    async def get_event(
+            self,
+            pk: int | None = None,
+            filters: dict | None = None,
+            pagination: dict | None = None
+    ) -> ReturnDict | dict:
+        result = await self.repository.get_event(pk, filters, pagination)
+
+        # обработка пагинированного результата
+        if isinstance(result, dict):
+            events = result['events']
+            serialized_data = await self.serialize_event(events)
+            return {
+                'results': serialized_data,
+                'total': result['total'],
+                'page': result['page'],
+                'page_size': result['page_size']
+            }
+
         return await self.serialize_event(result)
 
     async def update_event(self, event_id: int, data: dict) -> ReturnDict:

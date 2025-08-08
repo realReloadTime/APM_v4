@@ -1,5 +1,5 @@
 import json
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, QueryDict
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,8 +25,16 @@ async def get_post_event(request):
             event = await service.create_event(data)
             return JsonResponse(event, status=201)
         else:
-            event = await service.get_event()
-            return JsonResponse(event, status=200, safe=False)
+            filters = dict()
+            pagination = dict()
+            for key, value in request.GET.dict().items():
+                if 'page' in key:
+                    pagination[key] = int(value)
+                else:
+                    filters[key] = value
+
+            result = await service.get_event(filters=filters, pagination=pagination)
+            return JsonResponse(result, status=200, safe=False)
 
     except Event.DoesNotExist:
         return JsonResponse({'error': 'Event not found'}, status=404)
