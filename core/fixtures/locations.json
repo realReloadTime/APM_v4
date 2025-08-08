@@ -1,0 +1,29 @@
+[
+  {
+    "model": "core.location",
+    "pk": 1,
+    "fields": {
+      "location_type": 2,
+      "name": "Тестовая локация 1",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.location",
+    "pk": 2,
+    "fields": {
+      "location_type": 2,
+      "name": "Тестовая локация 2",
+      "loa": 2
+    }
+  },
+  {
+    "model": "core.location",
+    "pk": 3,
+    "fields": {
+      "location_type": 2,
+      "name": "Тестовая локация 3",
+      "loa": 3
+    }
+  }
+]

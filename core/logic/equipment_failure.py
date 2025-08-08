@@ -32,13 +32,6 @@ class EquipmentFailureRepository:
             raise ValueError('object_id обязательное поле для создания EquipmentFailure')
         data.pop('object_id', None)
 
-        if influenced_objects_id:
-            data['influenced_objects'] = []
-            for obj_id in influenced_objects_id:
-                obj = await ObjectRepository.get_object(obj_id)
-                data['influenced_objects'].append(obj)
-            data.pop('influenced_objects_id', None)
-
         if subsystem_id:
             subsystem = await SubsystemRepository.get_subsystem(subsystem_id)
             data['subsystem'] = subsystem
@@ -51,7 +44,18 @@ class EquipmentFailureRepository:
             data['subsystem_status'] = status
         data.pop('subsystem_status_id', None)
 
-        return await EquipmentFailure.objects.acreate(**data)
+        data.pop('influenced_objects_id', None)
+        new_object = await EquipmentFailure.objects.acreate(**data)
+
+        if influenced_objects_id:
+            influenced = list()
+            for obj_id in influenced_objects_id:
+                obj = await ObjectRepository.get_object(obj_id)
+                influenced.append(obj)
+            await new_object.influenced_objects.aset(influenced)
+            await new_object.asave()
+
+        return new_object
 
     @staticmethod
     async def get_equipment_failure(pk: int | None) -> EquipmentFailure | list[EquipmentFailure]:
@@ -82,13 +86,6 @@ class EquipmentFailureRepository:
             data['object'] = obj
         data.pop('object_id', None)
 
-        if influenced_objects_id:
-            data['influenced_objects'] = []
-            for obj_id in influenced_objects_id:
-                obj = await ObjectRepository.get_object(obj_id)
-                data['influenced_objects'].append(obj)
-            data.pop('influenced_objects_id', None)
-
         if subsystem_id:
             subsystem = await SubsystemRepository.get_subsystem(subsystem_id)
             data['subsystem'] = subsystem
@@ -98,12 +95,22 @@ class EquipmentFailureRepository:
             status = await SubsystemStatusRepository.get_subsystem_status(subsystem_status_id)
             data['subsystem_status'] = status
         data.pop('subsystem_status_id', None)
+        data.pop('influenced_objects_id', None)
 
         updated = await EquipmentFailure.objects.filter(id=pk).aupdate(**data)
         if not updated:
             return None
 
-        return await EquipmentFailure.objects.aget(id=pk)
+        updated_object = await EquipmentFailure.objects.aget(id=pk)
+        if influenced_objects_id:
+            influenced = list()
+            for obj_id in influenced_objects_id:
+                obj = await ObjectRepository.get_object(obj_id)
+                influenced.append(obj)
+            await updated_object.influenced_objects.aset(influenced)
+            await updated_object.asave()
+
+        return updated_object
 
     @staticmethod
     async def delete_equipment_failure(pk: int) -> bool:

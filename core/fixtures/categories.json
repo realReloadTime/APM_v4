@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Отказ / нарушение в работе оборудования",
-      "table_name": "equipmentfailure"
+      "table_name": "equipment_failure"
     }
   },
   {
@@ -12,7 +12,7 @@
     "pk": 2,
     "fields": {
       "name": "Неблагоприятные погодные условия",
-      "table_name": "adverseweather"
+      "table_name": "adverse_weather"
     }
   },
   {
@@ -20,7 +20,7 @@
     "pk": 3,
     "fields": {
       "name": "Неблагоприятная пожарная обстановка",
-      "table_name": "firedanger"
+      "table_name": "fire_danger"
     }
   },
   {
@@ -28,7 +28,7 @@
     "pk": 4,
     "fields": {
       "name": "Неблагоприятная геологическая обстановка",
-      "table_name": "geologicaldanger"
+      "table_name": "geological_danger"
     }
   },
   {
@@ -36,7 +36,7 @@
     "pk": 5,
     "fields": {
       "name": "Неблагоприятная гидрологическая обстановка",
-      "table_name": "hydrologicaldanger"
+      "table_name": "hydrological_danger"
     }
   },
   {
@@ -44,7 +44,7 @@
     "pk": 6,
     "fields": {
       "name": "ЧС / авария на объекте на смежной территории",
-      "table_name": "emergencysituation"
+      "table_name": "emergency_situation"
     }
   },
   {
@@ -52,7 +52,7 @@
     "pk": 7,
     "fields": {
       "name": "Другие неблагоприятные условия",
-      "table_name": "otherdanger"
+      "table_name": "other_danger"
     }
   }
 ]
