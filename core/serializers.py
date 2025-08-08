@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment, \
-    Category, LocationType, Region, LOA, Location, ObjectType, Object, Event, MeasuresTaken, EquipmentFailure
+    Category, LocationType, Region, LOA, Location, ObjectType, Object, Event, MeasuresTaken, EquipmentFailure, \
+    AdverseWeather
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -263,3 +264,33 @@ class EquipmentFailureSerializer(serializers.ModelSerializer):
                   'additional_info', 'subsystem', 'subsystem_id', 'subsystem_status', 'subsystem_status_id',
                   'description']
         read_only_fields = ['id', 'event', 'object', 'influenced_objects', 'subsystem', 'subsystem_status']
+
+
+class AdverseWeatherSerializer(serializers.ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
+    source_id = serializers.PrimaryKeyRelatedField(
+        queryset=Source.objects.all(),
+        source='source'
+    )
+    condition_id = serializers.PrimaryKeyRelatedField(
+        queryset=Condition.objects.all(),
+        source='condition'
+    )
+    precipitation_id = serializers.PrimaryKeyRelatedField(
+        queryset=Precipitation.objects.all(),
+        source='precipitation'
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+    source = serializers.StringRelatedField(read_only=True)
+    condition = serializers.StringRelatedField(read_only=True)
+    precipitation = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = AdverseWeather
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'condition_id', 'condition',
+                  'precipitation_id', 'precipitation', 'temperature', 'wind', 'description']
+        read_only_field = ['id', 'event', 'source', 'condition', 'precipitation']
