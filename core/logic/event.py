@@ -7,8 +7,6 @@ from core.serializers import EventSerializer
 from core.logic.loa import LOARepository
 from core.logic.category import CategoryRepository
 from core.logic.location import LocationRepository
-from core.logic.measures_taken import MeasuresTakenRepository
-from core.logic.attachment import AttachmentRepository
 from core.logic.user import UserRepository
 
 from django.db.models import aprefetch_related_objects
@@ -20,8 +18,6 @@ class EventRepository:
         loa_id = data.get('loa_id')
         category_id = data.get('category_id')
         location_id = data.get('location_id')
-        measures_id = data.get('measures_id')
-        attachments_id = data.get('attachments_id')
         created_by_id = data.get('created_by_id')
 
         if loa_id:
@@ -53,38 +49,21 @@ class EventRepository:
             data['created_by'] = current_user
             data.pop('created_by_id')
 
-        data.pop('measures_id', None)
-        data.pop('attachments_id', None)
-        new_object = await Event.objects.acreate(**data)
-
-        if measures_id:
-            measures = list()
-            for measure_pk in measures_id:
-                measure = await MeasuresTakenRepository.get_measures_taken(measure_pk)
-                measures.append(measure)
-            await new_object.measures.aset(measures)
-
-        if attachments_id:
-            attachments = list()
-            for attachment_pk in attachments_id:
-                attachment = await AttachmentRepository.get_attachment(attachment_pk)
-                attachments.append(attachment)
-            await new_object.attachments.aset(attachments)
-        await new_object.asave()
-
-        return new_object
+        return await Event.objects.acreate(**data)
 
     @staticmethod
     async def get_event(pk: int | None) -> Event | list[Event]:
         if pk is None:
-            events = [event async for event in Event.objects.select_related('loa', 'category', 'location', 'created_by').all()]
+            events = [event async for event in
+                      Event.objects.select_related('loa', 'category', 'location', 'created_by').all()]
 
-            # применяю aprefetch_related_objects для предварительной загрузки measures и attachments
-            await aprefetch_related_objects(events, 'measures', 'attachments')
+            # для предварительной загрузки event_attachments и event_measures из ForeignKey связанных таблиц
+            await aprefetch_related_objects(events, 'event_attachments', 'event_measures')
             return events
         try:
             event = await Event.objects.select_related('loa', 'category', 'location', 'created_by').aget(id=pk)
-            await aprefetch_related_objects([event], 'measures', 'attachments')
+            await aprefetch_related_objects([event], 'event_attachments', 'event_measures')
+
             return event
         except Event.DoesNotExist:
             raise ValueError(f"Event с ID {pk} не существует")
@@ -94,8 +73,6 @@ class EventRepository:
         loa_id = data.get('loa_id')
         category_id = data.get('category_id')
         location_id = data.get('location_id')
-        measures_id = data.get('measures_id')
-        attachments_id = data.get('attachments_id')
         created_by_id = data.get('created_by_id')
 
         if loa_id:
@@ -116,20 +93,6 @@ class EventRepository:
 
         data.pop('location_id', None)
 
-        if measures_id:
-            data['measures'] = list()
-            for measure_pk in measures_id:
-                measures = await MeasuresTakenRepository.get_measures_taken(measure_pk)
-                data['measures'].append(measures)
-            data.pop('measures_id', None)
-
-        if attachments_id:
-            data['attachments'] = list()
-            for attachment_pk in attachments_id:
-                attachments = await AttachmentRepository.get_attachment(attachment_pk)
-                data['attachments'].append(attachments)
-            data.pop('attachments_id', None)
-
         if created_by_id:
             current_user = await UserRepository.get_user(created_by_id)
             data['created_by'] = current_user
@@ -141,7 +104,7 @@ class EventRepository:
             return None
 
         event = await Event.objects.select_related('loa', 'category', 'location', 'created_by').aget(id=pk)
-        await aprefetch_related_objects([event], 'measures', 'attachments')
+        await aprefetch_related_objects([event], 'event_attachments', 'event_measures')
         return event
 
     @staticmethod

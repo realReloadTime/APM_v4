@@ -41,7 +41,7 @@ class SubsystemSerializer(serializers.ModelSerializer):
     system_id = serializers.PrimaryKeyRelatedField(
         queryset=System.objects.all(),
         source='system',
-        
+
     )
     system = serializers.StringRelatedField(read_only=True)  # Для вывода имени системы
 
@@ -71,7 +71,8 @@ class SourceSerializer(serializers.ModelSerializer):
 class AttachmentSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(
         queryset=Event.objects.all(),
-        source='event'
+        source='event',
+        allow_null=True
     )
     author_id = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.all(),
@@ -109,7 +110,7 @@ class LOASerializer(serializers.ModelSerializer):
     region_id = serializers.PrimaryKeyRelatedField(
         queryset=Region.objects.all(),
         source='region',
-        
+
     )
     region = serializers.StringRelatedField(read_only=True)
 
@@ -122,13 +123,13 @@ class LocationSerializer(serializers.ModelSerializer):
     location_type_id = serializers.PrimaryKeyRelatedField(
         queryset=LocationType.objects.all(),
         source='location_type',
-        
+
     )
 
     loa_id = serializers.PrimaryKeyRelatedField(
         queryset=LOA.objects.all(),
         source='loa',
-        
+
     )
 
     location_type = serializers.StringRelatedField(read_only=True)
@@ -149,13 +150,13 @@ class ObjectSerializer(serializers.ModelSerializer):
     object_type_id = serializers.PrimaryKeyRelatedField(
         queryset=ObjectType.objects.all(),
         source='object_type',
-        
+
     )
 
     loa_id = serializers.PrimaryKeyRelatedField(
         queryset=LOA.objects.all(),
         source='loa',
-        
+
     )
 
     object_type = serializers.StringRelatedField(read_only=True)
@@ -197,6 +198,18 @@ class EventSerializer(serializers.ModelSerializer):
         source='created_by',
     )
 
+    event_attachments_id = serializers.PrimaryKeyRelatedField(
+        queryset=Attachment.objects.all(),
+        source='event_attachments',
+        many=True,
+    )
+
+    event_measures_id = serializers.PrimaryKeyRelatedField(
+        queryset=MeasuresTaken.objects.all(),
+        source='event_measures',
+        many=True,
+    )
+
     loa = serializers.StringRelatedField(read_only=True)
     category = serializers.StringRelatedField(read_only=True)
     location = serializers.StringRelatedField(read_only=True)
@@ -205,7 +218,8 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ['id', 'begin', 'loa', 'loa_id', 'category', 'category_id', 'location', 'location_id', 'consequences',
-                  'personnel_count', 'technic_count', 'organization_name', 'note',
+                  'event_measures_id', 'personnel_count', 'technic_count', 'organization_name', 'note',
+                  'event_attachments_id',
                   'created_by', 'created_by_id', 'end']
         read_only_fields = ['id', 'begin', 'loa', 'category', 'location', 'created_by',
                             'end']
@@ -219,7 +233,7 @@ class EquipmentFailureSerializer(serializers.ModelSerializer):
     object_id = serializers.PrimaryKeyRelatedField(
         queryset=Object.objects.all(),
         source='object',
-        
+
     )
     influenced_objects_id = serializers.PrimaryKeyRelatedField(
         queryset=Object.objects.all(),

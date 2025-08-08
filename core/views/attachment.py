@@ -1,5 +1,6 @@
 import mimetypes
 import os
+import json
 
 from django.http import JsonResponse, HttpResponse, FileResponse
 
@@ -72,6 +73,22 @@ async def attachment_download(request, attachment_id: int):
 
     except ValueError as ve:
         return JsonResponse({'error': str(ve)}, status=404)
+
+    except Exception as other_err:
+        return JsonResponse({'error': str(other_err)}, status=400)
+
+
+@async_api_method(['PUT'])
+@async_permission_required([IsAuthenticated])
+async def attachment_update(request, attachment_id: int):
+    service = await get_attachment_service()
+    try:
+        data = json.loads(request.body)
+        attachment = await service.update_attachment(attachment_id, data)
+        return JsonResponse(attachment, status=200)
+
+    except ValueError as ve:
+        return JsonResponse({'error': str(ve)}, status=400)
 
     except Exception as other_err:
         return JsonResponse({'error': str(other_err)}, status=400)

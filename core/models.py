@@ -231,7 +231,9 @@ class Attachment(Model):
     event = ForeignKey(
         Event,
         on_delete=CASCADE,
-        related_name='event_attachments'
+        related_name='event_attachments',
+        blank=True,
+        null=True
     )
     name = CharField(max_length=255, unique=True)
     created_at = DateTimeField(auto_now_add=True)

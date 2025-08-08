@@ -3,23 +3,36 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from core.models import MeasuresTaken
 from core.serializers import MeasuresTakenSerializer
 
+from core.logic.event import EventRepository
+
 
 class MeasuresTakenRepository:
     @staticmethod
     async def create_measures_taken(data: dict) -> MeasuresTaken:
+        event_id = data.get('event_id')
+        if event_id:
+            data['event'] = await EventRepository.get_event(event_id)
+        else:
+            raise ValueError('event_id обязательное поле для создания MeasuresTaken')
+        data.pop('event_id', None)
         return await MeasuresTaken.objects.acreate(**data)
 
     @staticmethod
     async def get_measures_taken(pk: int | None) -> MeasuresTaken | list[MeasuresTaken]:
         if pk is None:
-            return [measures_taken async for measures_taken in MeasuresTaken.objects.all()]
+            return [measures_taken async for measures_taken in MeasuresTaken.objects.select_related('event').all()]
         try:
-            return await MeasuresTaken.objects.aget(id=pk)
+            return await MeasuresTaken.objects.select_related('event').aget(id=pk)
         except MeasuresTaken.DoesNotExist:
             raise ValueError(f"MeasuresTaken с ID {pk} не существует")
 
     @staticmethod
     async def update_measures_taken(pk: int, data: dict) -> MeasuresTaken | None:
+        event_id = data.get('event_id')
+        if event_id:
+            data['event'] = await EventRepository.get_event(event_id)
+            data.pop('event_id', None)
+
         updated = await MeasuresTaken.objects.filter(id=pk).aupdate(**data)
         if not updated:
             return None

@@ -10,7 +10,7 @@ from core.views.condition import get_post_condition, get_condition_detail, updat
 from core.views.precipitation import get_post_precipitation, get_precipitation_detail, update_precipitation, \
     delete_precipitation
 from core.views.source import get_post_source, get_source_detail, update_source, delete_source
-from core.views.attachment import get_post_attachment, attachment_detail, attachment_download, attachment_delete
+from core.views.attachment import get_post_attachment, attachment_detail, attachment_download, attachment_update, attachment_delete
 from core.views.category import get_post_category, get_category_detail, update_category, delete_category
 from core.views.location_type import get_post_location_type, get_location_type_detail, update_location_type, \
     delete_location_type
@@ -68,6 +68,7 @@ urlpatterns = [
     path('attachments/', get_post_attachment, name='attachment-get-post'),
     path('attachments/<int:attachment_id>/', attachment_detail, name='attachment-detail'),
     path('attachments/<int:attachment_id>/download/', attachment_download, name='attachment-download'),
+    path('attachments/<int:attachment_id>/update/', attachment_update, name='attachment-update'),
     path('attachments/<int:attachment_id>/delete/', attachment_delete, name='attachment-delete'),
 
     path('categories/', get_post_category, name='category-get-post'),
