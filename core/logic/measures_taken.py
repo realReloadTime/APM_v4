@@ -1,3 +1,4 @@
+from asgiref.sync import sync_to_async
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from core.models import MeasuresTaken
@@ -70,8 +71,11 @@ class MeasuresTakenService:
 
     @staticmethod
     async def serialize_measures_taken(result) -> ReturnDict:
-        if isinstance(result, list):
-            serializer = MeasuresTakenSerializer(result, many=True)
-        else:
-            serializer = MeasuresTakenSerializer(result)
-        return serializer.data
+        def serialize():
+            if isinstance(result, list):
+                serializer = MeasuresTakenSerializer(result, many=True)
+            else:
+                serializer = MeasuresTakenSerializer(result)
+            return serializer.data
+
+        return await sync_to_async(serialize)()
