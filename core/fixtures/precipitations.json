@@ -3,56 +3,56 @@
     "model": "core.precipitation",
     "pk": 1,
     "fields": {
-      "name": "Дождь"
+      "name": "☀\uFE0F Нет"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 2,
     "fields": {
-      "name": "Гроза"
+      "name": "\uD83C\uDF27 Дождь"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 3,
     "fields": {
-      "name": "Снег"
+      "name": "⚡\uFE0F Гроза"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 4,
     "fields": {
-      "name": "Град"
+      "name": "❄\uFE0FСнег"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 5,
     "fields": {
-      "name": "Ледяной дождь"
+      "name": "❄\uFE0F\uD83D\uDCA8 Снег с порывами ветра"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 6,
     "fields": {
-      "name": "Дождь с порывами ветра"
+      "name": "\uD83E\uDDCA Град"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 7,
     "fields": {
-      "name": "Снег с порывами ветра"
+      "name": "\uD83C\uDF27\uD83E\uDDCA Ледяной дождь"
     }
   },
   {
     "model": "core.precipitation",
     "pk": 8,
     "fields": {
-      "name": "Без осадков"
+      "name": "\uD83C\uDF27\uD83D\uDCA8 Дождь с порывами ветра"
     }
   }
 ]

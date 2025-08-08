@@ -3,49 +3,49 @@
     "model": "core.condition",
     "pk": 1,
     "fields": {
-      "name": "Ясно"
+      "name": "☀\uFE0F Ясно"
     }
   },
   {
     "model": "core.condition",
     "pk": 2,
     "fields": {
-      "name": "Облачно"
+      "name": "⛅\uFE0F Облачно"
     }
   },
   {
     "model": "core.condition",
     "pk": 3,
     "fields": {
-      "name": "Пасмурно"
+      "name": "☁\uFE0F Пасмурно"
     }
   },
   {
     "model": "core.condition",
     "pk": 4,
     "fields": {
-      "name": "Дождь"
+      "name": "\uD83C\uDF27 Дождь"
     }
   },
   {
     "model": "core.condition",
     "pk": 5,
     "fields": {
-      "name": "Туман"
+      "name": "\uD83C\uDF2B Туман"
     }
   },
   {
     "model": "core.condition",
     "pk": 6,
     "fields": {
-      "name": "Снег"
+      "name": "❄\uFE0F Снег"
     }
   },
   {
     "model": "core.condition",
     "pk": 7,
     "fields": {
-      "name": "Метель"
+      "name": "❄\uFE0F\uD83C\uDF2C Метель"
     }
   }
 ]
