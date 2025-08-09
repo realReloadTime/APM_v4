@@ -12,7 +12,7 @@ from core.logic.precipitation import PrecipitationRepository
 class AdverseWeatherRepository:
     @staticmethod
     async def create_adverse_weather(data: dict) -> AdverseWeather:
-        required_fields = [('event',  EventRepository.get_event),
+        required_fields = [('event', EventRepository.get_event),
                            ('source', SourceRepository.get_source),
                            ('condition', ConditionRepository.get_condition),
                            ('precipitation', PrecipitationRepository.get_precipitation)]
@@ -28,4 +28,72 @@ class AdverseWeatherRepository:
 
         return await AdverseWeather.objects.acreate(**data)
 
+    @staticmethod
+    async def get_adverse_weather(pk: int | None) -> AdverseWeather | list[AdverseWeather]:
+        if pk is None:
+            weathers = [weather async for weather in AdverseWeather.objects.all()]
+            return weathers
+        try:
+            weather = await AdverseWeather.objects.aget(id=pk)
+            return weather
+        except AdverseWeather.DoesNotExist:
+            raise ValueError(f'AdverseWeather с ID {pk} не существует')
 
+    @staticmethod
+    async def update_adverse_weather(pk: int, data: dict) -> AdverseWeather | None:
+        fields = [('event', EventRepository.get_event),
+                  ('source', SourceRepository.get_source),
+                  ('condition', ConditionRepository.get_condition),
+                  ('precipitation', PrecipitationRepository.get_precipitation)]
+
+        for field, repo in fields:
+            oid = data.get(field + '_id')
+            if oid:
+                field_object = await repo(oid)
+                data[field] = field_object
+            data.pop(field + '_id', None)
+
+        updated = await AdverseWeather.objects.filter(id=pk).aupdate(**data)
+        if not updated:
+            return None
+        return await AdverseWeather.objects.aget(id=pk)
+
+    @staticmethod
+    async def delete_adverse_weather(pk: int) -> bool:
+        result = await AdverseWeather.objects.filter(id=pk).adelete()
+        return bool(result)
+
+
+class AdverseWeatherService:
+    def __init__(self, repository: AdverseWeatherRepository):
+        self.repository = repository
+
+    async def create_adverse_weather(self, data: dict) -> ReturnDict:
+        result = await self.repository.create_adverse_weather(data)
+        return await self.serialize_adverse_weather(result)
+
+    async def get_adverse_weather(self, pk: int | None = None) -> ReturnDict:
+        result = await self.repository.get_adverse_weather(pk)
+        return await self.serialize_adverse_weather(result)
+
+    async def update_adverse_weather(self, pk: int, data: dict) -> ReturnDict:
+        if pk < 1:
+            raise ValueError('ID не может быть меньше 1')
+        result = await self.repository.update_adverse_weather(pk, data)
+        if result is None:
+            raise ValueError('AdverseWeather с этим ID не найден')
+        return await self.serialize_adverse_weather(result)
+
+    async def delete_adverse_weather(self, pk: int):
+        return await self.repository.delete_adverse_weather(pk)
+
+    @staticmethod
+    async def serialize_adverse_weather(result) -> ReturnDict:
+        def serialize():
+            if isinstance(result, list):
+                serializer = AdverseWeatherSerializer(result, many=True)
+            else:
+                serializer = AdverseWeatherSerializer(result)
+            return serializer.data
+
+        return await sync_to_async(serialize)()

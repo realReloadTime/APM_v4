@@ -328,9 +328,9 @@ class AdverseWeather(Model):
         Precipitation,
         on_delete=CASCADE
     )
-    temperature = FloatField()
-    wind = FloatField()
-    description = TextField()
+    temperature = FloatField(null=True, blank=True)
+    wind = FloatField(null=True, blank=True)
+    description = TextField(null=True, blank=True)
 
     class Meta:
         indexes = [
