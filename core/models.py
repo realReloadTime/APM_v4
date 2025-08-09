@@ -340,7 +340,7 @@ class AdverseWeather(Model):
 
 
 class FireDanger(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
         on_delete=CASCADE,
     )
@@ -361,7 +361,7 @@ class FireDanger(Model):
 
 
 class GeologicalDanger(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
         on_delete=CASCADE
     )
@@ -383,7 +383,7 @@ class GeologicalDanger(Model):
 
 
 class HydrologicalDanger(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
         on_delete=CASCADE
     )
@@ -404,7 +404,7 @@ class HydrologicalDanger(Model):
 
 
 class EmergencySituation(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
         on_delete=CASCADE
     )
@@ -424,7 +424,7 @@ class EmergencySituation(Model):
 
 
 class OtherDanger(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
         on_delete=CASCADE
     )

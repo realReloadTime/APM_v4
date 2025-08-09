@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment, \
     Category, LocationType, Region, LOA, Location, ObjectType, Object, Event, MeasuresTaken, EquipmentFailure, \
-    AdverseWeather
+    AdverseWeather, FireDanger, GeologicalDanger, HydrologicalDanger, EmergencySituation, OtherDanger
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -294,3 +294,97 @@ class AdverseWeatherSerializer(serializers.ModelSerializer):
         fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'condition_id', 'condition',
                   'precipitation_id', 'precipitation', 'temperature', 'wind', 'description']
         read_only_field = ['id', 'event', 'source', 'condition', 'precipitation']
+
+
+class FireDangerSerializer(serializers.ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
+    source_id = serializers.PrimaryKeyRelatedField(
+        queryset=Source.objects.all(),
+        source='source'
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+    source = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = FireDanger
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'area', 'direction', 'description']
+        read_only_fields = ['id', 'event', 'source']
+
+
+class GeologicalDangerSerializer(serializers. ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
+    source_id = serializers.PrimaryKeyRelatedField(
+        queryset=Source.objects.all(),
+        source='source'
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+    source = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = GeologicalDanger
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'epicenter', 'magnitude', 'description']
+        read_only_fields = ['id', 'event', 'source']
+
+
+class HydrologicalDangerSerializer(serializers. ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
+    source_id = serializers.PrimaryKeyRelatedField(
+        queryset=Source.objects.all(),
+        source='source'
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+    source = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = HydrologicalDanger
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'water_name', 'height', 'description']
+        read_only_fields = ['id', 'event', 'source']
+
+
+class EmergencySituationSerializer(serializers. ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
+    source_id = serializers.PrimaryKeyRelatedField(
+        queryset=Source.objects.all(),
+        source='source'
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+    source = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = EmergencySituation
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'description']
+        read_only_fields = ['id', 'event', 'source']
+
+class OtherDangerSerializer(serializers. ModelSerializer):
+    event_id = serializers.PrimaryKeyRelatedField(
+        queryset=Event.objects.all(),
+        source='event'
+    )
+    source_id = serializers.PrimaryKeyRelatedField(
+        queryset=Source.objects.all(),
+        source='source'
+    )
+
+    event = serializers.StringRelatedField(read_only=True)
+    source = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = OtherDanger
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'description']
+        read_only_fields = ['id', 'event', 'source']
