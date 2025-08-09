@@ -27,6 +27,7 @@ from core.views.equipment_failure import get_post_equipment_failure, get_equipme
     update_equipment_failure, delete_equipment_failure, get_equipment_failure_by_event
 from core.views.adverse_weather import get_post_adverse_weather, get_adverse_weather_detail, \
     get_adverse_weather_by_event, update_adverse_weather, delete_adverse_weather
+from core.views.fire_danger import get_post_fire_danger, get_fire_danger_detail, get_fire_danger_by_event, update_fire_danger, delete_fire_danger
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -133,4 +134,11 @@ urlpatterns = [
          name='adverse_weather-by-event'),
     path('adverse_weathers/<int:weather_id>/update/', update_adverse_weather, name='adverse_weather-update'),
     path('adverse_weathers/<int:weather_id>/delete/', delete_adverse_weather, name='adverse_weather-delete'),
+
+    path('fire_dangers/', get_post_fire_danger, name='fire_danger-get-post'),
+    path('fire_dangers/<int:fire_id>/', get_fire_danger_detail, name='fire_danger-detail'),
+    path('fire_dangers/by-event/<int:event_id>/', get_fire_danger_by_event,
+         name='fire_danger-by-event'),
+    path('fire_dangers/<int:fire_id>/update/', update_fire_danger, name='fire_danger-update'),
+    path('fire_dangers/<int:fire_id>/delete/', delete_fire_danger, name='fire_danger-delete'),
 ]
