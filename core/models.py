@@ -1,6 +1,6 @@
 from django.db.models import (Model, CASCADE, SET_NULL, Index, TextField, DateTimeField,
                               BooleanField, CharField, IntegerField, FloatField,
-                              ForeignKey, ManyToManyField, EmailField)
+                              ForeignKey, ManyToManyField, OneToOneField, EmailField)
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
@@ -274,7 +274,7 @@ class MeasuresTaken(Model):
 
 
 class EquipmentFailure(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
         on_delete=CASCADE,
     )
@@ -310,9 +310,9 @@ class EquipmentFailure(Model):
 
 
 class AdverseWeather(Model):
-    event = ForeignKey(
+    event = OneToOneField(
         Event,
-        on_delete=CASCADE,
+        on_delete=CASCADE
     )
     source = ForeignKey(
         Source,

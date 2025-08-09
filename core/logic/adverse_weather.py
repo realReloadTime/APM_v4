@@ -40,6 +40,11 @@ class AdverseWeatherRepository:
             raise ValueError(f'AdverseWeather с ID {pk} не существует')
 
     @staticmethod
+    async def get_adverse_weather_by_event(event_id: int) -> AdverseWeather:
+        weather = await AdverseWeather.objects.filter(event_id=event_id).aget()
+        return weather
+
+    @staticmethod
     async def update_adverse_weather(pk: int, data: dict) -> AdverseWeather | None:
         fields = [('event', EventRepository.get_event),
                   ('source', SourceRepository.get_source),
@@ -75,6 +80,13 @@ class AdverseWeatherService:
     async def get_adverse_weather(self, pk: int | None = None) -> ReturnDict:
         result = await self.repository.get_adverse_weather(pk)
         return await self.serialize_adverse_weather(result)
+
+    async def get_adverse_weather_by_event(self, event_id: int) -> ReturnDict:
+        if event_id > 0:
+            result = await self.repository.get_adverse_weather_by_event(event_id)
+            return await self.serialize_adverse_weather(result)
+        else:
+            raise ValueError('event_id должен быть больше 0')
 
     async def update_adverse_weather(self, pk: int, data: dict) -> ReturnDict:
         if pk < 1:

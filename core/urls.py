@@ -24,9 +24,9 @@ from core.views.measures_taken import get_post_measures_taken, get_measures_take
     delete_measures_taken
 from core.views.event import get_post_event, get_event_detail, update_event, delete_event
 from core.views.equipment_failure import get_post_equipment_failure, get_equipment_failure_detail, \
-    update_equipment_failure, delete_equipment_failure
-from core.views.adverse_weather import get_post_adverse_weather, get_adverse_weather_detail, update_adverse_weather, \
-    delete_adverse_weather
+    update_equipment_failure, delete_equipment_failure, get_equipment_failure_by_event
+from core.views.adverse_weather import get_post_adverse_weather, get_adverse_weather_detail, \
+    get_adverse_weather_by_event, update_adverse_weather, delete_adverse_weather
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -122,11 +122,15 @@ urlpatterns = [
 
     path('equipment_failures/', get_post_equipment_failure, name='equipment_failure-get-post'),
     path('equipment_failures/<int:failure_id>/', get_equipment_failure_detail, name='equipment_failure-detail'),
+    path('equipment_failures/by-event/<int:event_id>/', get_equipment_failure_by_event,
+         name='equipment_failure-by-event'),
     path('equipment_failures/<int:failure_id>/update/', update_equipment_failure, name='equipment_failure-update'),
     path('equipment_failures/<int:failure_id>/delete/', delete_equipment_failure, name='equipment_failure-delete'),
 
     path('adverse_weathers/', get_post_adverse_weather, name='adverse_weather-get-post'),
     path('adverse_weathers/<int:weather_id>/', get_adverse_weather_detail, name='adverse_weather-detail'),
+    path('adverse_weathers/by-event/<int:event_id>/', get_adverse_weather_by_event,
+         name='adverse_weather-by-event'),
     path('adverse_weathers/<int:weather_id>/update/', update_adverse_weather, name='adverse_weather-update'),
     path('adverse_weathers/<int:weather_id>/delete/', delete_adverse_weather, name='adverse_weather-delete'),
 ]

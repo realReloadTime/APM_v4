@@ -69,6 +69,11 @@ class EquipmentFailureRepository:
             raise ValueError(f"EquipmentFailure с ID {pk} не существует")
 
     @staticmethod
+    async def get_equipment_failure_by_event(event_id: int) -> EquipmentFailure:
+        failure = await EquipmentFailure.objects.filter(event_id=event_id).aget()
+        return failure
+
+    @staticmethod
     async def update_equipment_failure(pk: int, data: dict) -> EquipmentFailure | None:
         event_id = data.get('event_id')
         object_id = data.get('object_id')
@@ -129,6 +134,13 @@ class EquipmentFailureService:
     async def get_equipment_failure(self, pk: int | None = None) -> ReturnDict:
         result = await self.repository.get_equipment_failure(pk)
         return await self.serialize_equipment_failure(result)
+
+    async def get_equipment_failure_by_event(self, event_id: int) -> ReturnDict:
+        if event_id > 0:
+            result = await self.repository.get_equipment_failure_by_event(event_id)
+            return await self.serialize_equipment_failure(result)
+        else:
+            raise ValueError('event_id должен быть больше 0')
 
     async def update_equipment_failure(self, failure_id: int, data: dict) -> ReturnDict:
         if failure_id is None or failure_id < 1:
