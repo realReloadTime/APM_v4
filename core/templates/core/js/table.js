@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
     } catch (error) {
       console.error('Ошибка загрузки событий:', error);
-      eventsTableBody.innerHTML = `<tr><td colspan="8">Ошибка загрузки данных: ${error.message}</td></tr>`;
+      eventsTableBody.innerHTML = `<tr><td colspan="9">Ошибка загрузки данных: ${error.message}</td></tr>`;
     }
   }
 
@@ -56,9 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     events.forEach(event => {
       const row = document.createElement('tr');
-      row.dataset.id = event.id; // Сохраняем ID в атрибуте строки
+      row.dataset.id = event.id; 
       
-      // Обработчик двойного клика
       row.addEventListener('dblclick', function() {
         const eventId = this.dataset.id;
         window.location.href = `information_page.html?event_id=${eventId}`;
@@ -74,8 +73,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <td>${event.attachments && event.attachments.length > 0 ? 'Да' : 'Нет'}</td>
         <td><input type="checkbox" class="form-check" ${event.report_required ? 'checked' : ''}></td>
         <td>
-          <button class="btn btn-sm btn-warning edit-btn" data-id="${event.id}">
-            <i class="bi bi-pencil"></i> Редактировать
+          <button class="btn btn-sm btn-primary edit-btn" data-id="${event.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+            </svg> 
           </button>
         </td>
       `;

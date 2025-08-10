@@ -9,6 +9,7 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/loadNavbar.js"></script>
     <script src="js/loadUserProfile.js"></script>
+    <script src="js/loadInformation.js"></script>
 </head>
 <body>
     <div id="menu"></div>
@@ -22,31 +23,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for row in table %}
-                    <tr class="">
-                        <td scope="row">{{par.0}}</td>
-                        <td scope="row">{{par.1}}</td>
-                    </tr>
-                    {% empty %}
-                    <tr class="">
-                        <td scope="row">0</td>
-                        <td scope="row">1</td>
-                    </tr>
-                    {% endfor %}
+                    
                 </tbody>
             </table>
         </div>
         <div class="internal-block">
             <label>Возможные последствия</label>
-            <input type="text" class="form-control" disabled/>
+            <input id="consequences" type="text" class="form-control" disabled/>
         </div>
         <div class="internal-block">
             <label>Принимаемые меры</label>
-            <textarea class="form-control" disabled></textarea>
+            <textarea id="event_measures_id" class="form-control" disabled></textarea>
         </div>
         <div class="internal-block">
             <label>Информацию внес:</label>
-            <input id="writer-name" type="text" class="form-control" disabled>
+            <input id="created_by" type="text" class="form-control" disabled>
         </div>
     </main>
     <footer class="fixed-bottom bg-light p-2">
@@ -56,6 +47,7 @@
                     <button class="btn btn-primary btn-lg">Удалить</button>
                 </div>
                 <div>
+                    <a id="editButtonLink" href=''><button class="btn btn-primary btn-lg">Редактировать</button></a>
                     <a href="table_page.html"><button class="btn btn-primary btn-lg">Ок</button></a>
                 </div>
             </div>

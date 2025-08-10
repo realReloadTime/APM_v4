@@ -1,115 +1,61 @@
 document.addEventListener('DOMContentLoaded', function() {
     const accessToken = localStorage.getItem('access_token');
-    const filialSelect = document.getElementById('filial');
-    const categorySelect = document.getElementById('category');
-    const locationSelect = document.getElementById('location');
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
         alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
     }
 
-    async function loadFilial() {
+    async function loadData(object, object_value, object_text){
         try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/loas/`, {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/${object}/`, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const filials = await response.json();
-            renderFilial(filials);
+            const data = await response.json();
+            renderObject(object, data, object_value, object_text);
 
         } catch (error) {
             handleError(error, error.status);
         }
     }
 
-    async function loadCategory() {
-        try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/categories/`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const categories = await response.json();
-            renderCategory(categories);
-
-        } catch (error) {
-            handleError(error, error.status);
-        }
+    function renderObject(object, data, object_value, object_text) {
+    const objectSelect = document.getElementsByName(object);
+    if (!objectSelect) {
+        console.error('Element not found:', object);
+        return;
+    }
+    objectSelect.forEach(select => {
+            select.innerHTML = '';
+        })
+    if (data.length === 0) {
+        const option = document.createElement('option');
+        option.textContent = '--------';
+        objectSelect.forEach(select => {
+            select.appendChild(option);
+        })
+        return;
     }
 
-    async function loadLocation() {
-        try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/locations/`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const locations = await response.json();
-            renderLocation(locations);
-
-        } catch (error) {
-            handleError(error, error.status);
+    data.forEach(data_object => {
+        objectSelect.forEach(select => {
+            const option = document.createElement('option');
+            option.value = data_object[object_value || 'id'];
+            option.textContent = data_object[object_text || 'name'];
+            select.appendChild(option);
         }
-    }
-
-    function renderFilial(filials) {
-        filialSelect.innerHTML = '';
-        
-        if (filials.length === 0) {
-            const option = document.createElement('option');
-            option.textContent = 'Нет доступных филиалов';
-            filialSelect.appendChild(option);
-            return;
-        }
-
-        filials.forEach(filial => {
-            const option = document.createElement('option');
-            option.value = filial.id;
-            option.textContent = filial.name;
-            filialSelect.appendChild(option);
-        });
-    }
-
-    function renderLocation(locations) {
-        locationSelect.innerHTML = '';
-        
-
-        if (locations.length === 0) {
-            const option = document.createElement('option');
-            option.textContent = 'Нет доступных мест';
-            locationSelect.appendChild(option);
-            return;
-        }
-
-        locations.forEach(location => {
-            const option = document.createElement('option');
-            option.value = location.id;
-            option.textContent = location.name; 
-            locationSelect.appendChild(option);
-        });
-    }
-    
-    function renderCategory(categories) {
-        categorySelect.innerHTML = '';
-        
-        if (categories.length === 0) {
-            const option = document.createElement('option');
-            option.textContent = 'Нет доступных категорий';
-            categorySelect.appendChild(option);
-            return;
-        }
-
-        categories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.table_name;
-            option.textContent = category.name;  
-            categorySelect.appendChild(option);
-        });
-    }
-
-    loadFilial();
-    loadCategory();
-    loadLocation();
+        )
+    });
+}
+    loadData("loas", "id", "name");
+    loadData("locations", "id", "name");
+    loadData("categories", "id", "name");
+    loadData("systems", "id", "name");
+    loadData("subsystems", "id", "name");
+    loadData("subsystem_statuses", "id", "name");
+    loadData("conditions", "id", "name");
+    loadData("precipitations", "id", "name");
+    loadData("sources", "id", "name");
 });

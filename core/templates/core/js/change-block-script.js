@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let select = document.getElementById('category');
+    let select = document.getElementById('categories');
     let block = document.querySelectorAll('.changing-form');
     let lastIndex = 0; 
 
