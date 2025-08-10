@@ -1,6 +1,6 @@
 [
   {
-    "model": "core.geologicaldanger",
+    "model": "core.otherdanger",
     "pk": 1,
     "fields": {
       "event": 7,
@@ -9,7 +9,7 @@
     }
   },
   {
-    "model": "core.geologicaldanger",
+    "model": "core.otherdanger",
     "pk": 2,
     "fields": {
       "event": 8,
