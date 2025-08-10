@@ -1,0 +1,8 @@
+.env
+venv
+apm_project/__pycache__
+core/__pycache__
+core/logic/__pycache__
+core/views/__pycache__
+core/migrations/__pycache__
+core/management/commands/__pycache__

@@ -1,115 +1,195 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const accessToken = localStorage.getItem('access_token');
-    const userEmailElement = document.getElementById('username');
-    const eventsTableBody = document.getElementById('eventsTableBody');
-    const errorContainer = document.getElementById('error-message');
+  const accessToken = localStorage.getItem('access_token');
+  const eventsTableBody = document.getElementById('eventsTableBody');
+  const paginationContainer = document.getElementById('paginationContainer');
+  const recordsPerPageSelect = document.getElementById('recordsPerPage');
+  const paginationInfo = document.querySelector('.pagination-info');
+  
+  let currentPage = 1;
+  let totalPages = 1;
+  let totalItems = 0;
+  let currentPageSize = 10; 
+  const defaultPageSize = 10;
 
-     if (!accessToken) {
-         window.location.href = '/login.html';
-         return;
-     }
+  if (!accessToken) {
+    window.location.href = '/login.html';
+    return;
+  }
 
-     function handleError(error, status) {
-     console.error('Ошибка:', error);
-         if (status === 401) {
-             errorContainer.textContent = 'Сессия истекла. Пожалуйста, войдите снова.';
-             localStorage.removeItem('access_token');
-             localStorage.removeItem('refresh_token');
-             setTimeout(() => window.location.href = '/login.html', 3000);
-         } else {
-             errorContainer.textContent = error.message || `Ошибка ${status}`;
-         }
-         errorContainer.style.display = 'block';
-     }
-
-    async function loadUserProfile() {
-        try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/users/me/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const userData = await response.json();
-            userEmailElement.textContent = userData.email;
-
-            localStorage.setItem('user_permissions', JSON.stringify({
-                edit: userData.edit,
-                read: userData.read
-            }));
-
-        } catch (error) {
-            handleError(error, error.status);
+  async function loadEvents(page = 1, pageSize = defaultPageSize, filters = {}) {
+    try {
+      const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/events/`);
+      url.searchParams.append('page', page);
+      url.searchParams.append('page_size', pageSize);
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key, value] of urlParams.entries()) {
+        if (key !== 'page' && key !== 'page_size') {
+          url.searchParams.append(key, value);
         }
+      }
+
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const data = await response.json();
+      renderEventsTable(data.results);
+      updatePagination(data.total, data.page, data.page_size);
+      updateRecordsInfo(data.total, data.page, data.page_size);
+      
+    } catch (error) {
+      console.error('Ошибка загрузки событий:', error);
+      eventsTableBody.innerHTML = `<tr><td colspan="9">Ошибка загрузки данных: ${error.message}</td></tr>`;
+    }
+  }
+
+  function renderEventsTable(events) {
+    eventsTableBody.innerHTML = '';
+
+    if (!events || events.length === 0) {
+      eventsTableBody.innerHTML = `<tr><td colspan="9">Нет данных для отображения</td></tr>`;
+      return;
     }
 
-    async function loadEvents() {
-        try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/events/`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
+    events.forEach(event => {
+      const row = document.createElement('tr');
+      row.dataset.id = event.id; 
+      
+      row.addEventListener('dblclick', function() {
+        const eventId = this.dataset.id;
+        window.location.href = `information_page.html?event_id=${eventId}`;
+      });
+      
+      row.innerHTML = `
+        <td>${formatDateTime(event.begin)}</td>
+        <td>${event.loa || '-'}</td>
+        <td>${event.category || '-'}</td>
+        <td>${event.location || '-'}</td>
+        <td>${event.note || '-'}</td>
+        <td>${event.end ? formatDateTime(event.end) : '-'}</td>
+        <td>${event.attachments && event.attachments.length > 0 ? 'Да' : 'Нет'}</td>
+        <td><input type="checkbox" class="form-check" ${event.report_required ? 'checked' : ''}></td>
+        <td>
+          <button class="btn btn-sm btn-primary edit-btn" data-id="${event.id}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+            </svg> 
+          </button>
+        </td>
+      `;
+      eventsTableBody.appendChild(row);
+    });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+    // Добавляем обработчики для кнопок редактирования
+    document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const eventId = this.getAttribute('data-id');
+        window.location.href = `form_page.html?event_id=${eventId}`;
+      });
+    });
+  }
 
-            const events = await response.json();
-            renderEventsTable(events);
+  function formatDateTime(dateString) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleString('ru-RU');
+  }
 
-        } catch (error) {
-            handleError(error, error.status);
-        }
+  function updatePagination(totalItemsCount, currentPageArg, pageSizeFromServer) {
+    totalItems = totalItemsCount;
+    currentPage = currentPageArg;
+    currentPageSize = pageSizeFromServer;
+    totalPages = Math.ceil(totalItems / currentPageSize);
+    
+    paginationContainer.innerHTML = '';
+
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = startPage + maxVisiblePages - 1;
+    
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
-    function renderEventsTable(events) {
-        eventsTableBody.innerHTML = '';
+    createPaginationButton('<<', 'first-page', currentPage === 1);
+    createPaginationButton('<', 'prev-page', currentPage === 1);
 
-        if (events.length === 0) {
-            eventsTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="8" class="text-center">Нет доступных событий</td>
-                        </tr>
-                    `;
-            return;
+    for (let i = startPage; i <= endPage; i++) {
+      const pageLi = document.createElement('li');
+      pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+      paginationContainer.appendChild(pageLi);
+    }
+
+    createPaginationButton('>', 'next-page', currentPage === totalPages);
+    createPaginationButton('>>', 'last-page', currentPage === totalPages);
+  }
+
+
+  function updateRecordsInfo(totalItems, currentPage, pageSize) {
+    const startItem = Math.min((currentPage - 1) * pageSize + 1, totalItems);
+    const endItem = Math.min(currentPage * pageSize, totalItems);
+    
+    paginationInfo.innerHTML = `Показано ${startItem}-${endItem} из ${totalItems} записей`;
+  }
+
+
+  function createPaginationButton(symbol, className, isDisabled) {
+    const li = document.createElement('li');
+    li.className = `page-item ${isDisabled ? 'disabled' : ''}`;
+    li.innerHTML = `<a class="page-link ${className}" href="#">${symbol}</a>`;
+    paginationContainer.appendChild(li);
+  }
+
+
+  function setupEventListeners() {
+
+    paginationContainer.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      if (e.target.classList.contains('first-page') && currentPage > 1) {
+        loadEvents(1, currentPageSize);
+      } 
+      else if (e.target.classList.contains('prev-page') && currentPage > 1) {
+        loadEvents(currentPage - 1, currentPageSize);
+      } 
+      else if (e.target.classList.contains('next-page') && currentPage < totalPages) {
+        loadEvents(currentPage + 1, currentPageSize);
+      }
+      else if (e.target.classList.contains('last-page') && currentPage < totalPages) {
+        loadEvents(totalPages, currentPageSize);
+      }
+      else if (e.target.classList.contains('page-link')) {
+        const page = parseInt(e.target.dataset.page);
+        if (page && page !== currentPage) {
+          loadEvents(page, currentPageSize);
         }
+      }
+    });
 
-        events.forEach(event => {
-            const beginDate = new Date(event.begin).toLocaleString('ru-RU');
-            const endDate = event.end ? new Date(event.end).toLocaleString('ru-RU') : '-';
-            const hasAttachments = event.attachments.length > 0 ? 'Да' : 'Нет';
+    recordsPerPageSelect.addEventListener('change', (e) => {
+      const newPageSize = parseInt(e.target.value);
+      currentPageSize = newPageSize;
+      
+      loadEvents(1, newPageSize);
+    });
+  }
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${beginDate}</td>
-                        <td>${event.loa}</td>
-                        <td>${event.category}</td>
-                        <td>${event.location}</td>
-                        <td>${event.note}</td>
-                        <td>${endDate}</td>
-                        <td>${hasAttachments}</td>
-                        <td>
-                            <input type="checkbox" class="form-check"  id="{{event.id}}" checked>
-                        </td>
-                    `;
-                    eventsTableBody.appendChild(row);
-                });
+  function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialPage = urlParams.get('page') || 1;
+    const initialPageSize = urlParams.get('page_size') || defaultPageSize;
+    
+    recordsPerPageSelect.value = initialPageSize;
+    currentPageSize = parseInt(initialPageSize);
+    
+    setupEventListeners();
+    loadEvents(parseInt(initialPage), parseInt(initialPageSize));
+  }
 
-                document.querySelectorAll('.view-event').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const eventId = this.getAttribute('data-id');
-                        window.location.href = `event-details.html?id=${eventId}`;
-                    });
-                });
-            }
-
-            loadUserProfile();
-            loadEvents();
-        });
+  init();
+});

@@ -17,6 +17,6 @@ function setupSelectNavigation(selectId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setupSelectNavigation('select-weather-condition');
-    setupSelectNavigation('select-rainfall');
+    setupSelectNavigation('conditions');
+    setupSelectNavigation('precipitations');
 });
