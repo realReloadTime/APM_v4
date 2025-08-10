@@ -1,4 +1,3 @@
-# your_app/management/commands/loadallfixtures.py
 import os
 import sys
 from django.core.management import call_command

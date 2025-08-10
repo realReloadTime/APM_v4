@@ -201,7 +201,7 @@ class Event(Model):
         on_delete=CASCADE,
         related_name='location_events'
     )
-    consequences = TextField()
+    consequences = TextField(blank=True)
     personnel_count = IntegerField(default=0)
     technic_count = IntegerField(default=0)
     organization_name = CharField(max_length=255, blank=True)
@@ -287,7 +287,6 @@ class EquipmentFailure(Model):
         related_name='influenced_by_failures',
         blank=True
     )
-    additional_info = TextField()
     subsystem = ForeignKey(
         Subsystem,
         on_delete=CASCADE
@@ -298,7 +297,7 @@ class EquipmentFailure(Model):
         on_delete=SET_NULL,
         null=True
     )
-    description = TextField()
+    description = TextField(blank=True, null=True)
 
     class Meta:
         indexes = [

@@ -1,0 +1,115 @@
+[
+  {
+    "model": "core.event",
+    "pk": 1,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 1,
+      "location": 1,
+      "consequences": "Может сломаться еще какое-нибудь оборудование",
+      "personnel_count": 2,
+      "technic_count": 4,
+      "organization_name": "Рога и копыта",
+      "note": "Во всем виноват Баранкин"
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 2,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 2,
+      "location": 1,
+      "consequences": "На месте будут лужи, дороги будут мокрыми",
+      "personnel_count": 5,
+      "technic_count": 0,
+      "note": "Во всем виновата туча. Из нее пошел дождь."
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 3,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 3,
+      "location": 4,
+      "consequences": "Может начаться пожар",
+      "personnel_count": 3,
+      "technic_count": 2,
+      "organization_name": "МЧС России",
+      "note": "На улице стало жарко"
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 4,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 4,
+      "location": 1,
+      "consequences": "Разрушения на территории",
+      "personnel_count": 0,
+      "technic_count": 0,
+      "note": "Сейсмическая активность на Камчатке"
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 5,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 5,
+      "location": 4,
+      "consequences": "Может затопить территорию",
+      "personnel_count": 2,
+      "technic_count": 4,
+      "note": "Весна, местная река выходит из берегов, уровень воды поднимается"
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 6,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 6,
+      "location": 1,
+      "consequences": "Ужас ужас, все пропало",
+      "personnel_count": 1,
+      "technic_count": 1
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 7,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 7,
+      "location": 1,
+      "consequences": "Просто тестовое событие, никаких последствий не будет",
+      "personnel_count": 1,
+      "technic_count": 1,
+      "note": "Тестирование запросов к API"
+    }
+  },
+  {
+    "model": "core.event",
+    "pk": 8,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 2,
+      "category": 7,
+      "location": 2,
+      "consequences": "Второе тестовое событие, никаких последствий не будет",
+      "personnel_count": 1124,
+      "technic_count": 13543,
+      "note": "Тестирование запросов к API."
+    }
+  }
+]

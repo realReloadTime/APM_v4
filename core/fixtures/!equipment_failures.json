@@ -1,0 +1,29 @@
+[
+  {
+    "model": "core.equipmentfailure",
+    "pk": 1,
+    "fields": {
+      "event": 1,
+      "object": 1,
+      "influenced_objects": [
+        2, 3, 4, 5
+      ],
+      "subsystem": 2,
+      "subsystem_info": "Р Е К Л О У З Е Р",
+      "subsystem_status": 2,
+      "description": "Реклоузер реклоузер реклоузер"
+    }
+  },
+  {
+    "model": "core.equipmentfailure",
+    "pk": 2,
+    "fields": {
+      "event": 8,
+      "object": 8,
+      "subsystem": 3,
+      "subsystem_info": "",
+      "subsystem_status": 4,
+      "description": "Отключили электричество во всем районе. Ждем."
+    }
+  }
+]

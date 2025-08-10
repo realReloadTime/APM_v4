@@ -1,0 +1,74 @@
+[
+  {
+    "model": "core.object",
+    "pk": 1,
+    "fields": {
+      "object_type": 2,
+      "name": "АГРС КС «Александровская»",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 2,
+    "fields": {
+      "object_type": 2,
+      "name": "АГРС КС «Вертикос»",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 3,
+    "fields": {
+      "object_type": 2,
+      "name": "ГРС г. Излучинск",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 4,
+    "fields": {
+      "object_type": 1,
+      "name": "КС «Александровская»",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 5,
+    "fields": {
+      "object_type": 1,
+      "name": "КС «Вертикос»",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 6,
+    "fields": {
+      "object_type": 3,
+      "name": "Белозерный ГПК-(НВГПЗ-Парабель); 38 км; 38Д",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 7,
+    "fields": {
+      "object_type": 3,
+      "name": "г.Нижневартовск, ГРС-2; 2 км; 13-2",
+      "loa": 1
+    }
+  },
+  {
+    "model": "core.object",
+    "pk": 8,
+    "fields": {
+      "object_type": 2,
+      "name": "ГРС Белокуриха",
+      "loa": 2
+    }
+  }
+]
