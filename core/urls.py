@@ -28,6 +28,7 @@ from core.views.equipment_failure import get_post_equipment_failure, get_equipme
 from core.views.adverse_weather import get_post_adverse_weather, get_adverse_weather_detail, \
     get_adverse_weather_by_event, update_adverse_weather, delete_adverse_weather
 from core.views.fire_danger import get_post_fire_danger, get_fire_danger_detail, get_fire_danger_by_event, update_fire_danger, delete_fire_danger
+from core.views.geological_danger import get_post_geological_danger, get_geological_danger_detail, get_geological_danger_by_event, update_geological_danger, delete_geological_danger
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -141,4 +142,11 @@ urlpatterns = [
          name='fire_danger-by-event'),
     path('fire_dangers/<int:fire_id>/update/', update_fire_danger, name='fire_danger-update'),
     path('fire_dangers/<int:fire_id>/delete/', delete_fire_danger, name='fire_danger-delete'),
+
+    path('geological_dangers/', get_post_geological_danger, name='geological_danger-get-post'),
+    path('geological_dangers/<int:geo_id>/', get_geological_danger_detail, name='geological_danger-detail'),
+    path('geological_dangers/by-event/<int:event_id>/', get_geological_danger_by_event,
+         name='geological_danger-by-event'),
+    path('geological_dangers/<int:geo_id>/update/', update_geological_danger, name='geological_danger-update'),
+    path('geological_dangers/<int:geo_id>/delete/', delete_geological_danger, name='geological_danger-delete'),
 ]
