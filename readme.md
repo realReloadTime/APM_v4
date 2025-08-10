@@ -32,10 +32,11 @@ DB_PASSWORD='пароль-базы_данных'
 #### Опционально - создать суперпользователя:
 <code>python manage.py createsuperuser</code>
 
-[//]: # (#### Собрать статику:)
+#### Собрать статику:
 
-[//]: # (<code>python manage.py collectstatic</code>)
+<code>python manage.py collectstatic</code>
 
+<i>Обязательно вызывать эту команду при любом изменении CSS, JS файлов и очищать кэш браузера</i>
 #### Загрузить данные из фикстур:
 <code>python manage.py loadallfixtures</code>
 <br><br>

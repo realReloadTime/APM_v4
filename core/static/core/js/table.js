@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const defaultPageSize = 10;
 
   if (!accessToken) {
-    window.location.href = '/login.html';
+    window.location.href = '/login';
     return;
   }
 
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       row.addEventListener('dblclick', function() {
         const eventId = this.dataset.id;
-        window.location.href = `information_page.html?event_id=${eventId}`;
+        window.location.href = `/information?event_id=${eventId}`;
       });
       
       row.innerHTML = `
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.edit-btn').forEach(button => {
       button.addEventListener('click', function() {
         const eventId = this.getAttribute('data-id');
-        window.location.href = `form_page.html?event_id=${eventId}`;
+        window.location.href = `/form?event_id=${eventId}`;
       });
     });
   }

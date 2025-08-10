@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <title>Вход</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="js/config.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/register.js"></script>
+    <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <script src="{% static 'core/js/config.js' %}"></script>
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'core/js/register.js' %}"></script>
 </head>
 <body>
     <main>
@@ -32,7 +33,7 @@
         </form>
         <div class="internal-block" style="display: grid;">
             <label>Есть аккаунт?</label>
-            <a href="login.html">Войти</a>
+            <a href="/login">Войти</a>
         </div>
     </main>
 </body>

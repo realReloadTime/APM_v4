@@ -22,6 +22,10 @@ from django.urls import path, include
 from core.admin import custom_admin_site
 
 urlpatterns = [
+    path('', include('core.template_urls')),
     path('admin/', custom_admin_site.urls),
     path('api/', include('core.urls'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
