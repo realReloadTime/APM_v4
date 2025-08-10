@@ -1,0 +1,12 @@
+[
+  {
+    "model": "core.attachment",
+    "pk": 1,
+    "fields": {
+      "event": 1,
+      "name": "test.txt",
+      "created_at": "2025-08-08T10:42:15.780560Z",
+      "author": 1
+    }
+  }
+]
