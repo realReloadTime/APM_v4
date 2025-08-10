@@ -36,7 +36,7 @@ DB_PASSWORD='пароль-базы_данных'
 
 <code>python manage.py collectstatic</code>
 
-<i>Обязательно вызывать эту команду при любом изменении CSS, JS файлов и очищать кэш браузера</i>
+<i>Обязательно вызывать эту команду при любом изменении CSS, JS файлов.</i>
 #### Загрузить данные из фикстур:
 <code>python manage.py loadallfixtures</code>
 <br><br>
