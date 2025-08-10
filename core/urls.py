@@ -31,6 +31,7 @@ from core.views.fire_danger import get_post_fire_danger, get_fire_danger_detail,
 from core.views.geological_danger import get_post_geological_danger, get_geological_danger_detail, get_geological_danger_by_event, update_geological_danger, delete_geological_danger
 from core.views.hydrological_danger import get_post_hydrological_danger, get_hydrological_danger_detail, get_hydrological_danger_by_event, update_hydrological_danger, delete_hydrological_danger
 from core.views.emergency_situation import get_post_emergency_situation, get_emergency_situation_detail, get_emergency_situation_by_event, update_emergency_situation, delete_emergency_situation
+from core.views.other_danger import get_post_other_danger, get_other_danger_detail, get_other_danger_by_event, update_other_danger, delete_other_danger
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -164,4 +165,11 @@ urlpatterns = [
          name='emergency_situation-by-event'),
     path('emergency_situations/<int:situation_id>/update/', update_emergency_situation, name='emergency_situation-update'),
     path('emergency_situations/<int:situation_id>/delete/', delete_emergency_situation, name='emergency_situation-delete'),
+
+    path('other_dangers/', get_post_other_danger, name='other_danger-get-post'),
+    path('other_dangers/<int:danger_id>/', get_other_danger_detail, name='other_danger-detail'),
+    path('other_dangers/by-event/<int:event_id>/', get_other_danger_by_event,
+         name='other_danger-by-event'),
+    path('other_dangers/<int:danger_id>/update/', update_other_danger, name='other_danger-update'),
+    path('other_dangers/<int:danger_id>/delete/', delete_other_danger, name='other_danger-delete'),
 ]
