@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from asyncpg import InternalServerError
 
 from django.http import JsonResponse, HttpResponse
 
@@ -54,6 +55,19 @@ async def login(request):
         })
 
     return JsonResponse({'error': 'Invalid credentials'}, status=401)
+
+
+@async_api_method(['POST'])
+async def refresh_auth_token(request=None):
+    try:
+        refresh_token = json.loads(request.body)['refresh']
+        new_access = await sync_to_async(RefreshToken)(refresh_token)
+        return JsonResponse({"access": str(new_access.access_token)}, status=205)
+
+    except ValueError or InternalServerError:
+        JsonResponse({'error': 'Invalid key name or body.'}, status=400)
+    except Exception as other_ex:
+        JsonResponse({'error': str(other_ex), 'error_type': str(other_ex.__class__)}, status=404)
 
 
 @async_api_method(['GET'])

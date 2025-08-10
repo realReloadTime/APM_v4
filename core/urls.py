@@ -1,6 +1,6 @@
 from django.urls import path
 
-from core.views.user import register, login, user_list, user_detail, user_update, user_delete, get_user_self
+from core.views.user import register, login, refresh_auth_token, user_list, user_detail, user_update, user_delete, get_user_self
 from core.views.subsystem_status import get_post_subsystem_status, get_subsystem_status_detail, \
     update_subsystem_status, delete_subsystem_status
 from core.views.system import get_post_system, get_system_detail, update_system, delete_system
@@ -41,6 +41,7 @@ from core.views.other_danger import get_post_other_danger, get_other_danger_deta
 urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login, name='login'),
+    path('refresh_token/', refresh_auth_token, name='refresh'),
     path('users/', user_list, name='user-list'),
     path('users/me/', get_user_self, name='user_self'),
     path('users/<int:user_id>/', user_detail, name='user-detail'),
