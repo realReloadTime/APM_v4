@@ -1,0 +1,13 @@
+[
+  {
+    "model": "core.firedanger",
+    "pk": 1,
+    "fields": {
+      "event": 3,
+      "source": 2,
+      "area": 23.2,
+      "direction": "ЮЮЗ",
+      "description": "Может начаться пожар - предупреждает МЧС"
+    }
+  }
+]

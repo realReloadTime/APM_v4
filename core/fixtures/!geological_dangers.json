@@ -1,0 +1,14 @@
+[
+  {
+    "model": "core.geologicaldanger",
+    "pk": 1,
+    "fields": {
+      "event": 4,
+      "source": 2,
+      "geography": "Томская область, пгт Солнечное",
+      "epicenter": "56.452488, 84.973592",
+      "magnitude": 5,
+      "description": "Чувствуются толчки, посуда звенит"
+    }
+  }
+]

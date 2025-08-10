@@ -1,0 +1,12 @@
+[
+  {
+    "model": "core.emergencysituation",
+    "pk": 1,
+    "fields": {
+      "event": 6,
+      "source": 4,
+      "geography": "Томская область, город Томск",
+      "description": "Происходит что-то на уровне ЧС."
+    }
+  }
+]

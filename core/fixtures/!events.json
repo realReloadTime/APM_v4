@@ -111,5 +111,19 @@
       "technic_count": 13543,
       "note": "Тестирование запросов к API."
     }
+  },
+  {
+    "model": "core.event",
+    "pk": 9,
+    "fields": {
+      "begin": "2025-08-08T10:42:15.780560Z",
+      "loa": 1,
+      "category": 1,
+      "location": 1,
+      "consequences": "Не можем дальше работать",
+      "personnel_count": 0,
+      "technic_count": 0,
+      "note": "Рубанули свет, ну что за дела"
+    }
   }
 ]

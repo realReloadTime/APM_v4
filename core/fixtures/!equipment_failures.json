@@ -18,7 +18,7 @@
     "model": "core.equipmentfailure",
     "pk": 2,
     "fields": {
-      "event": 8,
+      "event": 9,
       "object": 8,
       "subsystem": 3,
       "subsystem_info": "",

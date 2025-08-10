@@ -24,26 +24,12 @@
     "model": "core.condition",
     "pk": 4,
     "fields": {
-      "name": "\uD83C\uDF27 Дождь"
-    }
-  },
-  {
-    "model": "core.condition",
-    "pk": 5,
-    "fields": {
       "name": "\uD83C\uDF2B Туман"
     }
   },
   {
     "model": "core.condition",
-    "pk": 6,
-    "fields": {
-      "name": "❄\uFE0F Снег"
-    }
-  },
-  {
-    "model": "core.condition",
-    "pk": 7,
+    "pk": 5,
     "fields": {
       "name": "❄\uFE0F\uD83C\uDF2C Метель"
     }

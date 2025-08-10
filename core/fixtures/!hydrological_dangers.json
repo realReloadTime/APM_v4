@@ -1,0 +1,13 @@
+[
+  {
+    "model": "core.hydrologicaldanger",
+    "pk": 1,
+    "fields": {
+      "event": 5,
+      "source": 5,
+      "water_name": "река Томь",
+      "height": 20.3,
+      "description": "Река сильно увеличила уровень воды. Обычный уровень воды составлял 6-7 метров."
+    }
+  }
+]

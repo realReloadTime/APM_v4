@@ -1,0 +1,16 @@
+[
+  {
+    "model": "core.adverseweather",
+    "pk": 1,
+    "fields": {
+      "event": 2,
+      "source": 1,
+      "geography": "Томская область, деревня Баранкино",
+      "condition": 3,
+      "precipitation": 2,
+      "temperature": 34.3,
+      "wind": 3.2,
+      "description": "Обычный летний дождь"
+    }
+  }
+]
