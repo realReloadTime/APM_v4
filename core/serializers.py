@@ -315,7 +315,7 @@ class FireDangerSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'event', 'source']
 
 
-class GeologicalDangerSerializer(serializers. ModelSerializer):
+class GeologicalDangerSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(
         queryset=Event.objects.all(),
         source='event'
@@ -330,11 +330,12 @@ class GeologicalDangerSerializer(serializers. ModelSerializer):
 
     class Meta:
         model = GeologicalDanger
-        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'epicenter', 'magnitude', 'description']
+        fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'epicenter', 'magnitude',
+                  'description']
         read_only_fields = ['id', 'event', 'source']
 
 
-class HydrologicalDangerSerializer(serializers. ModelSerializer):
+class HydrologicalDangerSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(
         queryset=Event.objects.all(),
         source='event'
@@ -353,7 +354,7 @@ class HydrologicalDangerSerializer(serializers. ModelSerializer):
         read_only_fields = ['id', 'event', 'source']
 
 
-class EmergencySituationSerializer(serializers. ModelSerializer):
+class EmergencySituationSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(
         queryset=Event.objects.all(),
         source='event'
@@ -371,7 +372,8 @@ class EmergencySituationSerializer(serializers. ModelSerializer):
         fields = ['id', 'event_id', 'event', 'source_id', 'source', 'geography', 'description']
         read_only_fields = ['id', 'event', 'source']
 
-class OtherDangerSerializer(serializers. ModelSerializer):
+
+class OtherDangerSerializer(serializers.ModelSerializer):
     event_id = serializers.PrimaryKeyRelatedField(
         queryset=Event.objects.all(),
         source='event'

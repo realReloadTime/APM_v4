@@ -1,3 +1,4 @@
+from asgiref.sync import sync_to_async
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from core.models import Location
@@ -43,6 +44,12 @@ class LocationRepository:
             raise ValueError(f"Location с ID {pk} не существует")
 
     @staticmethod
+    async def get_locations_by_loa(loa_id: int) -> list[Location]:
+        locations = [location async for location in Location.objects.filter(loa_id=loa_id)]
+
+        return locations
+
+    @staticmethod
     async def update_location(pk: int, data: dict) -> Location | None:
         location_type_id = data.get('location_type_id')
         loa_id = data.get('loa_id')
@@ -80,6 +87,10 @@ class LocationService:
         result = await self.repository.get_location(pk)
         return await self.serialize_location(result)
 
+    async def get_location_by_loa(self, loa_id: int) -> ReturnDict:
+        result = await self.repository.get_locations_by_loa(loa_id)
+        return await self.serialize_location(result)
+
     async def update_location(self, location_id: int, data: dict) -> ReturnDict:
         if location_id is None or location_id < 1:
             raise ValueError("Can't update without ID key.")
@@ -93,8 +104,11 @@ class LocationService:
 
     @staticmethod
     async def serialize_location(result) -> ReturnDict:
-        if isinstance(result, list):
-            serializer = LocationSerializer(result, many=True)
-        else:
-            serializer = LocationSerializer(result)
-        return serializer.data
+        def serialize():
+            if isinstance(result, list):
+                serializer = LocationSerializer(result, many=True)
+            else:
+                serializer = LocationSerializer(result)
+            return serializer.data
+
+        return await sync_to_async(serialize)()

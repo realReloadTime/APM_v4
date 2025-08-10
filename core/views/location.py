@@ -47,6 +47,21 @@ async def location_detail(request, location_id: int):
         return JsonResponse({'error': str(other_err)}, status=400)
 
 
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def location_by_loa_id(request, loa_id: int):
+    service = await get_location_service()
+    try:
+        location = await service.get_location_by_loa(loa_id)
+        return JsonResponse(location, status=200, safe=False)
+
+    except ValueError as ve:
+        return JsonResponse({'error': str(ve)}, status=404)
+
+    except Exception as other_err:
+        return JsonResponse({'error': str(other_err)}, status=400)
+
+
 @async_api_method(['PUT'])
 @async_permission_required([IsAuthenticated])
 async def location_update(request, location_id: int):
