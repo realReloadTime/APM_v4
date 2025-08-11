@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const base_data = await response.json();
-            const category_data = loadDataByEvent(event_id, base_data.category_id);
+            const category_data =  await loadDataByEvent(event_id, base_data.category_id);
 
             renderInformation(base_data, category_data);
 
@@ -61,10 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw error;
             }
             
-            const data = await response.json();
-
-        return data
-
+            const category_data = await response.json();
+            return category_data
         } catch (error) {
             handleError(error);
         }
@@ -97,10 +95,55 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('locations').disabled  = true;
         document.getElementById('categories').disabled  = true;
         if (base_data.category_id === 1) {
-            document.getElementById('object').value = category_data.object;
-            
+            document.getElementById('object').value = category_data.object || "";
+            document.getElementById('influenced_objects').value = category_data.influenced_objects || "";
+            document.getElementById('subsystems').value = category_data.subsystem_id || 1;
+            document.getElementById('systems').value = category_data.system_id || 1 ;
+            document.getElementById('subsystem_statuses').value = category_data.subsystem_status_id || 1;
+            document.getElementById('description-equipment-failure').value = category_data.description || "";
+
+            document.getElementById('subsystems').disabled  = true;
+            document.getElementById('systems').disabled  = true;
+        } else if (base_data.category_id === 2){
+            document.getElementById('source-adverse-weathers').value = category_data.source_id || 1;
+            document.getElementById('precipitations').value = category_data.precipitation_id || 1;
+            document.getElementById('conditions').value = category_data.condition_id || 1;
+            document.getElementById('temperature').value = category_data.temperature || 22 ;
+            document.getElementById('input-wind-speed').value = category_data.wind || 0;
+            document.getElementById('geography-adverse-weathers').value = category_data.geography || "";
+            document.getElementById('description-adverse_weathers').value = category_data.description || "";
+
+            document.getElementById('input-wind-speed').dispatchEvent(new Event('change')) 
         }
-        
+        else if (base_data.category_id === 3){
+            document.getElementById('source-fire-dangers').value = category_data.source_id || 1;
+            document.getElementById('area').value = category_data.area || 0;
+            document.getElementById('direction').value = category_data.direction || "";
+            document.getElementById('description-fire-dangers').value = category_data.description || "";
+        }
+        else if (base_data.category_id === 4){
+            document.getElementById('source-geological-dangers').value = category_data.source_id || 1;
+            document.getElementById('magnitude').value = category_data.magnitude || 1;
+            document.getElementById('magnitudeRange').value = category_data.magnitude || 1;
+            document.getElementById('epicenter').value = category_data.epicenter || "";
+            document.getElementById('geography-geological-dangers').value = category_data.geography || "";
+            document.getElementById('description-geological-dangers').value = category_data.description || "";
+        }
+        else if (base_data.category_id === 5){
+            document.getElementById('source-hydrological-dangers').value = category_data.source_id || 1;
+            document.getElementById('height').value = category_data.height || 0;
+            document.getElementById('water_name').value = category_data.water_name || "";
+            document.getElementById('description-hydrological-dangers').value = category_data.description || "";
+        }
+        else if (base_data.category_id === 6){
+            document.getElementById('source-emergency-situations').value = category_data.source_id || 1;
+            document.getElementById('geography-emergency-situations').value = category_data.geography || "";
+            document.getElementById('description-emergency-situations').value = category_data.description || "";
+        }
+        else if (base_data.category_id === 7){
+            document.getElementById('source-other-dangers').value = category_data.source_id || 1;
+            document.getElementById('description-other-dangers').value = category_data.description || "";
+        }
     }
 
 
