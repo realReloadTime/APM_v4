@@ -65,7 +65,7 @@ async def refresh_auth_token(request=None):
         return JsonResponse({"access": str(new_access.access_token)}, status=205)
 
     except TokenError:
-        return JsonResponse({'error': 'Invalid refresh token'}, status=400)
+        return JsonResponse({'error': 'Invalid refresh token'}, status=401)
     except KeyError:
         return JsonResponse({'error': 'Invalid key name'}, status=400)
     except Exception as other_ex:
