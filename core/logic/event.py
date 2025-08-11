@@ -4,12 +4,15 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from core.models import Event
 from core.serializers import EventSerializer
 
+from django.db.models import aprefetch_related_objects
+
 from core.logic.loa import LOARepository
 from core.logic.category import CategoryRepository
 from core.logic.location import LocationRepository
 from core.logic.user import UserRepository
 
-from django.db.models import aprefetch_related_objects
+from channels.layers import get_channel_layer
+channel_layer = get_channel_layer()
 
 
 class EventRepository:
@@ -152,7 +155,13 @@ class EventService:
 
     async def create_event(self, data: dict) -> ReturnDict:
         result = await self.repository.create_event(data)
-        return await self.serialize_event(result)
+        serialized_result = await self.serialize_event(result)
+
+        await channel_layer.group_send('events_group', {  # группа для оповещения (consumers.py EventConsumer)
+            'type': 'event_update',  # имя метода в consumer
+            'event': serialized_result  # параметр метода
+        })
+        return serialized_result
 
     async def get_event(
             self,
@@ -181,7 +190,14 @@ class EventService:
         result = await self.repository.update_event(event_id, data)
         if result is None:
             raise ValueError("Event not found")
-        return await self.serialize_event(result)
+
+        serialized_result = await self.serialize_event(result)
+
+        await channel_layer.group_send('events_group', {  # группа для оповещения (consumers.py EventConsumer)
+            'type': 'event_update',  # имя метода в consumer
+            'event': serialized_result  # параметр метода
+        })
+        return serialized_result
 
     async def delete_event(self, pk: int) -> bool:
         return await self.repository.delete_event(pk)

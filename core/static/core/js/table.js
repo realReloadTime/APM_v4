@@ -179,16 +179,49 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  function initWebSocket() {
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.host;
+    const accessToken = localStorage.getItem('access_token');  // Берем токен из localStorage
+    const wsUrl = `${wsProtocol}//${wsHost}/ws/events/?token=${encodeURIComponent(accessToken)}`;
+
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = () => {
+      console.log('WebSocket connected');
+    };
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'event.update') {
+        console.log('Received event update:', message.data);
+        // Перезагружаем текущую страницу таблицы для отражения изменений
+        loadEvents(currentPage, currentPageSize);
+      }
+    };
+
+    socket.onclose = (event) => {
+      console.log('WebSocket closed:', event);
+      // Опционально: добавить reconnection logic
+      setTimeout(initWebSocket, 1000); // Реконнект через 1 секунду
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+  }
+
   function init() {
     const urlParams = new URLSearchParams(window.location.search);
     const initialPage = urlParams.get('page') || 1;
     const initialPageSize = urlParams.get('page_size') || defaultPageSize;
-    
+
     recordsPerPageSelect.value = initialPageSize;
     currentPageSize = parseInt(initialPageSize);
-    
+
     setupEventListeners();
     loadEvents(parseInt(initialPage), parseInt(initialPageSize));
+    initWebSocket();  // Инициализируем WebSocket подключение
   }
 
   init();
