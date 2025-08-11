@@ -9,3 +9,6 @@ uvicorn
 uuid
 python-dotenv
 aiofiles
+channels
+channels_redis
+websockets
