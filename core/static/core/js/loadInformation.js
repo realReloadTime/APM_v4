@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function changeRef(eventId) {
         if (eventId) {
-            document.getElementById('editButtonLink').href = `form_page.html?event_id=${eventId}`;
+            document.getElementById('editButtonLink').href = `/form/?event_id=${eventId}`;
         } else {
             console.error('Event ID not found in URL');
             alert('Не указан идентификатор события');
