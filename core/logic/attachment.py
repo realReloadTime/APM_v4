@@ -30,7 +30,6 @@ class AttachmentRepository:
         except Attachment.DoesNotExist:
             raise ValueError(f"Attachment с ID {pk} не существует")
 
-
     async def update_attachment(self, pk: int, data: dict) -> Attachment | None:
         event_id = data.get('event_id')
         if event_id:
