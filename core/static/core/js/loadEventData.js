@@ -49,6 +49,50 @@ document.addEventListener('DOMContentLoaded', function() {
         )
     });
 }
+    // async function loadObjectTypes(isOneObject) {
+    //     try {
+    //         const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/object_types/`, {
+    //             headers: { 'Authorization': `Bearer ${accessToken}` }
+    //         });
+
+    //         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    //         const data = await response.json();
+    //         renderObjectTypes(data, isOneObject);
+    //     } catch (error) {
+    //         handleError(error, error.status);
+    //     }
+    // }
+    // async function loadObjects(objectType) {
+    //     try {
+    //         const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/object/object_types/`, {
+    //             headers: { 'Authorization': `Bearer ${accessToken}` }
+    //         });
+
+    //         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    //         const data = await response.json();
+    //         renderObjectTypes(data, isOneObject);
+    //     } catch (error) {
+    //         handleError(error, error.status);
+    //     }
+    // }
+    // function renderObjectTypes(data, isOneObject){
+    //     if (isOneObject){
+    //         const modal = document.getElementById('oneObjectModal');
+    //     } else {
+    //         const modal = document.getElementById("multObjectModal");
+    //     }
+    //     modal.innerHTML = "";
+    //     data.forEach(data_object => {
+
+    //         data_object.forEach(object => {
+    //             const option = document.createElement('option');
+    //             option.value = data_object[object_value || 'id'];
+    //             option.textContent = data_object[object_text || 'name'];
+    //             select.appendChild(option);
+    //         }
+    //         )
+    //     });
+    // } 
     loadData("loas", "id", "name");
     loadData("locations", "id", "name");
     loadData("categories", "id", "name");
@@ -58,4 +102,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadData("conditions", "id", "name");
     loadData("precipitations", "id", "name");
     loadData("sources", "id", "name");
+    // loadObjectTypes(isOneObject=true);
 });

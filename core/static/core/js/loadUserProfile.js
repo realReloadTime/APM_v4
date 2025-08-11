@@ -4,7 +4,7 @@ function handleError(error, status = null) {
     if (status === 401) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        setTimeout(() => window.location.href = '/login.html', 3000);
+        setTimeout(() => window.location.href = '/login', 3000);
     }
     
     console.error('Ошибка загрузки профиля:', error);

@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return urlParams.get('event_id');
     }
 
+    function formatDateTime(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0]
+    }
+
     async function loadData(event_id) {
         try {
             const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/events/${event_id}/`, {
@@ -65,11 +71,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderInformation(base_data, category_data) {
+        document.getElementById('consequences').value = base_data.consequences;
+        document.getElementById('loas').value = base_data.loa_id;
+        document.getElementById('categories').value = base_data.category_id;
+        document.getElementById('locations').value = base_data.location_id;
+        document.getElementById('begin').value = formatDateTime(base_data.begin);
+        document.getElementById('note').value = base_data.note;
+        document.getElementById('organization_name').value = base_data.organization_name;
+        document.getElementById('personnel_count').value = base_data.personnel_count;
+        document.getElementById('technic_count').value = base_data.technic_count;
+
+        if (base_data.end != null){
+            document.getElementById('end').value = formatDateTime(base_data.end);
+            document.getElementById('is_ended').checked = true;
+            document.getElementById('is_ended').dispatchEvent(new Event('change')) // для появления блока с концом даты
+
+            document.getElementById('end').disabled  = true;
+            document.getElementById('is_ended').disabled  = true;
+        }
+        
+        document.getElementById('categories').dispatchEvent(new Event('change')) // так вызывается смена блока
+
+        document.getElementById('begin').disabled = true;
+        document.getElementById('loas').disabled  = true;
+        document.getElementById('locations').disabled  = true;
+        document.getElementById('categories').disabled  = true;
         if (base_data.category_id === 1) {
+            document.getElementById('object').value = category_data.object;
             
         }
-        document.getElementById('consequences').value = base_data.consequences || '';
-        document.getElementById('loas').value = base_data.loa || '';
+        
     }
 
 
@@ -77,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (eventId) {
         loadData(eventId);
     } else {
-        console.error('Event ID not found in URL');
-        alert('Не указан идентификатор события в URL');
+        console.log('Event ID not found in URL');
     }
 });
