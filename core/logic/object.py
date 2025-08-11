@@ -34,10 +34,14 @@ class ObjectRepository:
         return await Object.objects.acreate(**data)
 
     @staticmethod
-    async def get_object(pk: int | None) -> Object | list[Object]:
+    async def get_object(pk: int | None, filters: dict | None = None) -> Object | list[Object]:
         if pk is None:
-            return [objecT async for objecT in
-                    Object.objects.select_related('object_type').select_related('loa').all()]
+            if filters:
+                return [objecT async for objecT in
+                    Object.objects.select_related('object_type').select_related('loa').all().filter(**filters)]
+            else:
+                return [objecT async for objecT in
+                        Object.objects.select_related('object_type').select_related('loa').all()]
         try:
             return await Object.objects.select_related('object_type').select_related('loa').aget(id=pk)
         except Object.DoesNotExist:
@@ -77,8 +81,11 @@ class ObjectService:
         result = await self.repository.create_object(data)
         return await self.serialize_object(result)
 
-    async def get_object(self, pk: int | None = None) -> ReturnDict:
-        result = await self.repository.get_object(pk)
+    async def get_object(
+            self, pk: int | None = None,
+            filters: dict | None = None,
+    ) -> ReturnDict:
+        result = await self.repository.get_object(pk, filters)
         return await self.serialize_object(result)
 
     async def update_object(self, object_id: int, data: dict) -> ReturnDict:

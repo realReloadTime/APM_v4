@@ -12,6 +12,7 @@ from core.logic.location import LocationRepository
 from core.logic.user import UserRepository
 
 from channels.layers import get_channel_layer
+
 channel_layer = get_channel_layer()
 
 
@@ -97,7 +98,8 @@ class EventRepository:
                 'page_size': pagination.get('page_size', total) if pagination else total
             }
         try:
-            event = await Event.objects.order_by('-begin').select_related('loa', 'category', 'location', 'created_by').aget(id=pk)
+            event = await Event.objects.order_by('-begin').select_related('loa', 'category', 'location',
+                                                                          'created_by').aget(id=pk)
             await aprefetch_related_objects([event], 'event_attachments', 'event_measures')
 
             return event

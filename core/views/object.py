@@ -22,7 +22,7 @@ async def get_post_object(request):
             obj = await service.create_object(data)
             return JsonResponse(obj, status=201)
         else:  # GET
-            objects = await service.get_object()
+            objects = await service.get_object(filters=request.GET.dict())
             return JsonResponse(objects, safe=False, status=200)
 
     except ValueError as ve:
