@@ -1,5 +1,6 @@
 import uuid
 import os
+import aiofiles
 
 from asgiref.sync import sync_to_async
 from rest_framework.utils.serializer_helpers import ReturnDict
@@ -65,9 +66,9 @@ class AttachmentService:
         unique_name = f"{uuid.uuid4()}{file_extension}"  # file_extension = '.*' (dot included)
         file_path = os.path.join('core', 'attachments', unique_name)
 
-        with open(file_path, 'wb+') as destination:
+        async with aiofiles.open(file_path, 'wb') as destination:
             for chunk in file.chunks():
-                destination.write(chunk)
+                await destination.write(chunk)
 
         data = {'name': unique_name, 'author': author}
         result = await self.repository.create_attachment(data)

@@ -1,8 +1,9 @@
 import mimetypes
 import os
 import json
+import aiofiles
 
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -12,6 +13,12 @@ from core.auth import async_permission_required, async_api_method
 
 async def get_attachment_service():
     return AttachmentService(AttachmentRepository())
+
+
+async def async_file_iterator(file_path, chunk_size=8192):  # асинхронная выгрузка файла порционно
+    async with aiofiles.open(file_path, mode='rb') as f:
+        while chunk := await f.read(chunk_size):
+            yield chunk
 
 
 @async_api_method(['GET', 'POST'])
@@ -64,10 +71,13 @@ async def attachment_download(request, attachment_id: int):
         if not os.path.exists(file_path):
             return JsonResponse({'error': 'Файл не найден на сервере'}, status=404)
 
-        file = open(file_path, 'rb')
         mime_type, _ = mimetypes.guess_type(file_path)
-        response = FileResponse(file, content_type=mime_type or 'application/octet-stream')
+        response = StreamingHttpResponse(
+            async_file_iterator(file_path),
+            content_type=mime_type or 'application/octet-stream'
+        )
         response['Content-Disposition'] = f'attachment; filename="{attachment["name"]}"'
+        response['Content-Length'] = os.path.getsize(file_path)
 
         return response
 
