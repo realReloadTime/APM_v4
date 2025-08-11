@@ -61,7 +61,7 @@ class EventRepository:
             pagination: dict | None = None
     ) -> Event | dict:
         if pk is None:
-            qs = Event.objects.select_related('loa', 'category', 'location', 'created_by').all()
+            qs = Event.objects.order_by('-begin').select_related('loa', 'category', 'location', 'created_by').all()
 
             if filters:
                 orm_filters = {}
@@ -97,7 +97,7 @@ class EventRepository:
                 'page_size': pagination.get('page_size', total) if pagination else total
             }
         try:
-            event = await Event.objects.select_related('loa', 'category', 'location', 'created_by').aget(id=pk)
+            event = await Event.objects.order_by('-begin').select_related('loa', 'category', 'location', 'created_by').aget(id=pk)
             await aprefetch_related_objects([event], 'event_attachments', 'event_measures')
 
             return event
