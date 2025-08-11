@@ -59,3 +59,14 @@ https://github.com/tporadowski/redis/releases/download/v5.0.14.1/Redis-x64-5.0.1
 Параметры:
 * <i><code>--reload</code> опционален, автоматически перезапускает проект при изменении кода<br>
 * <code>--port</code> опционален, имеет значение по-умолчанию 8000</i>
+
+
+### Возможные проблемы
+
+Если во время работы сервера Redis выдает ошибку: 
+<blockquote>MISCONF Redis is configured to save RDB snapshots, but it is currently not able to persist on disk. Commands that may modify the data set are disabled, because this instance is configured to report errors during writes if RDB snapshotting fails (stop-writes-on-bgsave-error option). Please check the Redis logs for details about the RDB error.</blockquote>
+Необходимо открыть CMD, перейти в директорию Redis (C:\Program Files\Redis стандартно) и ввести следующие команды:<br><br>
+<code>redis-cli</code><br>
+<code>config set stop-writes-on-bgsave-error no</code><br>
+<code>FLUSHALL</code><br><br>
+При правильном вводе в терминале должна появиться строка "ОК".
