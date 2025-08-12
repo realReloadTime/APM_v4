@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     async function loadMeasures(eventId) {
     try {
-        const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/measures/?event_id=${eventId}`, {
+        const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/measures/by-event/${eventId}/`, {
             headers: { 'Authorization': `Bearer ${accessToken}` }
         });
 
