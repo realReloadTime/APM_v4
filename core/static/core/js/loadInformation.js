@@ -30,10 +30,38 @@ document.addEventListener('DOMContentLoaded', function() {
             handleError(error);
         }
     }
+    async function loadMeasures(eventId) {
+    try {
+        const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/measures/?event_id=${eventId}`, {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        measures = await response.json();
+        renderMeasures(measures);
+    } catch (error) {
+        console.error('Ошибка загрузки мер:', error);
+        alert('Не удалось загрузить принятые меры');
+    }
+}
+    function renderMeasures(measures) {
+        actionsTextarea = document.getElementById('actions')
+         const sortedMeasures = [...measures].sort(
+            (a, b) => new Date(a.adopted_at) - new Date(b.adopted_at)
+        );
+        
+        let text = '';
+        sortedMeasures.forEach(measure => {
+            const date = new Date(measure.adopted_at).toLocaleString('ru-RU');
+            text += `[${date}] ${measure.description}\n\n`;
+        });
+        
+        actionsTextarea.value = text.trim();
+    }
 
     function renderInformation(data) {
         document.getElementById('consequences').value = data.consequences || '';
-        document.getElementById('event_measures_id').value = data.event_measures_id?.join(', ') || '';
         document.getElementById('created_by').value = data.created_by || '';
 
         const tbody = document.querySelector('.table tbody');
@@ -87,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventId = getEventIdFromUrl();
     if (eventId) {
         loadData(eventId);
+        loadMeasures(eventId);
         changeRef(eventId)
     } else {
         console.error('Event ID not found in URL');

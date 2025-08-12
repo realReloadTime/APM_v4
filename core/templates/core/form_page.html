@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
     <script src="{% static 'core/js/config.js' %}"></script>
     <script src="{% static 'core/js/loadNavbar.js' %}"></script>
-    <script src="{% static 'core/js/loadEventData.js' %}"></script>
     <script src="{% static 'core/js/loadUserProfile.js' %}"></script>
-    <script src="{% static 'core/js/change-block-script.js' %}"></script>
+    <script src="{% static 'core/js/loadEventData.js' %}"></script>
     <script src="{% static 'core/js/loadFormData.js' %}"></script>
+    <script src="{% static 'core/js/change-block-script.js' %}"></script>
     <script src="{% static 'core/js/select-navigation.js' %}"></script>
     <script src="{% static 'core/js/show-end-date.js' %}"></script>
     <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
@@ -20,6 +20,7 @@
     <script src="{% static 'core/js/wind-speed.js' %}"></script>
     <script src="{% static 'core/js/bootstrap.js' %}"></script>
     <script src="{% static 'core/js/file-upload.js' %}"></script>
+    <script src="{% static 'core/js/sendForm.js' %}"></script>
 </head>
 <body>
     <div id="menu"></div>
@@ -48,7 +49,7 @@
             </div>
             <div class="internal-block" style="display: block; " >
                 <div class="internal-block" style="display: grid; align-items: start; column-gap: 10px;">
-                    <label style="white-space: nowrap;">Дата начала: </label>
+                    <label style="white-space: nowrap;">Создано: </label>
                     <input type="date" class="form-control" min="1900-01-01" style="width:100%;" id="begin">
                 </div>
                 <div class="form-check" style="margin-bottom: 2.21%;">
@@ -56,7 +57,7 @@
                     <input class="form-check-input" type="checkbox" id="is_ended">
                 </div>
                 <div class="internal-block" id="event-end" style="display: none; align-items: start;  margin-bottom: 0; column-gap: 10px; bottom: 0;">
-                    <label style="white-space: nowrap;">Дата конца: </label>
+                    <label style="white-space: nowrap;">Закрыто: </label>
                     <input type="date" class="form-control" style="width:100%;" id="end">
                 </div>
             </div>
@@ -509,7 +510,7 @@
                 <textarea class="form-control" id="note"> </textarea>
             </div>
             <div class="external-block" style="display: block;">
-                <label class="label-for-textarea" for="attachments">Вложение(пока не сделаны) </label>
+                <label class="label-for-textarea" for="attachments">Вложения </label>
                 <input type="file" multiple class="form-control" id="fileInput">
                 <div id="fileListContainer">
                     <p class="text-muted">Файлы не выбраны</p>
