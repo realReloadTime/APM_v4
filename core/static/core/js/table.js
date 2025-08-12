@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentPageSize = 10; 
   const defaultPageSize = 10;
 
+  let isFirstWebSocketConnection = true;
+
   if (!accessToken) {
     window.location.href = '/login';
     return;
@@ -180,36 +182,59 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function initWebSocket() {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsHost = window.location.host;
-    const accessToken = localStorage.getItem('access_token');  // Берем токен из localStorage
-    const wsUrl = `${wsProtocol}//${wsHost}/ws/events/?token=${encodeURIComponent(accessToken)}`;
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsHost = window.location.host;
+  const accessToken = localStorage.getItem('access_token');
+  const wsUrl = `${wsProtocol}//${wsHost}/ws/events/?token=${encodeURIComponent(accessToken)}`;
 
-    const socket = new WebSocket(wsUrl);
+  const socket = new WebSocket(wsUrl);
+  let reconnectAttempts = 0;
 
-    socket.onopen = () => {
-      console.log('WebSocket connected');
-    };
+  socket.onopen = () => {
+    console.log('WebSocket connected');
 
-    socket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.type === 'event.update') {
-        console.log('Received event update:', message.data);
-        // Перезагружаем текущую страницу таблицы для отражения изменений
-        loadEvents(currentPage, currentPageSize);
-      }
-    };
+    // Обновляем данные только при переподключении
+    if (!isFirstWebSocketConnection) {
+      console.log('Refreshing data after reconnection');
+      loadEvents(currentPage, currentPageSize);
+    } else {
+      // Помечаем первое подключение как завершенное
+      isFirstWebSocketConnection = false;
+    }
+  };
 
-    socket.onclose = (event) => {
-      console.log('WebSocket closed:', event);
-      // Опционально: добавить reconnection logic
-      setTimeout(initWebSocket, 1000); // Реконнект через 1 секунду
-    };
+  socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    if (message.type === 'event.update') {
+      console.log('Received event update:', message.data);
+      loadEvents(currentPage, currentPageSize);
+    } else if (message.type === 'auth_error') {
+      console.error('WebSocket auth error, refreshing token...');
+      refreshAccessToken()
+        .then(newToken => {
+          // Обновляем токен и переподключаемся
+          localStorage.setItem('access_token', newToken);
+          initWebSocket();
+        })
+        .catch(error => {
+          console.error('Token refresh failed:', error);
+        });
+    }
+  };
 
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-  }
+  socket.onclose = (event) => {
+    console.log('WebSocket closed:', event);
+
+    // Не сбрасываем флаг первого подключения здесь!
+    const delay = Math.min(5000, 1000 * Math.pow(2, reconnectAttempts));
+    reconnectAttempts++;
+    setTimeout(initWebSocket, delay);
+  };
+
+  socket.onerror = (error) => {
+    console.error('WebSocket error:', error);
+  };
+}
 
   function init() {
     const urlParams = new URLSearchParams(window.location.search);

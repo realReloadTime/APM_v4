@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentEventId) {
                 // Удаляем меру с сервера
                 const response = await fetch(
-                    `${API_BASE}/api/measures/${currentMeasureId}/`,
+                    `${API_BASE}/api/measures/${currentMeasureId}/delete/`,
                     {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${accessToken}` }

@@ -58,11 +58,11 @@ async def login(request):
 
 
 @async_api_method(['POST'])
-async def refresh_auth_token(request=None):
+async def refresh_auth_token(request):
     try:
         refresh_token = json.loads(request.body)['refresh']
         new_access = await sync_to_async(RefreshToken)(refresh_token)
-        return JsonResponse({"access": str(new_access.access_token)}, status=205)
+        return JsonResponse({"access": str(new_access.access_token)}, status=200)
 
     except TokenError:
         return JsonResponse({'error': 'Invalid refresh token'}, status=401)
