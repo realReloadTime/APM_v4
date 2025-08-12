@@ -30,12 +30,12 @@ from core.views.adverse_weather import get_post_adverse_weather, get_adverse_wea
 from core.views.fire_danger import get_post_fire_danger, get_fire_danger_detail, fire_danger_by_event, \
     update_fire_danger, delete_fire_danger
 from core.views.geological_danger import get_post_geological_danger, get_geological_danger_detail, \
-    get_geological_danger_by_event, update_geological_danger, delete_geological_danger
+    geological_danger_by_event, update_geological_danger, delete_geological_danger
 from core.views.hydrological_danger import get_post_hydrological_danger, get_hydrological_danger_detail, \
-    get_hydrological_danger_by_event, update_hydrological_danger, delete_hydrological_danger
+    hydrological_danger_by_event, update_hydrological_danger, delete_hydrological_danger
 from core.views.emergency_situation import get_post_emergency_situation, get_emergency_situation_detail, \
-    get_emergency_situation_by_event, update_emergency_situation, delete_emergency_situation
-from core.views.other_danger import get_post_other_danger, get_other_danger_detail, get_other_danger_by_event, \
+    emergency_situation_by_event, update_emergency_situation, delete_emergency_situation
+from core.views.other_danger import get_post_other_danger, get_other_danger_detail, other_danger_by_event, \
     update_other_danger, delete_other_danger
 
 urlpatterns = [
@@ -155,21 +155,21 @@ urlpatterns = [
 
     path('geological_dangers/', get_post_geological_danger, name='geological_danger-get-post'),
     path('geological_dangers/<int:geo_id>/', get_geological_danger_detail, name='geological_danger-detail'),
-    path('geological_dangers/by-event/<int:event_id>/', get_geological_danger_by_event,
+    path('geological_dangers/by-event/<int:event_id>/', geological_danger_by_event,
          name='geological_danger-by-event'),
     path('geological_dangers/<int:geo_id>/update/', update_geological_danger, name='geological_danger-update'),
     path('geological_dangers/<int:geo_id>/delete/', delete_geological_danger, name='geological_danger-delete'),
 
     path('hydrological_dangers/', get_post_hydrological_danger, name='hydrological_danger-get-post'),
     path('hydrological_dangers/<int:hydro_id>/', get_hydrological_danger_detail, name='hydrological_danger-detail'),
-    path('hydrological_dangers/by-event/<int:event_id>/', get_hydrological_danger_by_event,
+    path('hydrological_dangers/by-event/<int:event_id>/', hydrological_danger_by_event,
          name='hydrological_danger-by-event'),
     path('hydrological_dangers/<int:hydro_id>/update/', update_hydrological_danger, name='hydrological_danger-update'),
     path('hydrological_dangers/<int:hydro_id>/delete/', delete_hydrological_danger, name='hydrological_danger-delete'),
 
     path('emergency_situations/', get_post_emergency_situation, name='emergency_situation-get-post'),
     path('emergency_situations/<int:situation_id>/', get_emergency_situation_detail, name='emergency_situation-detail'),
-    path('emergency_situations/by-event/<int:event_id>/', get_emergency_situation_by_event,
+    path('emergency_situations/by-event/<int:event_id>/', emergency_situation_by_event,
          name='emergency_situation-by-event'),
     path('emergency_situations/<int:situation_id>/update/', update_emergency_situation,
          name='emergency_situation-update'),
@@ -178,7 +178,7 @@ urlpatterns = [
 
     path('other_dangers/', get_post_other_danger, name='other_danger-get-post'),
     path('other_dangers/<int:danger_id>/', get_other_danger_detail, name='other_danger-detail'),
-    path('other_dangers/by-event/<int:event_id>/', get_other_danger_by_event,
+    path('other_dangers/by-event/<int:event_id>/', other_danger_by_event,
          name='other_danger-by-event'),
     path('other_dangers/<int:danger_id>/update/', update_other_danger, name='other_danger-update'),
     path('other_dangers/<int:danger_id>/delete/', delete_other_danger, name='other_danger-delete'),

@@ -41,20 +41,28 @@ class OtherDangerRepository:
         return danger
 
     @staticmethod
-    async def update_other_danger(pk: int, data: dict) -> OtherDanger | None:
+    async def update_other_danger(pk: int | None, data: dict, event_pk: int | None) -> OtherDanger | None:
         fields = [('event', EventRepository.get_event),
                   ('source', SourceRepository.get_source)]
 
         for field, repo in fields:
             oid = data.get(field + '_id')
+            data.pop(field + '_id', None)
+            if event_pk is not None and field == 'event':  # защита от перезаписи event_id при получении данных по event_id
+                continue
             if oid:
                 field_object = await repo(oid)
                 data[field] = field_object
-            data.pop(field + '_id', None)
 
-        updated = await OtherDanger.objects.filter(id=pk).aupdate(**data)
+        if event_pk is not None:
+            updated = await OtherDanger.objects.filter(event=event_pk).aupdate(**data)
+        else:
+            updated = await OtherDanger.objects.filter(id=pk).aupdate(**data)
         if not updated:
             return None
+
+        if event_pk is not None:
+            return await OtherDanger.objects.aget(event=event_pk)
         return await OtherDanger.objects.aget(id=pk)
 
     @staticmethod
@@ -82,10 +90,10 @@ class OtherDangerService:
         else:
             raise ValueError('event_id должен быть больше 0')
 
-    async def update_other_danger(self, pk: int, data: dict) -> ReturnDict:
-        if pk < 1:
-            raise ValueError('ID не может быть меньше 1')
-        result = await self.repository.update_other_danger(pk, data)
+    async def update_other_danger(self, data: dict, pk: int = None, event_id: int = None) -> ReturnDict:
+        if pk is None and event_id is None:
+            raise ValueError("Can't update without any ID key.")
+        result = await self.repository.update_other_danger(pk, data, event_id)
         if result is None:
             raise ValueError('OtherDanger с этим ID не найден')
         return await self.serialize_other_danger(result)

@@ -69,7 +69,7 @@ async def update_fire_danger(request, fire_id: int):
     service = await get_fire_danger_service()
     data = json.loads(request.body)
     try:
-        fire = await service.update_fire_danger(fire_id, data)
+        fire = await service.update_fire_danger(pk=fire_id, data=data)
         return JsonResponse(fire, status=200)
     except Exception as other_err:
         return JsonResponse({'error': str(other_err)}, status=404)
