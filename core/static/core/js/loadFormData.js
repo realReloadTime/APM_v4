@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentEventId) return;
         
         try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/measures/?event_id=${currentEventId}`, {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/measures/by-event/${currentEventId}/`, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
             
