@@ -49,6 +49,17 @@ async def get_measures_taken_detail(request, measures_taken_id: int):
         return JsonResponse({'error': str(other_err)}, status=404)
 
 
+@async_api_method(['GET'])
+@async_permission_required([IsAuthenticated])
+async def get_measures_taken_by_event(request, event_id: int):
+    service = await get_measures_taken_service()
+    try:
+        result = await service.get_measures_taken_by_event(event_id)
+        return JsonResponse(result, status=200, safe=False)
+    except Exception as other_err:
+        return JsonResponse({'error': str(other_err)}, status=404)
+
+
 @async_api_method(['PUT'])
 @async_permission_required([IsAuthenticated])
 async def update_measures_taken(request, measures_taken_id: int):

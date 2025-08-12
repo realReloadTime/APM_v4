@@ -31,6 +31,13 @@ class MeasuresTakenRepository:
             raise ValueError(f"MeasuresTaken с ID {pk} не существует")
 
     @staticmethod
+    async def get_measures_taken_by_event(event_pk: int) -> list[MeasuresTaken] | None:
+        if event_pk:
+            return [measures_taken async for measures_taken in
+                    MeasuresTaken.objects.select_related('event').all().filter(event=event_pk)]
+        raise ValueError('event_id обязательный параметр для получения MeasuresTaken по событию')
+
+    @staticmethod
     async def update_measures_taken(pk: int, data: dict) -> MeasuresTaken | None:
         event_id = data.get('event_id')
         if event_id:
@@ -58,6 +65,10 @@ class MeasuresTakenService:
 
     async def get_measures_taken(self, pk: int | None = None) -> ReturnDict:
         result = await self.repository.get_measures_taken(pk)
+        return await self.serialize_measures_taken(result)
+
+    async def get_measures_taken_by_event(self, event_pk: int | None = None) -> ReturnDict:
+        result = await self.repository.get_measures_taken_by_event(event_pk)
         return await self.serialize_measures_taken(result)
 
     async def update_measures_taken(self, measures_taken_id: int, data: dict) -> ReturnDict:
