@@ -12,3 +12,5 @@ aiofiles
 channels
 channels_redis
 websockets
+
+openpyxl

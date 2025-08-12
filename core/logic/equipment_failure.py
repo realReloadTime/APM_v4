@@ -74,14 +74,14 @@ class EquipmentFailureRepository:
         return failure
 
     @staticmethod
-    async def update_equipment_failure(pk: int, data: dict) -> EquipmentFailure | None:
+    async def update_equipment_failure(pk: int | None, data: dict, event_pk: int | None) -> EquipmentFailure | None:
         event_id = data.get('event_id')
         object_id = data.get('object_id')
         influenced_objects_id = data.get('influenced_objects_id', [])
         subsystem_id = data.get('subsystem_id')
         subsystem_status_id = data.get('subsystem_status_id')
 
-        if event_id:
+        if event_id and event_pk is None:  # защита от перезаписи event_id при получении данных по event_id
             event = await EventRepository.get_event(event_id)
             data['event'] = event
         data.pop('event_id', None)
@@ -102,11 +102,18 @@ class EquipmentFailureRepository:
         data.pop('subsystem_status_id', None)
         data.pop('influenced_objects_id', None)
 
-        updated = await EquipmentFailure.objects.filter(id=pk).aupdate(**data)
+        if event_pk:
+            updated = await EquipmentFailure.objects.filter(event=event_pk).aupdate(**data)
+        else:
+            updated = await EquipmentFailure.objects.filter(id=pk).aupdate(**data)
+
         if not updated:
             return None
 
-        updated_object = await EquipmentFailure.objects.aget(id=pk)
+        if event_pk:
+            updated_object = await EquipmentFailure.objects.aget(event=event_pk)
+        else:
+            updated_object = await EquipmentFailure.objects.aget(id=pk)
         if influenced_objects_id:
             influenced = list()
             for obj_id in influenced_objects_id:
@@ -142,10 +149,10 @@ class EquipmentFailureService:
         else:
             raise ValueError('event_id должен быть больше 0')
 
-    async def update_equipment_failure(self, failure_id: int, data: dict) -> ReturnDict:
-        if failure_id is None or failure_id < 1:
-            raise ValueError("Can't update without ID key.")
-        result = await self.repository.update_equipment_failure(failure_id, data)
+    async def update_equipment_failure(self, data: dict, failure_id: int = None, event_id: int = None) -> ReturnDict:
+        if failure_id is None and event_id is None:
+            raise ValueError("Can't update without any ID key.")
+        result = await self.repository.update_equipment_failure(failure_id, data, event_id)
         if result is None:
             raise ValueError("EquipmentFailure not found")
         return await self.serialize_equipment_failure(result)

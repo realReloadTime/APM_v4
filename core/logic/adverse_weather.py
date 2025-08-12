@@ -45,7 +45,7 @@ class AdverseWeatherRepository:
         return weather
 
     @staticmethod
-    async def update_adverse_weather(pk: int, data: dict) -> AdverseWeather | None:
+    async def update_adverse_weather(pk: int | None, data: dict, event_pk: int | None) -> AdverseWeather | None:
         fields = [('event', EventRepository.get_event),
                   ('source', SourceRepository.get_source),
                   ('condition', ConditionRepository.get_condition),
@@ -53,14 +53,22 @@ class AdverseWeatherRepository:
 
         for field, repo in fields:
             oid = data.get(field + '_id')
+            data.pop(field + '_id', None)
+            if event_pk is not None and field == 'event':  # защита от перезаписи event_id при получении данных по event_id
+                continue
             if oid:
                 field_object = await repo(oid)
                 data[field] = field_object
-            data.pop(field + '_id', None)
 
-        updated = await AdverseWeather.objects.filter(id=pk).aupdate(**data)
+        if event_pk is not None:
+            updated = await AdverseWeather.objects.filter(event=event_pk).aupdate(**data)
+        else:
+            updated = await AdverseWeather.objects.filter(id=pk).aupdate(**data)
         if not updated:
             return None
+
+        if event_pk is not None:
+            return await AdverseWeather.objects.aget(event=event_pk)
         return await AdverseWeather.objects.aget(id=pk)
 
     @staticmethod
@@ -88,10 +96,10 @@ class AdverseWeatherService:
         else:
             raise ValueError('event_id должен быть больше 0')
 
-    async def update_adverse_weather(self, pk: int, data: dict) -> ReturnDict:
-        if pk < 1:
-            raise ValueError('ID не может быть меньше 1')
-        result = await self.repository.update_adverse_weather(pk, data)
+    async def update_adverse_weather(self, data: dict, pk: int = None, event_id: int = None) -> ReturnDict:
+        if pk is None and event_id is None:
+            raise ValueError("Can't update without any ID key.")
+        result = await self.repository.update_adverse_weather(pk, data, event_id)
         if result is None:
             raise ValueError('AdverseWeather с этим ID не найден')
         return await self.serialize_adverse_weather(result)

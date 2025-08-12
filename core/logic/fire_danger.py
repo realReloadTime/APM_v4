@@ -41,20 +41,28 @@ class FireDangerRepository:
         return fire
 
     @staticmethod
-    async def update_fire_danger(pk: int, data: dict) -> FireDanger | None:
+    async def update_fire_danger(pk: int | None, data: dict, event_pk: int | None) -> FireDanger | None:
         fields = [('event', EventRepository.get_event),
                   ('source', SourceRepository.get_source)]
 
         for field, repo in fields:
             oid = data.get(field + '_id')
+            data.pop(field + '_id', None)
+            if event_pk is not None and field == 'event':  # защита от перезаписи event_id при получении данных по event_id
+                continue
             if oid:
                 field_object = await repo(oid)
                 data[field] = field_object
-            data.pop(field + '_id', None)
 
-        updated = await FireDanger.objects.filter(id=pk).aupdate(**data)
+        if event_pk is not None:
+            updated = await FireDanger.objects.filter(event=event_pk).aupdate(**data)
+        else:
+            updated = await FireDanger.objects.filter(id=pk).aupdate(**data)
         if not updated:
             return None
+
+        if event_pk is not None:
+            return await FireDanger.objects.aget(event=event_pk)
         return await FireDanger.objects.aget(id=pk)
 
     @staticmethod
@@ -82,10 +90,10 @@ class FireDangerService:
         else:
             raise ValueError('event_id должен быть больше 0')
 
-    async def update_fire_danger(self, pk: int, data: dict) -> ReturnDict:
-        if pk < 1:
-            raise ValueError('ID не может быть меньше 1')
-        result = await self.repository.update_fire_danger(pk, data)
+    async def update_fire_danger(self, data: dict, pk: int = None, event_id: int = None) -> ReturnDict:
+        if pk is None and event_id is None:
+            raise ValueError("Can't update without any ID key.")
+        result = await self.repository.update_fire_danger(pk, data, event_id)
         if result is None:
             raise ValueError('FireDanger с этим ID не найден')
         return await self.serialize_fire_danger(result)

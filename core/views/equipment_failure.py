@@ -47,12 +47,16 @@ async def get_equipment_failure_detail(request, failure_id: int):
         return JsonResponse({'error': str(other_err)}, status=404)
 
 
-@async_api_method(['GET'])
+@async_api_method(['GET', 'PUT'])
 @async_permission_required([IsAuthenticated])
-async def get_equipment_failure_by_event(request, event_id: int):
+async def equipment_failure_by_event(request, event_id: int):
     service = await get_equipment_failure_service()
     try:
-        failure = await service.get_equipment_failure_by_event(event_id)
+        if request.method == 'GET':
+            failure = await service.get_equipment_failure_by_event(event_id)
+        else:
+            data = json.loads(request.body)
+            failure = await service.update_equipment_failure(data=data, event_id=event_id)
         return JsonResponse(failure, status=200)
     except Exception as other_err:
         return JsonResponse({'error': str(other_err)}, status=404)
@@ -64,7 +68,7 @@ async def update_equipment_failure(request, failure_id: int):
     service = await get_equipment_failure_service()
     data = json.loads(request.body)
     try:
-        failure = await service.update_equipment_failure(failure_id, data)
+        failure = await service.update_equipment_failure(failure_id=failure_id, data=data)
         return JsonResponse(failure, status=200)
     except Exception as other_err:
         return JsonResponse({'error': str(other_err)}, status=404)

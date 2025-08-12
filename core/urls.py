@@ -24,10 +24,10 @@ from core.views.measures_taken import get_post_measures_taken, get_measures_take
     delete_measures_taken
 from core.views.event import get_post_event, get_event_detail, update_event, delete_event
 from core.views.equipment_failure import get_post_equipment_failure, get_equipment_failure_detail, \
-    update_equipment_failure, delete_equipment_failure, get_equipment_failure_by_event
+    update_equipment_failure, delete_equipment_failure, equipment_failure_by_event
 from core.views.adverse_weather import get_post_adverse_weather, get_adverse_weather_detail, \
-    get_adverse_weather_by_event, update_adverse_weather, delete_adverse_weather
-from core.views.fire_danger import get_post_fire_danger, get_fire_danger_detail, get_fire_danger_by_event, \
+    adverse_weather_by_event, update_adverse_weather, delete_adverse_weather
+from core.views.fire_danger import get_post_fire_danger, get_fire_danger_detail, fire_danger_by_event, \
     update_fire_danger, delete_fire_danger
 from core.views.geological_danger import get_post_geological_danger, get_geological_danger_detail, \
     get_geological_danger_by_event, update_geological_danger, delete_geological_danger
@@ -134,21 +134,21 @@ urlpatterns = [
 
     path('equipment_failures/', get_post_equipment_failure, name='equipment_failure-get-post'),
     path('equipment_failures/<int:failure_id>/', get_equipment_failure_detail, name='equipment_failure-detail'),
-    path('equipment_failures/by-event/<int:event_id>/', get_equipment_failure_by_event,
+    path('equipment_failures/by-event/<int:event_id>/', equipment_failure_by_event,
          name='equipment_failure-by-event'),
     path('equipment_failures/<int:failure_id>/update/', update_equipment_failure, name='equipment_failure-update'),
     path('equipment_failures/<int:failure_id>/delete/', delete_equipment_failure, name='equipment_failure-delete'),
 
     path('adverse_weathers/', get_post_adverse_weather, name='adverse_weather-get-post'),
     path('adverse_weathers/<int:weather_id>/', get_adverse_weather_detail, name='adverse_weather-detail'),
-    path('adverse_weathers/by-event/<int:event_id>/', get_adverse_weather_by_event,
+    path('adverse_weathers/by-event/<int:event_id>/', adverse_weather_by_event,
          name='adverse_weather-by-event'),
     path('adverse_weathers/<int:weather_id>/update/', update_adverse_weather, name='adverse_weather-update'),
     path('adverse_weathers/<int:weather_id>/delete/', delete_adverse_weather, name='adverse_weather-delete'),
 
     path('fire_dangers/', get_post_fire_danger, name='fire_danger-get-post'),
     path('fire_dangers/<int:fire_id>/', get_fire_danger_detail, name='fire_danger-detail'),
-    path('fire_dangers/by-event/<int:event_id>/', get_fire_danger_by_event,
+    path('fire_dangers/by-event/<int:event_id>/', fire_danger_by_event,
          name='fire_danger-by-event'),
     path('fire_dangers/<int:fire_id>/update/', update_fire_danger, name='fire_danger-update'),
     path('fire_dangers/<int:fire_id>/delete/', delete_fire_danger, name='fire_danger-delete'),
@@ -183,3 +183,7 @@ urlpatterns = [
     path('other_dangers/<int:danger_id>/update/', update_other_danger, name='other_danger-update'),
     path('other_dangers/<int:danger_id>/delete/', delete_other_danger, name='other_danger-delete'),
 ]
+
+# from views.test import test
+#
+# urlpatterns += path('/test', test, name='test')
