@@ -59,7 +59,8 @@ class EventRepository:
     async def get_event(
             pk: int | None = None,
             filters: dict | None = None,
-            pagination: dict | None = None
+            pagination: dict | None = None,
+            sorters: list | None = None
     ) -> Event | dict:
         if pk is None:
             qs = Event.objects.order_by('-begin').select_related('loa', 'category', 'location', 'created_by').all()
@@ -75,6 +76,9 @@ class EventRepository:
                     else:
                         orm_filters[key] = value
                 qs = qs.filter(**orm_filters)
+
+            if sorters:
+                qs = qs.order_by(*sorters)
 
             # применяем пагинацию
             if pagination:
@@ -169,9 +173,10 @@ class EventService:
             self,
             pk: int | None = None,
             filters: dict | None = None,
-            pagination: dict | None = None
+            pagination: dict | None = None,
+            sorters: list | None = None
     ) -> ReturnDict | dict:
-        result = await self.repository.get_event(pk, filters, pagination)
+        result = await self.repository.get_event(pk, filters, pagination, sorters)
 
         # обработка пагинированного результата
         if isinstance(result, dict):

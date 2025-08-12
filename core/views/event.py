@@ -27,13 +27,16 @@ async def get_post_event(request):
         else:
             filters = dict()
             pagination = dict()
+            sorters = None
             for key, value in request.GET.dict().items():
                 if 'page' in key:
                     pagination[key] = int(value)
+                elif 'sort_by' in key:
+                    sorters = value.split(',')
                 else:
                     filters[key] = value
 
-            result = await service.get_event(filters=filters, pagination=pagination)
+            result = await service.get_event(filters=filters, pagination=pagination, sorters=sorters)
             return JsonResponse(result, status=200, safe=False)
 
     except Event.DoesNotExist:
