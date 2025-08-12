@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
     <script src="{% static 'core/js/config.js' %}"></script>
     <script src="{% static 'core/js/loadNavbar.js' %}"></script>
-    <script src="{% static 'core/js/loadEventData.js' %}"></script>
     <script src="{% static 'core/js/loadUserProfile.js' %}"></script>
+    <script src="{% static 'core/js/loadEventData.js' %}"></script>
+    <script src="{% static 'core/js/loadFormData.js' %}"></script>
     <script src="{% static 'core/js/change-block-script.js' %}"></script>
     <script src="{% static 'core/js/select-navigation.js' %}"></script>
     <script src="{% static 'core/js/show-end-date.js' %}"></script>
@@ -19,8 +20,7 @@
     <script src="{% static 'core/js/wind-speed.js' %}"></script>
     <script src="{% static 'core/js/bootstrap.js' %}"></script>
     <script src="{% static 'core/js/file-upload.js' %}"></script>
-    <script src="{% static 'core/js/loadFormData.js' %}"></script>
-
+    <script src="{% static 'core/js/sendForm.js' %}"></script>
 </head>
 <body>
     <div id="menu"></div>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="internal-block" style="display: grid; align-items: center;">
                     <label for="locations">Место возникновения события</label>
-                    <select class="form-select" name="locations" style="width:100%">
+                    <select class="form-select" name="locations" id="locations" style="width:100%">
                         <option value="">Выберите место возникновения</option>
                         <option value="water">водопровод</option>
                     </select>
@@ -49,19 +49,18 @@
             </div>
             <div class="internal-block" style="display: block; " >
                 <div class="internal-block" style="display: grid; align-items: start; column-gap: 10px;">
-                    <label style="white-space: nowrap;">Дата начала: </label>
-                    <input type="date" class="form-control" min="1900-01-01" style="width:100%;">
+                    <label style="white-space: nowrap;">Создано: </label>
+                    <input type="date" class="form-control" min="1900-01-01" style="width:100%;" id="begin">
                 </div>
                 <div class="form-check" style="margin-bottom: 2.21%;">
                     <span class="form-check-label" for="is_ended">Событие закончено</span>
                     <input class="form-check-input" type="checkbox" id="is_ended">
                 </div>
                 <div class="internal-block" id="event-end" style="display: none; align-items: start;  margin-bottom: 0; column-gap: 10px; bottom: 0;">
-                    <label style="white-space: nowrap;">Дата конца: </label>
-                    <input type="date" class="form-control" style="width:100%;">
+                    <label style="white-space: nowrap;">Закрыто: </label>
+                    <input type="date" class="form-control" style="width:100%;" id="end">
                 </div>
             </div>
-            
         </div>
     </div>
     <div class="main-form">
@@ -69,10 +68,10 @@
             <div class="external-block" id="pick-objects" style="width: 100%; display: block;">
                 <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr auto;">
                     <label id="one_object" style="white-space: nowrap;">Объект, на котором произошло событие:</label>
-                    <input class="form-control" name="picked_object" type="text" disabled/>
+                    <input class="form-control" id="object" type="text" disabled/>
                     <button class="btn btn-primary" style="white-space: nowrap; min-width: max-content; overflow: hidden; text-overflow: ellipsis;" 
                             data-bs-toggle="modal" data-bs-target="#oneObjectModal">Выбрать объект</button>
-                    <div id="oneObjectModal" class="modal fade modal-lg" tabindex="-1" aria-hidden="true">
+                    <div id="oneObjectModal" class="modal fade modal-lg" tabindex="-1" inert>
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-body">
@@ -121,25 +120,34 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for row in table %}
-                                                        <tr class="">
-                                                            <td scope="row">{{lan.0}}</td>
-                                                            <td scope="row"><input type="radio" class="form-check" name="oneObjectRadios" id="{{lan.7}}"></td>
-                                                            <td scope="row">{{lan.1}}</td>
-                                                        </tr>
-                                                        {% empty %}
                                                         <tr class="">
                                                             <td scope="row">0</td>
-                                                            <td scope="row"><input type="radio" class="form-check" name="oneObjectRadios" id="{{lan.7}}"></td>
+                                                            <td scope="row"><input type="radio" class="form-check" name="oneObjectRadios" id="321312"></td>
                                                             <td scope="row">1</td>
                                                         </tr>
-                                                        {% endfor %}
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="type_2" role="tabpanel" aria-labelledby="type_2_tab">...</div>
-                                        <div class="tab-pane fade" id="type_3" role="tabpanel" aria-labelledby="type_3_tab">...</div>
+                                        <div class="tab-pane fade" id="type_3" role="tabpanel" aria-labelledby="type_3_tab">
+                                            <table class="table table-primary table-responsive table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Объект</th>
+                                                            <th scope="col">Участвует в событии</th>
+                                                            <th scope="col">Состояние оборудования</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td scope="row">2</td>
+                                                            <td scope="row"><input type="radio" class="form-check" name="oneObjectRadios" id="123123"></td>
+                                                            <td scope="row">3</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                        </div>
                                         <div class="tab-pane fade" id="type_4" role="tabpanel" aria-labelledby="type_4_tab">...</div>
                                         <div class="tab-pane fade" id="type_5" role="tabpanel" aria-labelledby="type_5_tab">...</div>
                                         <div class="tab-pane fade" id="type_6" role="tabpanel" aria-labelledby="type_6_tab">...</div>
@@ -154,7 +162,9 @@
                     </div>
                 </div>
                 <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr;">
-                    <span style="grid-column: 1; grid-row: 1; white-space: nowrap;">Список объектов под влиянием события:</span>
+                    <span id="influenced_objects" style="grid-column: 1; grid-row: 1; white-space: nowrap;">
+                        Список объектов под влиянием события:
+                    </span>
                     <button class="btn btn-primary" style="grid-column: 1; grid-row: 2; white-space: nowrap; min-width: max-content;" data-bs-toggle="modal" data-bs-target="#multObjectModal">Добавить/изменить объекты</button>
                     <div id="multObjectModal" class="modal fade modal-lg" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
@@ -199,26 +209,37 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for row in table %}
-                                                        <tr class="">
-                                                            <td scope="row">{{lan.0}}</td>
-                                                            <td scope="row"><input type="checkbox" class="form-check" id="{{lan.7}}"></td>
-                                                            <td scope="row">{{lan.1}}</td>
-                                                        </tr>
-                                                        {% empty %}
                                                         <tr class="">
                                                             <td scope="row">0</td>
-                                                            <td scope="row"><input type="checkbox" class="form-check" id="{{lan.7}}"></td>
+                                                            <td scope="row"><input type="checkbox" class="form-check" id="0"></td>
                                                             <td scope="row">1</td>
                                                         </tr>
-                                                        {% endfor %}
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="mot_type_2" role="tabpanel" aria-labelledby="mot_type_2_tab">...</div>
                                         <div class="tab-pane fade" id="mot_type_3" role="tabpanel" aria-labelledby="mot_type_3_tab">...</div>
-                                        <div class="tab-pane fade" id="mot_type_4" role="tabpanel" aria-labelledby="mot_type_4_tab">...</div>
+                                        <div class="tab-pane fade" id="mot_type_4" role="tabpanel" aria-labelledby="mot_type_4_tab">
+                                            <div class="table-responsive">
+                                                <table class="table table-primary table-responsive table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Объект</th>
+                                                            <th scope="col">Участвует в событии</th>
+                                                            <th scope="col">Состояние оборудования</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td scope="row">2</td>
+                                                            <td scope="row"><input type="checkbox" class="form-check" id="0"></td>
+                                                            <td scope="row">3</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                         <div class="tab-pane fade" id="mot_type_5" role="tabpanel" aria-labelledby="mot_type_5_tab">...</div>
                                         <div class="tab-pane fade" id="mot_type_6" role="tabpanel" aria-labelledby="mot_type_6_tab">...</div>
                                     </div>
@@ -236,7 +257,7 @@
             <div class="external-block">
                 <div class="internal-block" style="display: grid;">
                     <span style="white-space: nowrap;">Система возникновения отказа:</span>
-                    <select class="form-select" name="systems"> 
+                    <select class="form-select" name="systems" id="systems"> 
                         <option value="">Выберите тип обстановки</option>
                         <option value="equipment failure">Отказ оборудования</option>
                         <option value="weather">Погодные условия</option>
@@ -244,7 +265,7 @@
                 </div>
                 <div class="internal-block" style="display: grid;">
                     <span for="subsystems" style="white-space: nowrap;">Тип оборудования:</span>
-                    <select class="form-select" name="subsystems"> 
+                    <select class="form-select" name="subsystems" id="subsystems"> 
                         <option value="">Выберите тип обстановки</option>
                         <option value="equipment failure">Отказ оборудования</option>
                         <option value="weather">Погодные условия</option>
@@ -256,7 +277,7 @@
                 </div>
                 <div class="internal-block" style="display: grid;">
                     <span for="subsystem_statuses" style="white-space: nowrap;">Состояние оборудования:</span>
-                    <select class="form-select" name="subsystem_statuses"> 
+                    <select class="form-select" id="subsystem_statuses" name="subsystem_statuses"> 
                         <option value="">Выберите тип обстановки</option>
                         <option value="equipment failure">Отказ оборудования</option>
                         <option value="weather">Погодные условия</option>
@@ -264,21 +285,21 @@
                 </div>
             </div>
             <div class="internal-block" style="display: block;">
-                <label class="label-for-textarea" for="describe-event" style="white-space: nowrap;">Описание события:</label>
-                <textarea class="form-control" name="describe-event" type="text" style="width: 100%;"></textarea>
+                <label class="label-for-textarea" for="describe" style="white-space: nowrap;">Описание события:</label>
+                <textarea class="form-control" id="description-equipment-failure" type="text" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="changing-form" id="weather" >
             <div class="external-block" style="display: block;">
                 <div class="internal-block"  style="display: grid; align-items: center;">
                     <label>Вид информации и источник: </label>
-                    <select class="form-select" name="sources">
+                    <select class="form-select" id="source-adverse-weathers" name="sources">
 
                     </select>
                 </div>
                 <div class="internal-block" style="display: block;">
                     <label class="label-for-textarea">Географическая территория(край, область, регион):</label>
-                    <textarea class="form-control" id="territory" ></textarea>
+                    <textarea class="form-control" id="geography-adverse-weathers" ></textarea>
                 </div>
             </div>
             <div class="external-block" style="display: block;">
@@ -310,7 +331,7 @@
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto;">
                     <div class="internal-block" style="display: grid; margin-bottom: 0%;">
                         <label >Температура (по Цельсию):</label>
-                        <input class="form-control" type="number" min="-273" required/>
+                        <input id="temperature" class="form-control" type="number" min="-273" required/>
                     </div>
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto; ">
@@ -323,55 +344,55 @@
             </div>
             <div class="internal-block" style="display: block;">
                 <label class="label-for-textarea">Прочее:</label>
-                <textarea class="form-control"></textarea>    
+                <textarea class="form-control" id="description-adverse_weathers"></textarea>    
             </div>
         </div>
         <div class="changing-form" id="fire">
             <div class="external-block" style="display: grid; align-items: center; grid-template-columns: auto 1fr; column-gap: 1.42%;">
                 <label>Вид информации и источник: </label>
-                <select class="form-select" name="sources"></select>
+                <select class="form-select" id="source-fire-dangers" name="sources"></select>
             </div>
             <div class="external-block">
 
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto; ">
                     <div class="internal-block" style="display: grid; margin-bottom: 0%; grid-template-columns: auto 1fr 1fr;">
                         <label>Площадь пожара(га):</label>
-                        <input class="form-control" type="number" min="0">
+                        <input id="area" class="form-control" type="number" min="0">
                         <input class="form-control" type="text" disabled>
                     </div>
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto; ">
                     <div class="internal-block" style="display: grid; margin-bottom: 0%; grid-template-columns: auto 1fr;">
                         <label>Направление распространения:</label>
-                        <input class="form-control" type="text">
+                        <input class="form-control" type="text" id="direction">
                     </div>
                 </div>            
             </div>
             <div class="external-block">
                 <label class="label-for-textarea">Прочее:</label>
-                <textarea class="form-control" style="width: 100%;"></textarea>
+                <textarea class="form-control" id="description-fire-dangers" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="changing-form" id="geology">
             <div class="external-block" style="display: grid; align-items: center;  column-gap: 1.42%; grid-template-columns: auto 1fr;">
                 <label>Вид информации и источник: </label>
-                <select class="form-select" name="sources"></select>
+                <select class="form-select" id="source-geological-dangers" name="sources"></select>
             </div>
             <div class="external-block" style="display: block; align-items: center;">
                 <label class="label-for-textarea">Географическая территория(край, область, регион):</label>
-                <textarea class="form-control" style="width: 100%;"></textarea>
+                <textarea id="geography-geological-dangers" class="form-control" style="width: 100%;"></textarea>
             </div>
             <div class="external-block" style="display: block; align-items: center;">
                 <label class="label-for-textarea">Эпицентр возникновения события:</label>
-                <textarea class="form-control" style="width: 100%;"></textarea>
+                <textarea id="epicenter" class="form-control" style="width: 100%;"></textarea>
             </div>
             <div class="external-block" style="display: block; align-items: center;">
                 <div style="display: flex; align-items: center; margin-bottom: 8px;">
                     <label>Магнитуда: </label> 
-                    <input class="form-control" type="number" style="margin-left:auto; width: auto;" min="1" max="9" step="1" id="magnitudeValue" 
+                    <input class="form-control" type="number" style="margin-left:auto; width: auto;" min="1" max="9" step="1" id="magnitude" 
                     value="1" oninput="magnitudeRange.value = this.value">
                 </div>
-                <input class="form-control" type="range" min="1" max="9" step="1" value="1" id="magnitudeRange"list="values" oninput="magnitudeValue.value = this.value">
+                <input class="form-control" type="range" min="1" max="9" step="1" value="1" id="magnitudeRange"list="values" oninput="magnitude.value = this.value">
                 <datalist id="values">
                     <option value="1"></option>
                     <option value="2"></option>
@@ -386,53 +407,53 @@
             </div>
             <div class="external-block">
                 <label class="label-for-textarea">Прочее:</label>
-                <textarea class="form-control" style="width: 100%;"></textarea>
+                <textarea id="description-geological-dangers" class="form-control" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="changing-form" id="hydrology">
             <div class="external-block" style="display: grid; grid-template-columns: auto 1fr; column-gap: 1.42%;">
                 <label>Вид информации и источник: </label>
-                <select class="form-select" name="sources"></select>
+                <select class="form-select" id="source-hydrological-dangers" name="sources"></select>
             </div>
             <div class="external-block">
                 <div class="internal-block" style="display: grid;">
                     <label>Название водоема:</label> 
-                    <input type="text" class="form-control">
+                    <input type="text" id="water_name" class="form-control">
                 </div>
                 <div class="internal-block" style="display: grid;">
                     <label>Ожидаемый уровень воды:</label> 
-                    <input type="text" class="form-control">
+                    <input type="text" id="height" class="form-control">
                 </div>
             </div>
             <div class="external-block" style="display: block;">
                 <label class="label-for-textarea">Прочее:</label>
-                <textarea class="form-control" style="width: 100%;"></textarea>
+                <textarea id="description-hydrological-dangers" class="form-control" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="changing-form" id="emergency">
             <div class="external-block">
                 <div class="internal-block" style="display: grid;">
                         <label>Вид информации и источник: </label>
-                        <select class="form-select" name="sources"></select>
+                        <select class="form-select" id="source-emergency-situations" name="sources"></select>
                 </div>
                 <div class="internal-block" style="display: block;">
                     <label class="label-for-textarea">Географическая территория(край, область, регион):</label>
-                    <textarea class="form-control" style="width: 100%;"></textarea>
+                    <textarea class="form-control" id="geography-emergency-situations" style="width: 100%;"></textarea>
                 </div>
             </div>
             <div class="external-block" style="display: block">
                     <label class="label-for-textarea">Прочее:</label>
-                    <textarea class="form-control" style="width: 100%;"></textarea>
+                    <textarea class="form-control" id="description-emergency-situations" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="changing-form" id="other">
             <div class="external-block" style="display: grid; grid-template-columns: auto 1fr; column-gap: 1.42%;">
                     <label>Вид информации и источник: </label>
-                    <select class="form-select" name="sources"></select>
+                    <select class="form-select" id="source-other-dangers" name="sources"></select>
             </div>
             <div class="external-block" style="display: block;">
                     <label class="label-for-textarea">Прочее:</label>
-                    <textarea class="form-control" style="width: 100%;"></textarea>
+                    <textarea class="form-control" id="description-other-dangers" style="width: 100%;"></textarea>
             </div>
         </div>
         <div class="stable-form" style="display: block;">
@@ -468,11 +489,11 @@
                         <label>Привлечено к устранению: </label>
                         <div style="display: grid;">
                             <div class="internal-block" style="display: grid;  align-items: start; ">
-                                <input class="form-control" type="number" name="employees" min="0" max="999" step="1" value="1">
+                                <input class="form-control" type="number" id="personnel_count" min="0" max="999" step="1" value="1">
                                 <label>Человек</label>
                             </div>
                             <div class="internal-block" style="display: grid; align-items: start;">
-                                <input class="form-control" type="number" name="venicles" min="0" max="999" step="1" value="1">
+                                <input class="form-control" type="number" id="technic_count" min="0" max="999" step="1" value="1">
                                 <label>ед. техники</label>
                             </div>
                         </div>
@@ -481,15 +502,15 @@
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: 36.7% 1fr">
                     <label>Название организации: </label>
-                    <input class="form-control" name="organization" type="text"/>
+                    <input class="form-control" id="organization_name" type="text"/>
                 </div>
             </div>
             <div class="external-block" style="display: block;">
-                <label class="label-for-textarea" for="notice">Примечание </label>
-                <textarea class="form-control" name="notice"> </textarea>
+                <label class="label-for-textarea" for="note">Примечание </label>
+                <textarea class="form-control" id="note"> </textarea>
             </div>
             <div class="external-block" style="display: block;">
-                <label class="label-for-textarea" for="attachments">Вложение(пока не сделаны) </label>
+                <label class="label-for-textarea" for="attachments">Вложения </label>
                 <input type="file" multiple class="form-control" id="fileInput">
                 <div id="fileListContainer">
                     <p class="text-muted">Файлы не выбраны</p>
@@ -521,7 +542,7 @@
         padding: 0.63% 1.43% 0.63%;
         z-index: 100; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
         <button class="btn btn-danger" style="min-width: 120px; justify-self: start;">Отменить</button>
-        <button class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
+        <button id="save" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
     </div>
 </body>
 </html>
