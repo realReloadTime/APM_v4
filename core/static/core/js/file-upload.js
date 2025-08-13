@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     let eventId = getEventIdFromUrl();
-    console.log(eventId)
+    console.log("Initial eventId:", eventId);
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const eventData = await response.json();
             const attachmentsIds = eventData.event_attachments_id || [];
+            console.log("Found attachments:", attachmentsIds);
             
             for (const attachmentId of attachmentsIds) {
                 const attachmentResponse = await fetch(
@@ -40,15 +41,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     { headers: { 'Authorization': `Bearer ${accessToken}` } }
                 );
                 
-                if (!attachmentResponse.ok) continue;
+                if (!attachmentResponse.ok) {
+                    console.warn(`Attachment ${attachmentId} not found, status: ${attachmentResponse.status}`);
+                    continue;
+                }
                 
                 const attachment = await attachmentResponse.json();
+                console.log("Loaded attachment:", attachment);
+                
                 selectedFiles.push({
                     id: attachment.id,
                     name: attachment.name,
                     size: attachment.size,
                     serverFile: true,
-                    hasEventId: true // Файл уже привязан к событию
+                    hasEventId: true
                 });
             }
             
@@ -64,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fileInput.addEventListener('change', function(e) {
         const newFiles = Array.from(e.target.files);
+        console.log("New files selected:", newFiles.length);
         
         newFiles.forEach(newFile => {
             const isDuplicate = selectedFiles.some(
@@ -71,16 +78,16 @@ document.addEventListener('DOMContentLoaded', function() {
             );
             
             if (!isDuplicate) {
-                // Добавляем файл с пометкой о привязке к событию
                 const fileRecord = {
                     fileObject: newFile,
                     name: newFile.name,
                     size: newFile.size,
-                    hasEventId: eventId !== null // Если eventId есть - файл сразу привязан
+                    hasEventId: eventId !== null
                 };
                 
                 selectedFiles.push(fileRecord);
-                uploadFile(newFile, fileRecord); // Передаем конкретную запись файла
+                console.log("Added file record:", fileRecord);
+                uploadFile(newFile, fileRecord);
             }
         });
         
@@ -114,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const fileInfo = document.createElement('div');
             
-            // Добавляем иконку статуса привязки
             let statusIcon = '';
             if (file.id) {
                 statusIcon = file.hasEventId 
@@ -154,9 +160,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('file', file);
         
-        // Если eventId известен, сразу привязываем файл
+        // Всегда добавляем event_id, если он известен
         if (eventId) {
             formData.append('event_id', eventId);
+            console.log("Uploading with event_id:", eventId);
+        } else {
+            console.log("Uploading without event_id");
         }
         
         fetch(`${window.APP_CONFIG.API_BASE_URL}/api/attachments/`, {
@@ -165,32 +174,30 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Authorization': `Bearer ${accessToken}` }
         })
         .then(response => {
-            if (!response.ok) throw new Error('Upload failed');
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Upload failed: ${response.status} - ${text}`);
+                });
+            }
             return response.json();
         })
         .then(data => {
-            // Обновляем запись о файле
+            console.log("Upload response:", data);
+            
             fileRecord.id = data.id;
             fileRecord.serverFile = true;
+            fileRecord.hasEventId = eventId !== null;
             
-            // Если файл был привязан к событию сразу
-            if (eventId) {
-                fileRecord.hasEventId = true;
-            }
-            
-            console.log('Файл успешно загружен:', data);
-            renderFileList(); // Обновляем список для отображения статуса
-            
-            // Если это временный файл (без eventId), добавляем в очередь для обновления
-            if (!eventId) {
+            if (eventId && data.event_id !== eventId) {
+                console.warn("Server event_id mismatch:", data.event_id, "expected:", eventId);
                 fileRecord.hasEventId = false;
-                console.log('Временный файл, ожидает привязки к событию');
             }
+            
+            renderFileList();
         })
         .catch(error => {
             console.error('Upload error:', error);
             
-            // Удаляем файл из списка при ошибке
             const index = selectedFiles.findIndex(f => f.name === file.name);
             if (index !== -1) {
                 selectedFiles.splice(index, 1);
@@ -210,7 +217,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => {
                 if (!response.ok) {
                     console.error('Delete failed:', response.status);
+                    return response.text().then(text => {
+                        console.error('Delete error text:', text);
+                    });
                 }
+                console.log("File deleted:", file.id);
             })
             .catch(error => console.error('Delete error:', error));
         }
@@ -235,16 +246,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.updateAttachmentsEventId = function(newEventId) {
+        console.log("Updating attachments with new eventId:", newEventId);
         eventId = newEventId;
         
         const temporaryFiles = selectedFiles.filter(file => file.id && !file.hasEventId);
         
-        if (temporaryFiles.length === 0) return;
+        if (temporaryFiles.length === 0) {
+            console.log("No temporary files to update");
+            return;
+        }
         
-        console.log(`Обновление ${temporaryFiles.length} файлов с eventId=${newEventId}`);
+        console.log(`Updating ${temporaryFiles.length} files with eventId=${newEventId}`);
         
         temporaryFiles.forEach(file => {
-            fetch(`${window.APP_CONFIG.API_BASE_URL}/api/attachments/${file.id}/update/`, {
+            const url = `${window.APP_CONFIG.API_BASE_URL}/api/attachments/${file.id}/update/`;
+            console.log(`Updating attachment: ${url}`);
+            
+            fetch(url, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -253,14 +271,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ event_id: newEventId })
             })
             .then(response => {
-                if (!response.ok) throw new Error('Update failed');
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Update failed: ${response.status} - ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Update response:", data);
                 file.hasEventId = true;
-                console.log(`Файл ${file.name} привязан к событию`);
-                renderFileList(); 
+                renderFileList();
             })
             .catch(error => {
                 console.error('Update error:', error);
-                alert(`Ошибка привязки файла ${file.name} к событию`);
+                alert(`Ошибка привязки файла ${file.name} к событию: ${error.message}`);
             });
         });
     };
