@@ -112,11 +112,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    async function deleteEvent(eventId) {
+        try {
+            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/events/${eventId}/delete/`, {
+                method: 'DELETE',
+                headers: { 
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
+            
+            alert('Событие успешно удалено!');
+            window.location.href = '/table'; // Перенаправляем на страницу таблицы
+        } catch (error) {
+            handleError(error);
+        }
+    }
+
+    function setupDeleteConfirmation(eventId) {
+        const deleteButton = document.getElementById('deleteButton');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        
+        if (deleteButton && confirmDeleteBtn) {
+            deleteButton.addEventListener('click', function() {
+                const confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                confirmDeleteModal.show();
+            });
+            
+            confirmDeleteBtn.addEventListener('click', function() {
+                deleteEvent(eventId);
+            });
+        }
+    }
+
+
+
     const eventId = getEventIdFromUrl();
     if (eventId) {
         loadData(eventId);
         loadMeasures(eventId);
-        changeRef(eventId)
+        changeRef(eventId);
+        setupDeleteConfirmation(eventId);
     } else {
         console.error('Event ID not found in URL');
         alert('Не указан идентификатор события в URL');

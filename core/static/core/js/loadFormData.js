@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!dateString) return '-';
         const date = new Date(dateString);
         return new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
-                    .toISOString().slice(0,16);
+                    .toISOString().slice(0,16).replace('T', ' ');
     }
 
     async function loadData(event_id) {
