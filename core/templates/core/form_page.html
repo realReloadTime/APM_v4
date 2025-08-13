@@ -69,6 +69,7 @@
                 <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr auto;">
                     <label id="one_object" style="white-space: nowrap;">Объект, на котором произошло событие:</label>
                     <input class="form-control" id="object" type="text" disabled/>
+                    <input id="object_id" type="text" hidden/>
                     <button class="btn btn-primary" style="white-space: nowrap; min-width: max-content; overflow: hidden; text-overflow: ellipsis;" 
                             data-bs-toggle="modal" data-bs-target="#oneObjectModal">Выбрать объект</button>
                     <div id="oneObjectModal" class="modal fade modal-lg" tabindex="-1" inert>
@@ -162,7 +163,7 @@
                     </div>
                 </div>
                 <div class="internal-block" style="display:grid; align-items: center; grid-template-columns: 51.5% 1fr;">
-                    <span id="influenced_objects" style="grid-column: 1; grid-row: 1; white-space: nowrap;">
+                    <span style="grid-column: 1; grid-row: 1; white-space: nowrap;">
                         Список объектов под влиянием события:
                     </span>
                     <button class="btn btn-primary" style="grid-column: 1; grid-row: 2; white-space: nowrap; min-width: max-content;" data-bs-toggle="modal" data-bs-target="#multObjectModal">Добавить/изменить объекты</button>
@@ -251,7 +252,8 @@
                             </div>
                         </div>
                     </div>
-                    <textarea class="form-control" style="grid-column: 2; grid-row: 1 / span 2; height: 100%;" disabled></textarea>                           
+                    <textarea id="influenced_objects_id" hidden></textarea>
+                    <textarea id="influenced_objects" class="form-control" style="grid-column: 2; grid-row: 1 / span 2; height: 100%;" disabled></textarea>                           
                 </div>
             </div>
             <div class="external-block">

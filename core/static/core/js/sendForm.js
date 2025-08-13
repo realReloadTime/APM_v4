@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             required: true,
             message: 'Выберите обьект'
         },
+        influenced_objects_id:{ },
         subsystem_id:{
             required: true,
             message: 'Укажите тип оборудования'
@@ -143,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function markFieldAsInvalid(fieldId, message) {
+        
         const field = document.getElementById(fieldId);
         if (!field) return;
         
@@ -217,14 +219,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 markFieldAsValid(fieldId);
             }
         }
-        const category_data = {}
-        switch (base_data.category_id) {
+        let category_data = {}
+        switch (parseInt(base_data.category_id)) {
             case 1: 
                 category_data = {
-                    object_id: document.getElementById('object').value,
-                    influenced_objects: document.getElementById('influenced_objects').value,
+                    object_id: document.getElementById('object_id').value,
+                    influenced_objects_id: document.getElementById('influenced_objects_id').value,
                     subsystem_id: document.getElementById('subsystems').value,
-                    system_id: document.getElementById('systems').value,
                     subsystem_status_id: document.getElementById('subsystem_statuses').value,
                     description: document.getElementById('description-equipment-failure').value,
                 }
@@ -278,6 +279,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     description: document.getElementById('description-other-dangers').value
                 }
                 break;
+            default:
+                console.error("Unknown category_id:", base_data.category_id);
         }
 
         for (const [fieldId, value] of Object.entries(category_data)) {
@@ -291,22 +294,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        console.log(errors)
-        console.log(base_data)
-        console.log(category_data)
         if (!isValid) {
             return;
         }
 
         let event_url, method;
-        const category = categories.find(cat => cat.key === category_id);
+        const category = categories.find(cat => cat.key === parseInt(base_data.category_id));
+
         if (eventID) {
             event_url = `${window.APP_CONFIG.API_BASE_URL}/api/events/${eventID}/update/`;
-            category_url = `${window.APP_CONFIG.API_BASE_URL}/api/${category.label}/by-event/${event_id}/update/`;
+            category_url = `${window.APP_CONFIG.API_BASE_URL}/api/${category.label}/by-event/${eventID}/`;
             method = 'PUT';
         } else {
             event_url = `${window.APP_CONFIG.API_BASE_URL}/api/events/`;
-            category_url = `${window.APP_CONFIG.API_BASE_URL}/api/${category.label}/by-event/`
+            category_url = `${window.APP_CONFIG.API_BASE_URL}/api/${category.label}/`
             method = 'POST';
         }
         
@@ -338,9 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify(category_data),
         });
 
-        let newEventId = data.id;
-        await sendLocalMeasures(newEventId);
-
         if (!category_response.ok) {
             const error = new Error(`HTTP error! status: ${category_response.status}`);
             error.status = category_response.status;
@@ -358,31 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         handleError(error, error.status);
     }
-    async function attachMeasuresToEvent(eventId) {
-        try {
-            const response = await fetch(`${API_BASE}/api/measures/?event_id__isnull=true`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-            
-            if (!response.ok) throw new Error('Ошибка загрузки непривязанных мер');
-            
-            const measures = await response.json();
-            
-            for (const measure of measures) {
-                await fetch(`${API_BASE}/api/measures/${measure.id}/update/`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`
-                    },
-                    body: JSON.stringify({ event_id: eventId })
-                });
-            }
-            
-        } catch (error) {
-            console.error('Ошибка привязки мер к событию:', error);
-        }
-    }
+    
 }
     async function handleSave() {
         saveButton.disabled = true;
