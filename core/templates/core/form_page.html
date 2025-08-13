@@ -7,20 +7,20 @@
     <title>Пустая форма</title>    
     <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'core/js/bootstrap.js' %}"></script>
     <script src="{% static 'core/js/config.js' %}"></script>
     <script src="{% static 'core/js/loadNavbar.js' %}"></script>
     <script src="{% static 'core/js/loadUserProfile.js' %}"></script>
     <script src="{% static 'core/js/loadEventData.js' %}"></script>
     <script src="{% static 'core/js/loadFormData.js' %}"></script>
+    <script src="{% static 'core/js/sendForm.js' %}"></script>
     <script src="{% static 'core/js/change-block-script.js' %}"></script>
     <script src="{% static 'core/js/select-navigation.js' %}"></script>
     <script src="{% static 'core/js/show-end-date.js' %}"></script>
-    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'core/js/measures.js' %}"></script>
     <script src="{% static 'core/js/wind-speed.js' %}"></script>
-    <script src="{% static 'core/js/bootstrap.js' %}"></script>
     <script src="{% static 'core/js/file-upload.js' %}"></script>
-    <script src="{% static 'core/js/sendForm.js' %}"></script>
 </head>
 <body>
     <div id="menu"></div>
@@ -468,13 +468,13 @@
                     <div style="display: grid;">
                         <label>Принятые меры:</label>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#measuresModal">Добавить принятые меры</button>
-                        <div id="measuresModal" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div id="measuresModal" class="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-body">
                                         <div class="internal-block" style="display: grid; grid-template-columns: auto auto;align-items: center;">
                                             <label>Текущее время:</label>
-                                            <input id="measure-date" class="form-control" type="date" style="width:100%; height: auto;"/>
+                                            <input id="measure-date" class="form-control" type="datetime-local" style="width:100%; height: auto;"/>
                                         </div>
                                         <div class="external-block">
                                             <label>Принятая мера:</label>
@@ -482,7 +482,7 @@
                                         </div>
                                         <div class="internal-block" style="margin-bottom: 0; display: grid;">
                                             <button data-bs-dismiss="modal" class="btn btn-danger" style="min-width: 120px; justify-self: start;">Отменить</button>
-                                            <button id="save-measure" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
+                                            <button id="save-measure" data-bs-dismiss="modal" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>
                                         </div>
                                     </div>
                                 </div>
@@ -501,6 +501,7 @@
                         </div>
                     </div>
                     <textarea class="form-control" id="actions" disabled></textarea>
+                    <textarea id="local-measures" hidden></textarea>
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: 36.7% 1fr">
                     <label>Название организации: </label>

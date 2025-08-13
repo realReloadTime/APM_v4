@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case 1: 
                 category_data = {
                     object_id: document.getElementById('object_id').value,
-                    influenced_objects_id: document.getElementById('influenced_objects_id').value,
+                    influenced_objects_id: (document.getElementById('influenced_objects_id').value).split(','),
                     subsystem_id: document.getElementById('subsystems').value,
                     subsystem_status_id: document.getElementById('subsystem_statuses').value,
                     description: document.getElementById('description-equipment-failure').value,
@@ -344,6 +344,24 @@ document.addEventListener('DOMContentLoaded', function() {
             error.status = category_response.status;
             throw error;
         }
+        if (!eventID) {
+            // Отправляем локальные меры
+            for (const measure of window.localMeasures || []) {
+                await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/measures/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({
+                        ...measure,
+                        event_id: data.id
+                    })
+                });
+            }
+            // Очищаем локальные меры
+            window.localMeasures = [];
+        }
 
         if (eventID) {
             alert('Событие успешно обновлено!');
@@ -356,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         handleError(error, error.status);
     }
-    
+
 }
     async function handleSave() {
         saveButton.disabled = true;

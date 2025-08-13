@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const accessToken = localStorage.getItem('access_token');
     let measures = []; 
+    window.localMeasures = [];
     const actionsTextarea = document.getElementById('actions');
 
     function handleError(error, status) {
@@ -34,6 +35,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const base_data = await response.json();
             const category_data =  await loadDataByEvent(event_id, base_data.category_id);
+            const savedMeasures = localStorage.getItem('draftMeasures');
+            if (savedMeasures) {
+                localMeasures = JSON.parse(savedMeasures);
+                updateActionsTextarea();
+            }
 
             renderInformation(base_data, category_data);
 
@@ -70,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
             handleError(error);
         }
     }
-
 
     async function loadMeasures(currentEventId) {
         if (!currentEventId) return;
@@ -188,29 +193,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateActionsTextarea() {
-        if (measures.length === 0) {
+        let measuresToShow = [...measures];
+        
+        // Добавляем локальные меры для новых событий
+        if (!getEventIdFromUrl() && window.localMeasures && window.localMeasures.length > 0) {
+            measuresToShow = [...window.localMeasures];
+        }
+
+        if (measuresToShow.length === 0) {
             actionsTextarea.value = 'Принятые меры отсутствуют';
             return;
         }
         
-        const sortedMeasures = [...measures].sort(
+        const sortedMeasures = measuresToShow.sort(
             (a, b) => new Date(a.adopted_at) - new Date(b.adopted_at)
         );
         
         let text = '';
         sortedMeasures.forEach(measure => {
-            const date = new Date(measure.adopted_at).toLocaleString('ru-RU');
+            const date = formatDateTime(new Date(measure.adopted_at));
             text += `[${date}] ${measure.description}\n\n`;
         });
         
         actionsTextarea.value = text.trim();
+        if (!getEventIdFromUrl() && localMeasures.length > 0) {
+            localStorage.setItem('draftMeasures', JSON.stringify(localMeasures));
+        }
     }
-
+    window.loadMeasures = loadMeasures;
     const eventId = getEventIdFromUrl();
     if (eventId) {
         loadData(eventId);
         loadMeasures(eventId);
     } else {
-        console.log('Event ID not found in URL');
+        console.log('Creating new event');
+        
+        const actionsTextarea = document.getElementById('actions');
+        if (actionsTextarea) {
+            actionsTextarea.value = 'Принятые меры отсутствуют';
+        }
+        
+        window.localMeasures = [];
     }
 });
