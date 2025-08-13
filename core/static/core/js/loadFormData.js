@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatDateTime(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
-        return date.toISOString().split('T')[0]
+        return new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                    .toISOString().slice(0,16);
     }
 
     async function loadData(event_id) {
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function renderInformation(base_data, category_data) {
+    async function renderInformation(base_data, category_data) {
         document.getElementById('consequences').value = base_data.consequences|| "";
         document.getElementById('loas').value = base_data.loa_id || "";
         document.getElementById('categories').value = base_data.category_id || "";
@@ -122,25 +123,28 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('influenced_objects').value = category_data.influenced_objects || "";
             document.getElementById('subsystems').value = category_data.subsystem_id || "";
             try {
-            const url = `${window.APP_CONFIG.API_BASE_URL}/api/subsystems/${parseInt(category_data.subsystem_id)}/`;
-                const response = fetch(url, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
+                if (category_data.subsystem_id) {
+                    const url = `${window.APP_CONFIG.API_BASE_URL}/api/subsystems/${parseInt(category_data.subsystem_id)}/`;
+                    
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
 
-                if (!response.ok) {
-                    const error = new Error(`HTTP error! status: ${response.status}`);
-                    error.status = response.status;
-                    throw error;
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const subsystem_data = await response.json();
+                    document.getElementById('systems').value = subsystem_data.system_id || "";
                 }
-                
-                const subsystem_data = response.json();
             } catch (error) {
-                handleError(error);
+                handleError(error); 
             }
-            document.getElementById('systems').value = subsystem_data.system_id || "" ;
             document.getElementById('subsystem_statuses').value = category_data.subsystem_status_id || "";
             document.getElementById('description-equipment-failure').value = category_data.description || "";
 
+            document.getElementById('subsystems').disabled  = true;
+            document.getElementById('systems').disabled  = true;
         } else if (base_data.category_id === 2){
             document.getElementById('source-adverse-weathers').value = category_data.source_id || "";
             document.getElementById('precipitations').value = category_data.precipitation_id || "";
