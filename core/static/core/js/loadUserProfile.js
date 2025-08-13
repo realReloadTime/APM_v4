@@ -25,7 +25,7 @@ async function refreshAccessToken() {
         }
 
         localStorage.setItem('access_token', data.access);
-        
+        location.reload();
         return data.access;
     } catch (error) {
         console.error('Token refresh failed:', error);

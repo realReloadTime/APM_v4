@@ -362,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Очищаем локальные меры
             window.localMeasures = [];
         }
+        window.updateAttachmentsEventId(data.id);
 
         if (eventID) {
             alert('Событие успешно обновлено!');
