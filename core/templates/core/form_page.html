@@ -97,32 +97,20 @@
             <div class="external-block">
                 <div class="internal-block" style="display: grid;">
                     <span style="white-space: nowrap;">Система возникновения отказа:</span>
-                    <select class="form-select" name="systems" id="systems">
-                        <option value="">Выберите тип обстановки</option>
-                        <option value="equipment failure">Отказ оборудования</option>
-                        <option value="weather">Погодные условия</option>
-                    </select>
+                    <select class="form-select" name="systems" id="systems"></select>
                 </div>
                 <div class="internal-block" style="display: grid;">
                     <span for="subsystems" style="white-space: nowrap;">Тип оборудования:</span>
-                    <select class="form-select" name="subsystems" id="subsystems">
-                        <option value="">Выберите тип обстановки</option>
-                        <option value="equipment failure">Отказ оборудования</option>
-                        <option value="weather">Погодные условия</option>
-                    </select>
+                    <select class="form-select" name="subsystems" id="subsystems"> </select>
                 </div>
                 <div class="internal-block" style="display: grid;">
                     <span id="lbl-equipment-correction" style="white-space: nowrap;">Уточнение по оборудованию:</span>
-                    <input class="form-control" name="equipment-correction" type="text"
+                    <input class="form-control" id ="subsystem_info" name="subsystem_info" type="text"
                         aria-describedby="lbl-equipment-correction" />
                 </div>
                 <div class="internal-block" style="display: grid;">
                     <span for="subsystem_statuses" style="white-space: nowrap;">Состояние оборудования:</span>
-                    <select class="form-select" id="subsystem_statuses" name="subsystem_statuses">
-                        <option value="">Выберите тип обстановки</option>
-                        <option value="equipment failure">Отказ оборудования</option>
-                        <option value="weather">Погодные условия</option>
-                    </select>
+                    <select class="form-select" id="subsystem_statuses" name="subsystem_statuses"></select>
                 </div>
             </div>
             <div class="internal-block" style="display: block;">
@@ -135,9 +123,7 @@
             <div class="external-block" style="display: block;">
                 <div class="internal-block" style="display: grid; align-items: center;">
                     <label>Вид информации и источник: </label>
-                    <select class="form-select" id="source-adverse-weathers" name="sources">
-
-                    </select>
+                    <select class="form-select" id="source-adverse-weathers" name="sources"></select>
                 </div>
                 <div class="internal-block" style="display: block;">
                     <label class="label-for-textarea">Географическая территория(край, область, регион):</label>
@@ -150,42 +136,29 @@
                         <label style="grid-column: 1 / span 3; grid-row: 1;">Метеоусловия:</label>
                         <button class="btn btn-primary" style="grid-column: 1; grid-row: 2;">&lt</button>
                         <select class="form-select" id="conditions" name="conditions"
-                            style="grid-column: 2; grid-row: 2; text-align-last: center; text-align: center;">
-                            <option>☀️ Ясно</option>
-                        </select>
+                            style="grid-column: 2; grid-row: 2; text-align-last: center; text-align: center;"></select>
                         <button class="btn btn-primary" style="grid-column: 3; grid-row: 2;">&gt</button>
                     </div>
                     <div class="internal-block" style="display: grid;">
                         <label style="grid-column: 1 / span 3; grid-row: 1;">Осадки:</label>
                         <button class="btn btn-primary" style="grid-column: 1; grid-row: 2;">&lt</button>
                         <select class="form-select" id="precipitations" name="precipitations"
-                            style="grid-column: 2; grid-row: 2; text-align-last: center; text-align: center;">
-                            <option>Отсутствуют ☀️</option>
-                            <option>Дождь 🌧️</option>
-                            <option>Гроза ⚡</option>
-                            <option>Снег ❄️</option>
-                            <option>Снег с порывами ветра ❄️💨</option>
-                            <option>Град 🧊</option>
-                            <option>Ледяной дождь 🌧️🧊</option>
-                            <option>Дождь с порывами ветра 🌧️💨</option>
-                        </select>
+                            style="grid-column: 2; grid-row: 2; text-align-last: center; text-align: center;"></select>
                         <button class="btn btn-primary" style="grid-column: 3;grid-row: 2;">&gt</button>
                     </div>
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto;">
                     <div class="internal-block" style="display: grid; margin-bottom: 0%;">
                         <label>Температура (по Цельсию):</label>
-                        <input id="temperature" class="form-control" type="number" min="-273" required />
+                        <input id="temperature" class="form-control" type="number" min="-273"/>
                     </div>
                 </div>
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto; ">
                     <div class="internal-block"
                         style="display: grid; margin-bottom: 0%; grid-template-columns: auto 1fr 1fr;">
                         <label style="grid-column: 1;">Ветер (м/сек):</label>
-                        <input id="input-wind-speed" class="form-control" type="number" min="0" style="grid-column: 2;"
-                            required />
-                        <input id="output-wind-group" class="form-control" type="text" style="grid-column: 3;"
-                            disabled />
+                        <input id="input-wind-speed" class="form-control" type="number" min="0" style="grid-column: 2;"/>
+                        <input id="output-wind-group" class="form-control" type="text" style="grid-column: 3;"disabled />
                     </div>
                 </div>
             </div>
@@ -201,10 +174,8 @@
                 <select class="form-select" id="source-fire-dangers" name="sources"></select>
             </div>
             <div class="external-block">
-
                 <div class="internal-block" style="display: grid; grid-template-columns: auto auto; ">
-                    <div class="internal-block"
-                        style="display: grid; margin-bottom: 0%; grid-template-columns: auto 1fr 1fr;">
+                    <div class="internal-block" style="display: grid; margin-bottom: 0%; grid-template-columns: auto 1fr 1fr;">
                         <label>Площадь пожара(га):</label>
                         <input id="area" class="form-control" type="number" min="0">
                         <input class="form-control" type="text" disabled>
@@ -317,19 +288,16 @@
                 <div class="internal-block" style="grid-template-columns: 36.7% 1fr; display: grid;">
                     <div style="display: grid;">
                         <label>Принятые меры:</label>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#measuresModal">Добавить
-                            принятые меры</button>
-
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#measuresModal">
+                            Добавить принятые меры</button>
                         <label>Привлечено к устранению: </label>
                         <div style="display: grid;">
                             <div class="internal-block" style="display: grid;  align-items: start; ">
-                                <input class="form-control" type="number" id="personnel_count" min="0" max="999"
-                                    step="1" value="1">
+                                <input class="form-control" type="number" id="personnel_count" min="0" max="999" step="1" value="1">
                                 <label>Человек</label>
                             </div>
                             <div class="internal-block" style="display: grid; align-items: start;">
-                                <input class="form-control" type="number" id="technic_count" min="0" max="999" step="1"
-                                    value="1">
+                                <input class="form-control" type="number" id="technic_count" min="0" max="999" step="1" value="1">
                                 <label>ед. техники</label>
                             </div>
                         </div>
@@ -355,11 +323,9 @@
             </div>
         </div>
     </div>
-
     <div class="form-footer" style="
         display: grid; grid-template-columns: 2fr auto ; position: fixed; bottom: 0; left: 0; 
-        right: 0; background: #f1f1f1;
-        padding: 0.63% 1.43% 0.63%;
+        right: 0; background: #f1f1f1; padding: 0.63% 1.43% 0.63%;
         z-index: 100; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
         <button class="btn btn-danger" style="min-width: 120px; justify-self: start;">Отменить</button>
         <button id="save" class="btn btn-primary" style="min-width: 120px; justify-self: end;">Сохранить</button>

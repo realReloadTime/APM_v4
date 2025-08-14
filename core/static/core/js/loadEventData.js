@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const accessToken = localStorage.getItem('access_token');
+    let allSubsystems = [];
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
@@ -14,6 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
+
+            if (object === 'subsystems') {
+                allSubsystems = data;
+            }
+
             renderObject(object, data);
 
         } catch (error) {
@@ -176,6 +182,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+    };
+
+    function filterSubsystems() {
+        const systemId = document.getElementById('systems').value;
+        const subsystemSelect = document.getElementById('subsystems');
+        
+        subsystemSelect.innerHTML = '<option value="">Выберите подсистему</option>';
+        
+        if (!systemId) return;
+        
+        const filteredSubsystems = allSubsystems.filter(
+            subsystem => subsystem.system_id == systemId
+        );
+        filteredSubsystems.forEach(subsystem => {
+            const option = document.createElement('option');
+            option.value = subsystem.id;
+            option.textContent = subsystem.name;
+            subsystemSelect.appendChild(option);
+        });
     }
 
     document.getElementById('save-oneObject')?.addEventListener('click', function() {
@@ -202,15 +227,21 @@ document.addEventListener('DOMContentLoaded', function() {
         bootstrap.Modal.getInstance(document.getElementById('multObjectModal')).hide();
     });
 
+    document.getElementById('systems')?.addEventListener('change', filterSubsystems);
+
     loadData("loas");
     loadData("locations");
     loadData("categories");
     loadData("systems");
-    loadData("subsystems");
     loadData("subsystem_statuses");
     loadData("conditions");
     loadData("precipitations");
     loadData("sources");
+    loadData("systems");
+    loadData("subsystems").then(() => {
+        // После загрузки подсистем вызываем фильтрацию
+        filterSubsystems();
+    });
     
     loadObjectTypes();
 });

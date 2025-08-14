@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('object').value = category_data.object || "";
             document.getElementById('influenced_objects_id').value = category_data.influenced_objects_id || "";
             document.getElementById('influenced_objects').value = category_data.influenced_objects || "";
-            document.getElementById('subsystems').value = category_data.subsystem_id || "";
             try {
                 if (category_data.subsystem_id) {
                     const url = `${window.APP_CONFIG.API_BASE_URL}/api/subsystems/${parseInt(category_data.subsystem_id)}/`;
@@ -141,10 +140,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const subsystem_data = await response.json();
                     document.getElementById('systems').value = subsystem_data.system_id || "";
+                    document.getElementById('systems').dispatchEvent(new Event('change'))
                 }
             } catch (error) {
                 handleError(error); 
             }
+            document.getElementById('subsystems').value = category_data.subsystem_id;;
+            document.getElementById('subsystem_info').value = category_data.subsystem_info || "";;
             document.getElementById('subsystem_statuses').value = category_data.subsystem_status_id || "";
             document.getElementById('description-equipment-failure').value = category_data.description || "";
 

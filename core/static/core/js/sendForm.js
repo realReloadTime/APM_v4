@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             message: 'Выберите обьект'
         },
         influenced_objects_id:{ },
+        subsystem_info:{ },
         subsystem_id:{
             required: true,
             message: 'Укажите тип оборудования'
@@ -228,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     subsystem_id: document.getElementById('subsystems').value,
                     subsystem_status_id: document.getElementById('subsystem_statuses').value,
                     description: document.getElementById('description-equipment-failure').value,
+                    subsystem_info: document.getElementById('subsystem_info').value,
                 }
                 break;
             case 2:
