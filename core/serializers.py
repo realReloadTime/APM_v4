@@ -260,7 +260,7 @@ class EquipmentFailureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EquipmentFailure
-        fields = ['id', 'event', 'event_id', 'object', 'object_id', 'influenced_objects', 'influenced_objects_id', 'subsystem', 'subsystem_id', 'subsystem_status', 'subsystem_status_id',
+        fields = ['id', 'event', 'event_id', 'object', 'object_id', 'influenced_objects', 'influenced_objects_id', 'subsystem', 'subsystem_id', 'subsystem_info', 'subsystem_status', 'subsystem_status_id',
                   'description']
         read_only_fields = ['id', 'event', 'object', 'influenced_objects', 'subsystem', 'subsystem_status']
 
