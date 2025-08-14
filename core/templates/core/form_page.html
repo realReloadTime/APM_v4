@@ -20,6 +20,7 @@
     <script src="{% static 'core/js/select-navigation.js' %}"></script>
     <script src="{% static 'core/js/show-end-date.js' %}"></script>
     <script src="{% static 'core/js/measures.js' %}"></script>
+    <script src="{% static 'core/js/selectObjects.js' %}"></script>
     <script src="{% static 'core/js/wind-speed.js' %}"></script>
     <script src="{% static 'core/js/file-upload.js' %}"></script>
 </head>
@@ -370,31 +371,6 @@
                 <div class="modal-body">
                     <ul class="nav nav-tabs nav-justified" id="oneObjectTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="type_1_tab" data-bs-toggle="tab"
-                                data-bs-target="#type_1" type="button" role="tab" aria-controls="type_1"
-                                aria-selected="true">тип1</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="type_2_tab" data-bs-toggle="tab" data-bs-target="#type_2"
-                                type="button" role="tab" aria-controls="type_2" aria-selected="false">тип2</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="type_3_tab" data-bs-toggle="tab" data-bs-target="#type_3"
-                                type="button" role="tab" aria-controls="type_3" aria-selected="false">тип3</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="type_4_tab" data-bs-toggle="tab" data-bs-target="#type_4"
-                                type="button" role="tab" aria-controls="type_4" aria-selected="false">тип4</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="type_5_tab" data-bs-toggle="tab" data-bs-target="#type_5"
-                                type="button" role="tab" aria-controls="type_5" aria-selected="false">тип5</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="type_6_tab" data-bs-toggle="tab" data-bs-target="#type_6"
-                                type="button" role="tab" aria-controls="type_6" aria-selected="false">тип6</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="search_tab" data-bs-toggle="tab" data-bs-target="#search"
                                 type="button" role="tab" aria-controls="search" aria-selected="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -406,56 +382,12 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="oneObjectTabContent">
-                        <div class="tab-pane fade show active" id="type_1" role="tabpanel" aria-labelledby="type_1_tab">
-                            <div class="table-responsive">
-                                <table class="table table-primary table-responsive table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Объект</th>
-                                            <th scope="col">Участвует в событии</th>
-                                            <th scope="col">Состояние оборудования</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="">
-                                            <td scope="row">0</td>
-                                            <td scope="row"><input type="radio" class="form-check"
-                                                    name="oneObjectRadios" id="321312"></td>
-                                            <td scope="row">1</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="type_2" role="tabpanel" aria-labelledby="type_2_tab">...</div>
-                        <div class="tab-pane fade" id="type_3" role="tabpanel" aria-labelledby="type_3_tab">
-                            <table class="table table-primary table-responsive table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Объект</th>
-                                        <th scope="col">Участвует в событии</th>
-                                        <th scope="col">Состояние оборудования</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="">
-                                        <td scope="row">2</td>
-                                        <td scope="row"><input type="radio" class="form-check" name="oneObjectRadios"
-                                                id="123123"></td>
-                                        <td scope="row">3</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="tab-pane fade" id="type_4" role="tabpanel" aria-labelledby="type_4_tab">...</div>
-                        <div class="tab-pane fade" id="type_5" role="tabpanel" aria-labelledby="type_5_tab">...</div>
-                        <div class="tab-pane fade" id="type_6" role="tabpanel" aria-labelledby="type_6_tab">...</div>
                     </div>
                 </div>
                 <div class="modal-footer internal-block" style=" margin-bottom: 0; display: grid;">
                     <button data-bs-dismiss="modal" class="btn btn-danger"
                         style="min-width: 120px; justify-self: start;">Отменить</button>
-                    <button id="save-oneObject" class="btn btn-primary"
+                    <button id="save-oneObject" class="btn btn-primary" data-bs-dismiss="modal"
                         style="min-width: 120px; justify-self: end;">Сохранить</button>
                 </div>
             </div>
@@ -467,36 +399,6 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <ul class="nav nav-tabs nav-justified" id="multObjectTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="mot_type_1_tab" data-bs-toggle="tab"
-                                data-bs-target="#mot_type_1" type="button" role="tab" aria-controls="mot_type_1"
-                                aria-selected="true">тип1</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="mot_type_2_tab" data-bs-toggle="tab"
-                                data-bs-target="#mot_type_2" type="button" role="tab" aria-controls="mot_type_2"
-                                aria-selected="false">тип2</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="mot_type_3_tab" data-bs-toggle="tab"
-                                data-bs-target="#mot_type_3" type="button" role="tab" aria-controls="mot_type_3"
-                                aria-selected="false">тип3</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="mot_type_4_tab" data-bs-toggle="tab"
-                                data-bs-target="#mot_type_4" type="button" role="tab" aria-controls="mot_type_4"
-                                aria-selected="false">тип4</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="mot_type_5_tab" data-bs-toggle="tab"
-                                data-bs-target="#mot_type_5" type="button" role="tab" aria-controls="mot_type_5"
-                                aria-selected="false">тип5</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="mot_type_6_tab" data-bs-toggle="tab"
-                                data-bs-target="#mot_type_6" type="button" role="tab" aria-controls="mot_type_6"
-                                aria-selected="false">тип6</button>
-                        </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="mot_search_tab" data-bs-toggle="tab"
                                 data-bs-target="#mot_search" type="button" role="tab" aria-controls="mot_search"
@@ -510,61 +412,12 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="multObjectTabContent">
-                        <div class="tab-pane fade show active" id="mot_type_1" role="tabpanel"
-                            aria-labelledby="mot_type_1_tab">
-                            <div class="table-responsive">
-                                <table class="table table-primary table-responsive table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Объект</th>
-                                            <th scope="col">Участвует в событии</th>
-                                            <th scope="col">Состояние оборудования</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="">
-                                            <td scope="row">0</td>
-                                            <td scope="row"><input type="checkbox" class="form-check" id="0"></td>
-                                            <td scope="row">1</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="mot_type_2" role="tabpanel" aria-labelledby="mot_type_2_tab">...
-                        </div>
-                        <div class="tab-pane fade" id="mot_type_3" role="tabpanel" aria-labelledby="mot_type_3_tab">...
-                        </div>
-                        <div class="tab-pane fade" id="mot_type_4" role="tabpanel" aria-labelledby="mot_type_4_tab">
-                            <div class="table-responsive">
-                                <table class="table table-primary table-responsive table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Объект</th>
-                                            <th scope="col">Участвует в событии</th>
-                                            <th scope="col">Состояние оборудования</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="">
-                                            <td scope="row">2</td>
-                                            <td scope="row"><input type="checkbox" class="form-check" id="0"></td>
-                                            <td scope="row">3</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="mot_type_5" role="tabpanel" aria-labelledby="mot_type_5_tab">...
-                        </div>
-                        <div class="tab-pane fade" id="mot_type_6" role="tabpanel" aria-labelledby="mot_type_6_tab">...
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer internal-block" style=" margin-bottom: 0; display: grid;">
                     <button data-bs-dismiss="modal" class="btn btn-danger"
                         style="min-width: 120px; justify-self: start;">Отменить</button>
-                    <button id="save-multObject" class="btn btn-primary"
+                    <button id="save-multObject" class="btn btn-primary" data-bs-dismiss="modal"
                         style="min-width: 120px; justify-self: end;">Сохранить</button>
                 </div>
             </div>
