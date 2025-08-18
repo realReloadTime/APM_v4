@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const accessToken = localStorage.getItem('access_token');
     let allSubsystems = [];
 
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
     }
 
-    async function loadData(object){
+    async function loadData(object) {
         try {
             const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/${object}/`, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -33,11 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Element not found:', object);
             return;
         }
-        
+
         objectSelect.forEach(select => {
             select.innerHTML = '';
         });
-        
+
         if (data.length === 0) {
             const option = document.createElement('option');
             option.textContent = '--------';
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             return;
         }
-        
+
         const sortedData = [...data].sort((a, b) => a.id - b.id);
         sortedData.forEach(data_object => {
             objectSelect.forEach(select => {
@@ -66,11 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const objectTypes = await response.json();
-            
-            // Загружаем объекты для каждого типа
+
             for (const type of objectTypes) {
-                const objects = await loadObjectsByType(type.id);
-                renderObjectsInModal(type, objects);
+                try {
+                    const objects = await loadObjectsByType(type.id);
+                    renderObjectsInModal(type, objects);
+                } catch (error) {
+                    console.error(`Error loading objects for type ${type.id}:`, error);
+                }
             }
 
         } catch (error) {
@@ -79,14 +82,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function loadObjectsByType(typeId) {
+        const selectedLoaId = document.getElementById('loas').value;
+        let url = `${window.APP_CONFIG.API_BASE_URL}/api/objects/?object_type_id=${typeId}`;
+
+        if (selectedLoaId) {
+            url += `&loa=${selectedLoaId}`;
+        }
         try {
-            const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/objects/?object_type_id=${typeId}`, {
+            const response = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
-            
+
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return await response.json();
-            
+
         } catch (error) {
             handleError(error);
             return [];
@@ -96,34 +105,38 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderObjectsInModal(type, objects) {
         const oneObjectTab = document.querySelector('#oneObjectTab');
         const oneObjectTabContent = document.querySelector('#oneObjectTabContent');
-        
+
         const multObjectTab = document.querySelector('#multObjectTab');
         const multObjectTabContent = document.querySelector('#multObjectTabContent');
-        
+
         createObjectTab(type, objects, oneObjectTab, oneObjectTabContent, false);
         createObjectTab(type, objects, multObjectTab, multObjectTabContent, true);
     }
 
-    function createObjectTab(type, objects, tabContainer, contentContainer, isMultiple) {
+   function createObjectTab(type, objects, tabContainer, contentContainer, isMultiple) {
         const tabId = `tab-${type.id}-${isMultiple ? 'multi' : 'single'}`;
-        const tabButton = document.createElement('li');
-        tabButton.className = 'nav-item';
-        tabButton.innerHTML = `
-            <button class="nav-link" id="${tabId}-tab" data-bs-toggle="tab" 
-                data-bs-target="#${tabId}" type="button" role="tab">${type.name}</button>
-        `;
+        let tabPane = document.getElementById(tabId);
         
-        tabContainer.insertBefore(tabButton, tabContainer.lastElementChild);
-        
-        const tabPane = document.createElement('div');
-        tabPane.className = 'tab-pane fade';
-        tabPane.id = tabId;
-        tabPane.role = 'tabpanel';
-        tabPane.setAttribute('aria-labelledby', `${tabId}-tab`);
+        if (!tabPane) {
+            const tabButton = document.createElement('li');
+            tabButton.className = 'nav-item';
+            tabButton.innerHTML = `
+                <button class="nav-link" id="${tabId}-tab" data-bs-toggle="tab" 
+                    data-bs-target="#${tabId}" type="button" role="tab">${type.name}</button>
+            `;
+            
+            tabContainer.insertBefore(tabButton, tabContainer.lastElementChild);
+            
+            tabPane = document.createElement('div');
+            tabPane.className = 'tab-pane fade';
+            tabPane.id = tabId;
+            tabPane.role = 'tabpanel';
+            tabPane.setAttribute('aria-labelledby', `${tabId}-tab`);
+            contentContainer.appendChild(tabPane);
+        }
         
         const tableHtml = createObjectsTable(objects, isMultiple);
         tabPane.innerHTML = tableHtml;
-        contentContainer.appendChild(tabPane);
         
         addObjectSelectionHandlers(tabPane, isMultiple);
     }
@@ -132,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (objects.length === 0) {
             return '<div class="p-3 text-center">Объекты не найдены</div>';
         }
-        
+
         let tableHtml = `
             <div class="table-responsive">
                 <table class="table table-primary table-hover">
@@ -144,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </thead>
                     <tbody>
         `;
-        
+
         objects.forEach(obj => {
             tableHtml += `
                 <tr>
@@ -159,22 +172,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 </tr>
             `;
         });
-        
+
         tableHtml += `
                     </tbody>
                 </table>
             </div>
         `;
-        
+
         return tableHtml;
     }
 
     function addObjectSelectionHandlers(tabPane, isMultiple) {
         const selector = isMultiple ? 'input[type="checkbox"]' : 'input[type="radio"]';
         const inputs = tabPane.querySelectorAll(selector);
-        
+
         inputs.forEach(input => {
-            input.addEventListener('change', function() {
+            input.addEventListener('change', function () {
                 if (!isMultiple) {
                     tabPane.querySelectorAll('input[type="radio"]').forEach(radio => {
                         if (radio !== input) radio.checked = false;
@@ -187,11 +200,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function filterSubsystems() {
         const systemId = document.getElementById('systems').value;
         const subsystemSelect = document.getElementById('subsystems');
-        
+
         subsystemSelect.innerHTML = '<option value="">Выберите подсистему</option>';
-        
+
         if (!systemId) return;
-        
+
         const filteredSubsystems = allSubsystems.filter(
             subsystem => subsystem.system_id == systemId
         );
@@ -202,8 +215,28 @@ document.addEventListener('DOMContentLoaded', function() {
             subsystemSelect.appendChild(option);
         });
     }
+    async function loadLocations() {
+        const selectedLoaId = document.getElementById('loas').value;
+        let url = `${window.APP_CONFIG.API_BASE_URL}/api/locations/`;
 
-    document.getElementById('save-oneObject')?.addEventListener('click', function() {
+        if (selectedLoaId) {
+            url += `by-loa/${selectedLoaId}`;
+        }
+
+        try {
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            if (!response.ok) throw new Error('Failed to load locations');
+            const locations = await response.json();
+            renderObject("locations", locations);
+
+        } catch (error) {
+            console.error('Error loading locations:', error);
+        }
+    }
+
+    document.getElementById('save-oneObject')?.addEventListener('click', function () {
         const selected = document.querySelector('#oneObjectModal input[name="oneObject"]:checked');
         if (selected) {
             document.getElementById('object_id').value = selected.value;
@@ -212,25 +245,24 @@ document.addEventListener('DOMContentLoaded', function() {
         bootstrap.Modal.getInstance(document.getElementById('oneObjectModal')).hide();
     });
 
-    document.getElementById('save-multObject')?.addEventListener('click', function() {
+    document.getElementById('save-multObject')?.addEventListener('click', function () {
         const selected = document.querySelectorAll('#multObjectModal input[name="multObject"]:checked');
         const ids = [];
         const names = [];
-        
+
         selected.forEach(input => {
             ids.push(input.value);
             names.push(input.getAttribute('data-name'));
         });
-        
+
         document.getElementById('influenced_objects_id').value = ids.join(',');
         document.getElementById('influenced_objects').value = names.join(', ');
         bootstrap.Modal.getInstance(document.getElementById('multObjectModal')).hide();
     });
 
     document.getElementById('systems')?.addEventListener('change', filterSubsystems);
+    document.getElementById('loas').addEventListener('change', function () {loadLocations(); loadObjectTypes();});
 
-    loadData("loas");
-    loadData("locations");
     loadData("categories");
     loadData("systems");
     loadData("subsystem_statuses");
@@ -238,10 +270,12 @@ document.addEventListener('DOMContentLoaded', function() {
     loadData("precipitations");
     loadData("sources");
     loadData("systems");
+    loadData("loas").then(() => {
+        loadLocations();
+        loadObjectTypes();
+    });
     loadData("subsystems").then(() => {
         // После загрузки подсистем вызываем фильтрацию
         filterSubsystems();
     });
-    
-    loadObjectTypes();
 });
