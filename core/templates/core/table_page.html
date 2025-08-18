@@ -18,12 +18,15 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="d-flex align-items-center">
                 <label for="recordsPerPage" class="me-2">Записей на странице:</label>
-                <select id="recordsPerPage" class="form-select form-select-sm" style="width: 80px;">
+                <select id="recordsPerPage" class="form-select form-select-sm me-2" style="width: 80px;">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
                 </select>
+                <button class="btn btn-primary me-2" data-bs-toggle="modal"
+                    data-bs-target="#filterModal">Фильтрация</button>
+                <button class="btn btn-primary me-2">Создать отчет</button>
             </div>
             <div class="pagination-info"></div>
         </div>
@@ -66,5 +69,60 @@
             </li>
         </ul>
     </footer>
+    <!--Модальное окно фильтрации-->
+    <div id="filterModal" class="modal fade modal-xl" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" id="showAll" name="showEvents" type="radio" checked/>
+                            <label class="form-check-label" for="showAll">Показать все</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="showEnded" name="showEvents" type="radio" />
+                            <label class="form-check-label" for="showEnded">Только завершенные</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="showNotEnded" name="showEvents" type="radio" />
+                            <label class="form-check-label" for="showNotEnded">Только незавершенные</label>
+                        </div>
+                    </div>
+                    <div class="justify-content-between align-items-center mb-3" style="display: inline-flex;">
+                        <label class="me-3" style="white-space: nowrap;">Актуально в период от </label>
+                        <input type="datetime-local" class="form-control" min="1970-01-01" id="begin">
+                        <label class="mx-3" style="white-space: nowrap;">до </label>
+                        <input type="datetime-local" class="form-control" min="1970-01-01" id="end">
+                    </div>
+                    <div class="internal-block justify-content-between align-items-center mb-3">
+                        <label for="categories">Тип обстановки</label>
+                        <select class="form-select" id="categoriesFilter" name="categories" 
+                            style="width:100%; box-sizing: border-box">
+                            <option value="">Все</option>
+                        </select>
+                    </div>
+                    <div class="internal-block justify-content-between align-items-center mb-3">
+                        <label for="loas">Филиал</label>
+                        <select class="form-select" id="loasFilter" name="loas" style="width:100%; box-sizing: border-box">
+                            <option value="">Все</option>
+                        </select>
+                    </div>
+                    <div class="internal-block justify-content-between align-items-center mb-3">
+                        <label for="locations">Место возникновения события</label>
+                        <select class="form-select"  name="locations" id="locationsFilter" style="width:100%">
+                            <option value="">Все</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer internal-block" style=" margin-bottom: 0; display: grid;">
+                    <button data-bs-dismiss="modal" class="btn btn-danger"
+                        style="min-width: 120px; justify-self: start;">Отменить</button>
+                    <button id="saveFilter" class="btn btn-primary" data-bs-dismiss="modal"
+                        style="min-width: 120px; justify-self: end;">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

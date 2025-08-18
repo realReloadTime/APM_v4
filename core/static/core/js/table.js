@@ -1,15 +1,17 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const accessToken = localStorage.getItem('access_token');
   const eventsTableBody = document.getElementById('eventsTableBody');
   const paginationContainer = document.getElementById('paginationContainer');
   const recordsPerPageSelect = document.getElementById('recordsPerPage');
   const paginationInfo = document.querySelector('.pagination-info');
-  
+
   let currentPage = 1;
   let totalPages = 1;
   let totalItems = 0;
-  let currentPageSize = 10; 
+  let currentPageSize = 10;
   const defaultPageSize = 10;
+  let categoriesFilterSelect, loasFilterSelect, locationsFilterSelect;
+  let currentFilters = {};
 
   let isFirstWebSocketConnection = true;
 
@@ -18,30 +20,130 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  async function loadEvents(page = 1, pageSize = defaultPageSize, filters = {}) {
+  async function loadFilterData() {
+    try {
+      const categoriesResponse = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/categories/`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      if (!categoriesResponse.ok) throw new Error('Failed to load categories');
+      const categories = await categoriesResponse.json();
+      populateSelect(categoriesFilterSelect, categories, 'Выберите категорию');
+
+      const loasResponse = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/loas/`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      if (!loasResponse.ok) throw new Error('Failed to load loas');
+      const loas = await loasResponse.json();
+      populateSelect(loasFilterSelect, loas, 'Выберите филиал');
+
+      await loadLocations();
+
+    } catch (error) {
+      console.error('Error loading filter data:', error);
+    }
+  }
+
+  function populateSelect(select, items, placeholder) {
+    select.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = placeholder;
+    select.appendChild(defaultOption);
+
+    items.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.id;
+      option.textContent = item.name;
+      select.appendChild(option);
+    });
+  }
+
+  async function loadLocations() {
+    const selectedLoaId = loasFilterSelect.value;
+    let url = `${window.APP_CONFIG.API_BASE_URL}/api/locations/`;
+
+    if (selectedLoaId) {
+      url += `by-loa/${selectedLoaId}`;
+    }
+
+    try {
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      if (!response.ok) throw new Error('Failed to load locations');
+      const locations = await response.json();
+      populateSelect(locationsFilterSelect, locations, 'Выберите место');
+
+      if (currentFilters.location) {
+        locationsFilterSelect.value = currentFilters.location;
+      }
+    } catch (error) {
+      console.error('Error loading locations:', error);
+    }
+  }
+
+  function saveFilters() {
+    currentFilters = {
+      show: document.querySelector('input[name="showEvents"]:checked').id,
+      begin: document.getElementById('begin').value,
+      end: document.getElementById('end').value,
+      category: categoriesFilterSelect.value,
+      loa: loasFilterSelect.value,
+      location: locationsFilterSelect.value
+    };
+    localStorage.setItem('eventFilters', JSON.stringify(currentFilters));
+  }
+
+  function restoreFilters() {
+    const savedFilters = localStorage.getItem('eventFilters');
+    if (savedFilters) {
+      currentFilters = JSON.parse(savedFilters);
+
+      if (currentFilters.show) document.getElementById(currentFilters.show).checked = true;
+      if (currentFilters.begin) document.getElementById('begin').value = currentFilters.begin;
+      if (currentFilters.end) document.getElementById('end').value = currentFilters.end;
+      if (currentFilters.category) categoriesFilterSelect.value = currentFilters.category;
+      if (currentFilters.loa) loasFilterSelect.value = currentFilters.loa;
+      if (currentFilters.location) locationsFilterSelect.value = currentFilters.location;
+    }
+  }
+
+  function applyFiltersToURL(urlObj) {
+    if (currentFilters.show && currentFilters.show !== 'showAll') {
+      if (currentFilters.show == "showEnded"){
+        urlObj.searchParams.set('is_ended', true);
+      }
+      else {
+        urlObj.searchParams.set('is_ended', false);
+      }
+    }
+
+    if (currentFilters.begin) urlObj.searchParams.set('start_date', currentFilters.begin);
+    if (currentFilters.end) urlObj.searchParams.set('end_date', currentFilters.end);
+    if (currentFilters.category) urlObj.searchParams.set('category', currentFilters.category);
+    if (currentFilters.loa) urlObj.searchParams.set('loa', currentFilters.loa);
+    if (currentFilters.location) urlObj.searchParams.set('location', currentFilters.location);
+  }
+
+  async function loadEvents(page = 1, pageSize = defaultPageSize) {
     try {
       const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/events/`);
-      url.searchParams.append('page', page);
-      url.searchParams.append('page_size', pageSize);
+      applyFiltersToURL(url);
       
-      const urlParams = new URLSearchParams(window.location.search);
-      for (const [key, value] of urlParams.entries()) {
-        if (key !== 'page' && key !== 'page_size') {
-          url.searchParams.append(key, value);
-        }
-      }
+      url.searchParams.set('page', page);
+      url.searchParams.set('page_size', pageSize);
 
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${accessToken}` }
       });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
+
       const data = await response.json();
       renderEventsTable(data.results);
       updatePagination(data.total, data.page, data.page_size);
       updateRecordsInfo(data.total, data.page, data.page_size);
-      
+
     } catch (error) {
       console.error('Ошибка загрузки событий:', error);
       eventsTableBody.innerHTML = `<tr><td colspan="9">Ошибка загрузки данных: ${error.message}</td></tr>`;
@@ -58,13 +160,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     events.forEach(event => {
       const row = document.createElement('tr');
-      row.dataset.id = event.id; 
-      
-      row.addEventListener('dblclick', function() {
+      row.dataset.id = event.id;
+
+      row.addEventListener('dblclick', function () {
         const eventId = this.dataset.id;
         window.location.href = `/information?event_id=${eventId}`;
       });
-      
+
       row.innerHTML = `
         <td>${formatDateTime(event.begin)}</td>
         <td>${event.loa || '-'}</td>
@@ -85,9 +187,8 @@ document.addEventListener('DOMContentLoaded', function() {
       eventsTableBody.appendChild(row);
     });
 
-    // Добавляем обработчики для кнопок редактирования
     document.querySelectorAll('.edit-btn').forEach(button => {
-      button.addEventListener('click', function() {
+      button.addEventListener('click', function () {
         const eventId = this.getAttribute('data-id');
         window.location.href = `/form?event_id=${eventId}`;
       });
@@ -105,13 +206,13 @@ document.addEventListener('DOMContentLoaded', function() {
     currentPage = currentPageArg;
     currentPageSize = pageSizeFromServer;
     totalPages = Math.ceil(totalItems / currentPageSize);
-    
+
     paginationContainer.innerHTML = '';
 
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = startPage + maxVisiblePages - 1;
-    
+
     if (endPage > totalPages) {
       endPage = totalPages;
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -135,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateRecordsInfo(totalItems, currentPage, pageSize) {
     const startItem = Math.min((currentPage - 1) * pageSize + 1, totalItems);
     const endItem = Math.min(currentPage * pageSize, totalItems);
-    
+
     paginationInfo.innerHTML = `Показано ${startItem}-${endItem} из ${totalItems} записей`;
   }
 
@@ -152,13 +253,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     paginationContainer.addEventListener('click', (e) => {
       e.preventDefault();
-      
+
       if (e.target.classList.contains('first-page') && currentPage > 1) {
         loadEvents(1, currentPageSize);
-      } 
+      }
       else if (e.target.classList.contains('prev-page') && currentPage > 1) {
         loadEvents(currentPage - 1, currentPageSize);
-      } 
+      }
       else if (e.target.classList.contains('next-page') && currentPage < totalPages) {
         loadEvents(currentPage + 1, currentPageSize);
       }
@@ -176,65 +277,65 @@ document.addEventListener('DOMContentLoaded', function() {
     recordsPerPageSelect.addEventListener('change', (e) => {
       const newPageSize = parseInt(e.target.value);
       currentPageSize = newPageSize;
-      
+
       loadEvents(1, newPageSize);
     });
   }
 
   function initWebSocket() {
-  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsHost = window.location.host;
-  const accessToken = localStorage.getItem('access_token');
-  const wsUrl = `${wsProtocol}//${wsHost}/ws/events/?token=${encodeURIComponent(accessToken)}`;
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.host;
+    const accessToken = localStorage.getItem('access_token');
+    const wsUrl = `${wsProtocol}//${wsHost}/ws/events/?token=${encodeURIComponent(accessToken)}`;
 
-  const socket = new WebSocket(wsUrl);
-  let reconnectAttempts = 0;
+    const socket = new WebSocket(wsUrl);
+    let reconnectAttempts = 0;
 
-  socket.onopen = () => {
-    console.log('WebSocket connected');
+    socket.onopen = () => {
+      console.log('WebSocket connected');
 
-    // Обновляем данные только при переподключении
-    if (!isFirstWebSocketConnection) {
-      console.log('Refreshing data after reconnection');
-      loadEvents(currentPage, currentPageSize);
-    } else {
-      // Помечаем первое подключение как завершенное
-      isFirstWebSocketConnection = false;
-    }
-  };
+      // Обновляем данные только при переподключении
+      if (!isFirstWebSocketConnection) {
+        console.log('Refreshing data after reconnection');
+        loadEvents(currentPage, currentPageSize);
+      } else {
+        // Помечаем первое подключение как завершенное
+        isFirstWebSocketConnection = false;
+      }
+    };
 
-  socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    if (message.type === 'event.update') {
-      console.log('Received event update:', message.data);
-      loadEvents(currentPage, currentPageSize);
-    } else if (message.type === 'auth_error') {
-      console.error('WebSocket auth error, refreshing token...');
-      refreshAccessToken()
-        .then(newToken => {
-          // Обновляем токен и переподключаемся
-          localStorage.setItem('access_token', newToken);
-          initWebSocket();
-        })
-        .catch(error => {
-          console.error('Token refresh failed:', error);
-        });
-    }
-  };
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'event.update') {
+        console.log('Received event update:', message.data);
+        loadEvents(currentPage, currentPageSize);
+      } else if (message.type === 'auth_error') {
+        console.error('WebSocket auth error, refreshing token...');
+        refreshAccessToken()
+          .then(newToken => {
+            // Обновляем токен и переподключаемся
+            localStorage.setItem('access_token', newToken);
+            initWebSocket();
+          })
+          .catch(error => {
+            console.error('Token refresh failed:', error);
+          });
+      }
+    };
 
-  socket.onclose = (event) => {
-    console.log('WebSocket closed:', event);
+    socket.onclose = (event) => {
+      console.log('WebSocket closed:', event);
 
-    // Не сбрасываем флаг первого подключения здесь!
-    const delay = Math.min(5000, 1000 * Math.pow(2, reconnectAttempts));
-    reconnectAttempts++;
-    setTimeout(initWebSocket, delay);
-  };
+      // Не сбрасываем флаг первого подключения здесь!
+      const delay = Math.min(5000, 1000 * Math.pow(2, reconnectAttempts));
+      reconnectAttempts++;
+      setTimeout(initWebSocket, delay);
+    };
 
-  socket.onerror = (error) => {
-    console.error('WebSocket error:', error);
-  };
-}
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+  }
 
   function init() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -243,10 +344,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     recordsPerPageSelect.value = initialPageSize;
     currentPageSize = parseInt(initialPageSize);
+    categoriesFilterSelect = document.getElementById('categoriesFilter');
+    loasFilterSelect = document.getElementById('loasFilter');
+    locationsFilterSelect = document.getElementById('locationsFilter');
+
+    restoreFilters();
+    loadFilterData();
+    
+    loasFilterSelect.addEventListener('change', loadLocations);
+    
+    document.getElementById('saveFilter').addEventListener('click', function() {
+        saveFilters();
+        loadEvents(1, currentPageSize);
+    });
 
     setupEventListeners();
     loadEvents(parseInt(initialPage), parseInt(initialPageSize));
-    initWebSocket();  // Инициализируем WebSocket подключение
+    initWebSocket();
   }
 
   init();
