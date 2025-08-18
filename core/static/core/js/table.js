@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const defaultPageSize = 10;
   let categoriesFilterSelect, loasFilterSelect, locationsFilterSelect;
   let currentFilters = {};
+  let currentSortField = 'begin';
+  let currentSortDirection = 'desc';
+  let allEvents = [];
 
   let isFirstWebSocketConnection = true;
 
@@ -110,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function applyFiltersToURL(urlObj) {
     if (currentFilters.show && currentFilters.show !== 'showAll') {
-      if (currentFilters.show == "showEnded"){
+      if (currentFilters.show == "showEnded") {
         urlObj.searchParams.set('is_ended', true);
       }
       else {
@@ -129,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/events/`);
       applyFiltersToURL(url);
-      
+
       url.searchParams.set('page', page);
       url.searchParams.set('page_size', pageSize);
 
@@ -140,7 +143,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      renderEventsTable(data.results);
+      allEvents = data.results;
+      sortEvents();
+      renderEventsTable(allEvents);
       updatePagination(data.total, data.page, data.page_size);
       updateRecordsInfo(data.total, data.page, data.page_size);
 
@@ -148,6 +153,30 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('Ошибка загрузки событий:', error);
       eventsTableBody.innerHTML = `<tr><td colspan="9">Ошибка загрузки данных: ${error.message}</td></tr>`;
     }
+  }
+
+  function sortEvents() {
+    allEvents.sort((a, b) => {
+      let valA, valB;
+
+      switch (currentSortField) {
+        case 'begin':
+        case 'end':
+          valA = new Date(a[currentSortField]);
+          valB = new Date(b[currentSortField]);
+          break;
+        default:
+          valA = a[currentSortField] || '';
+          valB = b[currentSortField] || '';
+          break;
+      }
+
+      let comparison = 0;
+      if (valA > valB) comparison = 1;
+      if (valA < valB) comparison = -1;
+
+      return currentSortDirection === 'asc' ? comparison : -comparison;
+    });
   }
 
   function renderEventsTable(events) {
@@ -199,6 +228,36 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleString('ru-RU');
+  }
+
+  function updateSortUI() {
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+      icon.textContent = '';
+    });
+
+    const activeHeader = document.querySelector(`th[data-sort="${currentSortField}"]`);
+    if (activeHeader) {
+      const icon = activeHeader.querySelector('.sort-icon');
+      if (icon) {
+        icon.textContent = currentSortDirection === 'asc' ? '↑' : '↓';
+      }
+    }
+  }
+
+  function handleHeaderClick() {
+    const sortField = this.dataset.sort;
+
+    if (sortField === currentSortField) {
+      currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    }
+    else {
+      currentSortField = sortField;
+      currentSortDirection = 'desc';
+    }
+
+    updateSortUI();
+    sortEvents();
+    renderEventsTable(allEvents);
   }
 
   function updatePagination(totalItemsCount, currentPageArg, pageSizeFromServer) {
@@ -350,16 +409,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     restoreFilters();
     loadFilterData();
-    
+
     loasFilterSelect.addEventListener('change', loadLocations);
-    
-    document.getElementById('saveFilter').addEventListener('click', function() {
-        saveFilters();
-        loadEvents(1, currentPageSize);
+
+    document.getElementById('saveFilter').addEventListener('click', function () {
+      saveFilters();
+      loadEvents(1, currentPageSize);
     });
 
     setupEventListeners();
     loadEvents(parseInt(initialPage), parseInt(initialPageSize));
+
+    document.querySelectorAll('th[data-sort]').forEach(header => {
+        header.addEventListener('click', handleHeaderClick);
+    });
+    
+    updateSortUI();
+
     initWebSocket();
   }
 

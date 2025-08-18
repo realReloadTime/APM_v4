@@ -138,3 +138,17 @@ button.btn-danger{
   color: #dc3545;
 }
 
+th[data-sort] {
+    cursor: pointer;
+    position: relative;
+}
+
+th[data-sort]:hover {
+    background-color: rgba(158, 169, 255, 0.368);
+}
+
+.sort-icon {
+    margin-left: 1px;
+    font-weight: bold;
+}
+
