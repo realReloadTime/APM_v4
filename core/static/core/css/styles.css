@@ -144,11 +144,72 @@ th[data-sort] {
 }
 
 th[data-sort]:hover {
-    background-color: rgba(158, 169, 255, 0.368);
+    background-color: rgb(184, 192, 255);
 }
 
 .sort-icon {
     margin-left: 1px;
     font-weight: bold;
 }
+
+/* Убираем обводку у бургерного меню */
+.custom-toggler {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.custom-toggler:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Смена цвета при наведении на кнопки меню */
+.nav-button {
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+    margin: 0 5px;
+    padding: 5px 10px !important;
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Стили для активной кнопки меню */
+.nav-button.active {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.navbar-nav {
+    gap: 10px;
+}
+
+.navbar-brand h1 {
+    margin: 0;
+}
+
+.navbar-brand a {
+    padding: 0;
+}
+
+.navbar-brand a:hover {
+    background-color: transparent !important;
+}
+
+#recordsPerPage {
+  text-align: center;
+}
+
+#recordsPerPage::-webkit-outer-spin-button,
+#recordsPerPage::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#recordsPerPage {
+  appearance: textfield;
+}
+
 

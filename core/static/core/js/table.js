@@ -12,9 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const defaultPageSize = 10;
   let categoriesFilterSelect, loasFilterSelect, locationsFilterSelect;
   let currentFilters = {};
-  let currentSortField = 'begin';
-  let currentSortDirection = 'desc';
-  let allEvents = [];
+  let sortFields = {}; // Объект для хранения состояния сортировки {field: direction}
 
   let isFirstWebSocketConnection = true;
 
@@ -126,6 +124,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (currentFilters.category) urlObj.searchParams.set('category', currentFilters.category);
     if (currentFilters.loa) urlObj.searchParams.set('loa', currentFilters.loa);
     if (currentFilters.location) urlObj.searchParams.set('location', currentFilters.location);
+    
+    const sortParams = getSortParams();
+    if (sortParams) {
+      urlObj.searchParams.set('sort_by', sortParams);
+    }
+  }
+
+  function getSortParams() {
+    const sortFieldsArray = [];
+    
+    for (const [field, direction] of Object.entries(sortFields)) {
+      const prefix = direction === 'desc' ? '-' : '';
+      sortFieldsArray.push(`${prefix}${field}`);
+    }
+    
+    return sortFieldsArray.length > 0 ? sortFieldsArray.join(',') : null;
   }
 
   async function loadEvents(page = 1, pageSize = defaultPageSize) {
@@ -143,9 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-      allEvents = data.results;
-      sortEvents();
-      renderEventsTable(allEvents);
+      renderEventsTable(data.results);
       updatePagination(data.total, data.page, data.page_size);
       updateRecordsInfo(data.total, data.page, data.page_size);
 
@@ -155,28 +167,40 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function sortEvents() {
-    allEvents.sort((a, b) => {
-      let valA, valB;
-
-      switch (currentSortField) {
-        case 'begin':
-        case 'end':
-          valA = new Date(a[currentSortField]);
-          valB = new Date(b[currentSortField]);
-          break;
-        default:
-          valA = a[currentSortField] || '';
-          valB = b[currentSortField] || '';
-          break;
-      }
-
-      let comparison = 0;
-      if (valA > valB) comparison = 1;
-      if (valA < valB) comparison = -1;
-
-      return currentSortDirection === 'asc' ? comparison : -comparison;
+  function updateSortUI() {
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+      icon.textContent = '';
     });
+    
+    for (const [field, direction] of Object.entries(sortFields)) {
+      const header = document.querySelector(`th[data-sort="${field}"]`);
+      if (header) {
+        const icon = header.querySelector('.sort-icon');
+        if (icon) {
+          icon.textContent = direction === 'asc' ? '↑' : '↓';
+        }
+      }
+    }
+  }
+
+  function handleHeaderClick(event) {
+    const field = this.dataset.sort;
+    const isShiftKey = event.shiftKey; 
+    
+    if (!isShiftKey) {
+      sortFields = {};
+    }
+    
+    if (!sortFields[field]) {
+      sortFields[field] = 'desc';
+    } else if (sortFields[field] === 'desc') {
+      sortFields[field] = 'asc';
+    } else {
+      delete sortFields[field];
+    }
+    
+    updateSortUI();
+    loadEvents(currentPage, currentPageSize);
   }
 
   function renderEventsTable(events) {
@@ -230,36 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return date.toLocaleString('ru-RU');
   }
 
-  function updateSortUI() {
-    document.querySelectorAll('.sort-icon').forEach(icon => {
-      icon.textContent = '';
-    });
-
-    const activeHeader = document.querySelector(`th[data-sort="${currentSortField}"]`);
-    if (activeHeader) {
-      const icon = activeHeader.querySelector('.sort-icon');
-      if (icon) {
-        icon.textContent = currentSortDirection === 'asc' ? '↑' : '↓';
-      }
-    }
-  }
-
-  function handleHeaderClick() {
-    const sortField = this.dataset.sort;
-
-    if (sortField === currentSortField) {
-      currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-    }
-    else {
-      currentSortField = sortField;
-      currentSortDirection = 'desc';
-    }
-
-    updateSortUI();
-    sortEvents();
-    renderEventsTable(allEvents);
-  }
-
   function updatePagination(totalItemsCount, currentPageArg, pageSizeFromServer) {
     totalItems = totalItemsCount;
     currentPage = currentPageArg;
@@ -291,14 +285,12 @@ document.addEventListener('DOMContentLoaded', function () {
     createPaginationButton('>>', 'last-page', currentPage === totalPages);
   }
 
-
   function updateRecordsInfo(totalItems, currentPage, pageSize) {
     const startItem = Math.min((currentPage - 1) * pageSize + 1, totalItems);
     const endItem = Math.min(currentPage * pageSize, totalItems);
 
     paginationInfo.innerHTML = `Показано ${startItem}-${endItem} из ${totalItems} записей`;
   }
-
 
   function createPaginationButton(symbol, className, isDisabled) {
     const li = document.createElement('li');
@@ -307,9 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
     paginationContainer.appendChild(li);
   }
 
-
   function setupEventListeners() {
-
     paginationContainer.addEventListener('click', (e) => {
       e.preventDefault();
 
@@ -334,9 +324,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     recordsPerPageSelect.addEventListener('change', (e) => {
-      const newPageSize = parseInt(e.target.value);
-      currentPageSize = newPageSize;
+      let newPageSize = parseInt(e.target.value);
 
+      if (isNaN(newPageSize) || newPageSize < 1) {
+        newPageSize = defaultPageSize;
+        recordsPerPageSelect.value = defaultPageSize;
+      } else if (newPageSize > 1000) {
+        newPageSize = 1000;
+        recordsPerPageSelect.value = 1000;
+      }
+
+      currentPageSize = newPageSize;
       loadEvents(1, newPageSize);
     });
   }
@@ -353,12 +351,10 @@ document.addEventListener('DOMContentLoaded', function () {
     socket.onopen = () => {
       console.log('WebSocket connected');
 
-      // Обновляем данные только при переподключении
       if (!isFirstWebSocketConnection) {
         console.log('Refreshing data after reconnection');
         loadEvents(currentPage, currentPageSize);
       } else {
-        // Помечаем первое подключение как завершенное
         isFirstWebSocketConnection = false;
       }
     };
@@ -372,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('WebSocket auth error, refreshing token...');
         refreshAccessToken()
           .then(newToken => {
-            // Обновляем токен и переподключаемся
             localStorage.setItem('access_token', newToken);
             initWebSocket();
           })
@@ -385,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function () {
     socket.onclose = (event) => {
       console.log('WebSocket closed:', event);
 
-      // Не сбрасываем флаг первого подключения здесь!
       const delay = Math.min(5000, 1000 * Math.pow(2, reconnectAttempts));
       reconnectAttempts++;
       setTimeout(initWebSocket, delay);
@@ -412,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loasFilterSelect.addEventListener('change', loadLocations);
 
-    document.getElementById('saveFilter').addEventListener('click', function () {
+    document.getElementById('saveFilter').addEventListener('click', function() {
       saveFilters();
       loadEvents(1, currentPageSize);
     });
@@ -421,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadEvents(parseInt(initialPage), parseInt(initialPageSize));
 
     document.querySelectorAll('th[data-sort]').forEach(header => {
-        header.addEventListener('click', handleHeaderClick);
+      header.addEventListener('click', handleHeaderClick);
     });
     
     updateSortUI();

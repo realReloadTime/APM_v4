@@ -3,7 +3,7 @@ async function refreshAccessToken() {
         const refreshToken = localStorage.getItem('refresh_token');
         
         if (!refreshToken) {
-            throw new Error('Refresh token not found');
+            window.location.href = '/login';
         }
 
         const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/refresh_token/`, {
@@ -15,25 +15,24 @@ async function refreshAccessToken() {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to refresh token: HTTP ${response.status}`);
+            window.location.href = '/login';
         }
 
         const data = await response.json();
         
         if (!data.access) {
-            throw new Error('New access token not received');
+            window.location.href = '/login';
         }
 
         localStorage.setItem('access_token', data.access);
         location.reload();
         return data.access;
     } catch (error) {
-        console.error('Token refresh failed:', error);
-        
+               
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         
-        throw error; 
+        window.location.href = '/login';
     }
 }
 
@@ -42,7 +41,7 @@ async function loadUserProfile() {
         let accessToken = localStorage.getItem('access_token');
         
         if (!accessToken) {
-            throw new Error('Токен доступа отсутствует');
+            window.location.href = '/login';
         }
 
         const fetchWithTokenRefresh = async (url, options = {}) => {
@@ -64,15 +63,15 @@ async function loadUserProfile() {
                 
                 return response;
             } catch (error) {
-                console.error('Request failed:', error);
-                throw error;
+
+                window.location.href = '/login';
             }
         };
 
         const response = await fetchWithTokenRefresh(`${window.APP_CONFIG.API_BASE_URL}/api/users/me/`);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            window.location.href = '/login';
         }
 
         const userData = await response.json();
@@ -91,6 +90,7 @@ async function loadUserProfile() {
         handleError(error);
     }
 }
+window.loadUserProfile = loadUserProfile;
 
 function handleError(error, status = null) {
     console.error('Ошибка:', error);
