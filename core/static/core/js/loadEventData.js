@@ -275,7 +275,6 @@ document.addEventListener('DOMContentLoaded', function () {
         loadObjectTypes();
     });
     loadData("subsystems").then(() => {
-        // После загрузки подсистем вызываем фильтрацию
         filterSubsystems();
     });
 });

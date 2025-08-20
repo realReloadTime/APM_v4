@@ -226,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     window.loadMeasures = loadMeasures;
+    document.getElementById('begin').value= formatDateTime(new Date());
     const eventId = getEventIdFromUrl();
     if (eventId) {
         loadData(eventId);
