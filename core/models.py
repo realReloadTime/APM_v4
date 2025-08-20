@@ -4,32 +4,51 @@ from django.db.models import (Model, CASCADE, SET_NULL, Index, TextField, DateTi
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
+class Profile(Model):
+    name = CharField(max_length=255, unique=True)  # "Администратор", "Наблюдатель", "Сотрудник"
+    read = BooleanField(default=False)
+    edit = BooleanField(default=False)
+    admin = BooleanField(default=False)  # объединяет is_staff и is_superuser
+
+    def __str__(self):
+        return self.name
+
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
+
+        if 'profile' not in extra_fields:
+            extra_fields['profile'] = Profile.objects.get(name='Наблюдатель')
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('profile', Profile.objects.get(name='Администратор'))  # запустить фикстуру!!
         return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = EmailField(unique=True)
     name = CharField(max_length=255, blank=True)
+    is_active = BooleanField(default=True)
 
-    is_active = BooleanField(default=True)  # поля для доступа к админке (обязательные для PermissionsMixin)
-    is_staff = BooleanField(default=False)
-    is_superuser = BooleanField(default=False)
-
-    read = BooleanField(default=True)
-    edit = BooleanField(default=False)
+    profile = ForeignKey(
+        'Profile',
+        on_delete=SET_NULL,
+        null=True,
+        related_name='users'
+    )
+    loa = ManyToManyField(
+        'LOA',
+        related_name='users',
+        blank=True
+    )  # привязка к LOA; null для админов (доступ ко всему)
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
@@ -39,13 +58,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def has_perm(self, perm: str, obj=None):
-        if self.is_superuser:  # Если пользователь админ, даём все права
+        if not self.profile:
+            return False
+        if self.profile.admin:  # полный доступ для админов
             return True
-        if perm.endswith('_read') and self.read:
+        if perm.endswith('_read') and self.profile.read:
             return True
-        if perm.endswith('_edit') and self.edit:
+        if perm.endswith('_edit') and self.profile.edit:
             return True
         return False
+
+    @property
+    def is_admin(self):
+        return self.profile.admin if self.profile else False
 
 
 class SubsystemStatus(Model):

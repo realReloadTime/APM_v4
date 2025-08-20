@@ -1,7 +1,8 @@
 import json
-from django.http import JsonResponse, HttpResponse, QueryDict
+from django.http import JsonResponse, HttpResponse
 
 from rest_framework.permissions import IsAuthenticated
+from core.auth import HasLOAAccess, HasEditPermission, HasReadPermission
 
 from core.logic.event import EventRepository, EventService
 from core.models import Event
@@ -47,7 +48,7 @@ async def get_post_event(request):
 
 
 @async_api_method(['GET'])
-@async_permission_required([IsAuthenticated])
+@async_permission_required([IsAuthenticated, HasReadPermission, HasLOAAccess])
 async def get_event_detail(request, event_id: int):
     service = await get_event_service()
 
@@ -63,7 +64,7 @@ async def get_event_detail(request, event_id: int):
 
 
 @async_api_method(['PUT'])
-@async_permission_required([IsAuthenticated])
+@async_permission_required([IsAuthenticated, HasEditPermission])
 async def update_event(request, event_id: int):
     service = await get_event_service()
     data = json.loads(request.body)
@@ -76,7 +77,7 @@ async def update_event(request, event_id: int):
 
 
 @async_api_method(['DELETE'])
-@async_permission_required([IsAuthenticated])
+@async_permission_required([IsAuthenticated, HasEditPermission])
 async def delete_event(request, event_id: int):
     service = await get_event_service()
 

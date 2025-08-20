@@ -13,15 +13,19 @@ class UserRepository:
     @staticmethod
     async def get_user(pk: int | None = None) -> CustomUser | list[CustomUser] | None:
         if pk is None:
-            return [user async for user in CustomUser.objects.all()]
-        return await CustomUser.objects.aget(id=pk)
+            return [user async for user in CustomUser.objects.select_related('profile').prefetch_related('loa').all()]
+        return await CustomUser.objects.select_related('profile').prefetch_related('loa').aget(id=pk)
+
+    @staticmethod
+    async def get_me_as_user(user: CustomUser) -> CustomUser:
+        return await CustomUser.objects.select_related('profile').prefetch_related('loa').aget(id=user.id)
 
     @staticmethod
     async def update_user(pk: int, data: dict) -> CustomUser | None:
-        updated = await CustomUser.objects.filter(id=pk).aupdate(**data)
+        updated = await CustomUser.objects.filter(id=pk).select_related('profile').prefetch_related('loa').aupdate(**data)
         if not updated:
             return None
-        return await CustomUser.objects.aget(id=pk)
+        return await CustomUser.objects.aget(id=pk).select_related('profile').prefetch_related('loa')
 
     @staticmethod
     async def delete_user(pk: int) -> bool:
@@ -38,7 +42,7 @@ class UserService:
         return await self.serialize_user(result)
 
     async def get_me_as_user(self, user: CustomUser):
-        return await self.serialize_user(user)
+        return await self.serialize_user(await self.repository.get_me_as_user(user))
 
     async def get_user(self, pk: int | None = None):
         result = await self.repository.get_user(pk)

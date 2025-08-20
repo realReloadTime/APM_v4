@@ -7,9 +7,7 @@
         "email": "test@test.com",
         "name": "Иванов И.А.",
         "is_active": true,
-        "is_staff": false,
-        "read": true,
-        "edit": false
+        "profile": 3
     }
   }
 ]

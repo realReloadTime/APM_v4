@@ -1,11 +1,12 @@
+import json
+
 from asgiref.sync import sync_to_async
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import BasePermission
 
 from django.http import JsonResponse
-
-from core.models import CustomUser
 
 
 async def authenticate_request(request):
@@ -52,6 +53,38 @@ def async_api_method(methods):
     return decorator
 
 
-@sync_to_async
-def check_user_permisssion(user: CustomUser, permission: str = 'read'):  # проверка доступа пользователя к функционалу
-    return user.has_perm(permission)
+class HasReadPermission(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.profile.read if request.user.profile else False
+
+
+class HasEditPermission(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.profile.edit if request.user.profile else False
+
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_admin
+
+
+class HasLOAAccess(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_admin:
+            return True
+        if not request.user.loa:
+            return False
+        # Для list(GET) — фильтрация в view, так что permission ок
+        if request.method in ['POST', 'PUT']:
+            data = json.loads(request.body) if request.body else {}
+            loa_id = data.get('loa_id')
+            return loa_id == request.user.loa.id
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_admin:
+            return True
+        if not request.user.loa:
+            return False
+        # Проверяем, что объект (например, Event) связан с user.loa
+        return obj.loa == request.user.loa  # Предполагаем, что obj имеет поле loa

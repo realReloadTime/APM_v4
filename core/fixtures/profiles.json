@@ -1,0 +1,29 @@
+[
+  {
+    "model": "core.profile",
+    "pk": 1,
+    "fields": {
+      "name": "Наблюдатель",
+      "read": true
+    }
+  },
+  {
+    "model": "core.profile",
+    "pk": 2,
+    "fields": {
+      "name": "Сотрудник",
+      "read": true,
+      "edit": true
+    }
+  },
+  {
+    "model": "core.profile",
+    "pk": 3,
+    "fields": {
+      "name": "Администратор",
+      "read": true,
+      "edit": true,
+      "admin": true
+    }
+  }
+]

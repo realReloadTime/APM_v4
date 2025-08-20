@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment, \
+from core.models import Profile, CustomUser, SubsystemStatus, System, Subsystem, Condition, Precipitation, Source, Attachment, \
     Category, LocationType, Region, LOA, Location, ObjectType, Object, Event, MeasuresTaken, EquipmentFailure, \
     AdverseWeather, FireDanger, GeologicalDanger, HydrologicalDanger, EmergencySituation, OtherDanger
 
@@ -9,7 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password', 'name']
+        fields = ['email', 'password', 'name', 'profile']
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -21,9 +21,30 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_id = serializers.PrimaryKeyRelatedField(
+        queryset=Profile.objects.all(),
+        source='profile',
+        required=False
+    )
+    loa_id = serializers.PrimaryKeyRelatedField(
+        queryset=LOA.objects.all(),
+        source='loa',
+        required=False,
+        many=True
+    )
+    profile = serializers.StringRelatedField(read_only=True)
+    loa = serializers.StringRelatedField(read_only=True, many=True)
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'name', 'is_active', 'is_staff', 'read', 'edit']
+        fields = ['id', 'email', 'name', 'is_active', 'profile_id', 'profile', 'loa_id', 'loa']
+        read_only_fields = ['id', 'profile', 'loa']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'
 
 
 class SubsystemStatusSerializer(serializers.ModelSerializer):  # ExampleSerializer(example) -> JSON response
