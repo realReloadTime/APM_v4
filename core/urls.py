@@ -185,6 +185,6 @@ urlpatterns = [
     path('other_dangers/<int:danger_id>/delete/', delete_other_danger, name='other_danger-delete'),
 ]
 
-# from views.test import test
-#
-# urlpatterns += path('/test', test, name='test')
+from core.views.test import test
+
+urlpatterns.append(path('test/', test, name='test'))

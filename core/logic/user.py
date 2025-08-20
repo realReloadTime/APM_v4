@@ -25,7 +25,7 @@ class UserRepository:
         updated = await CustomUser.objects.filter(id=pk).select_related('profile').prefetch_related('loa').aupdate(**data)
         if not updated:
             return None
-        return await CustomUser.objects.aget(id=pk).select_related('profile').prefetch_related('loa')
+        return await CustomUser.objects.select_related('profile').prefetch_related('loa').aget(id=pk)
 
     @staticmethod
     async def delete_user(pk: int) -> bool:

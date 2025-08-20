@@ -14,7 +14,7 @@ async def get_event_service():
 
 
 @async_api_method(['GET', 'POST'])
-@async_permission_required([IsAuthenticated])
+@async_permission_required([IsAuthenticated, HasReadPermission])
 async def get_post_event(request):
     service = await get_event_service()
 
