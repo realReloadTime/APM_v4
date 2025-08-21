@@ -241,6 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (selected) {
             document.getElementById('object_id').value = selected.value;
             document.getElementById('object').value = selected.getAttribute('data-name');
+            console.log(selected.value)
         }
         bootstrap.Modal.getInstance(document.getElementById('oneObjectModal')).hide();
     });

@@ -78,7 +78,7 @@ async function loadUserProfile() {
         
         const usernameElement = document.getElementById('username');
         if (usernameElement) {
-            usernameElement.textContent = userData.name || userData.email || 'Пользователь';
+            usernameElement.textContent = userData.profile || userData.email || 'Пользователь';
         }
         
         localStorage.setItem('user_permissions', JSON.stringify({

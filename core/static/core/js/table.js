@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (currentFilters.category) urlObj.searchParams.set('category', currentFilters.category);
     if (currentFilters.loa) urlObj.searchParams.set('loa', currentFilters.loa);
     if (currentFilters.location) urlObj.searchParams.set('location', currentFilters.location);
-    
+
     const sortParams = getSortParams();
     if (sortParams) {
       urlObj.searchParams.set('sort_by', sortParams);
@@ -133,12 +133,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function getSortParams() {
     const sortFieldsArray = [];
-    
+
     for (const [field, direction] of Object.entries(sortFields)) {
       const prefix = direction === 'desc' ? '-' : '';
       sortFieldsArray.push(`${prefix}${field}`);
     }
-    
+
     return sortFieldsArray.length > 0 ? sortFieldsArray.join(',') : null;
   }
 
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.sort-icon').forEach(icon => {
       icon.textContent = '';
     });
-    
+
     for (const [field, direction] of Object.entries(sortFields)) {
       const header = document.querySelector(`th[data-sort="${field}"]`);
       if (header) {
@@ -185,12 +185,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function handleHeaderClick(event) {
     const field = this.dataset.sort;
-    const isShiftKey = event.shiftKey; 
-    
+    const isShiftKey = event.shiftKey;
+
     if (!isShiftKey) {
       sortFields = {};
     }
-    
+
     if (!sortFields[field]) {
       sortFields[field] = 'desc';
     } else if (sortFields[field] === 'desc') {
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       delete sortFields[field];
     }
-    
+
     updateSortUI();
     loadEvents(currentPage, currentPageSize);
   }
@@ -227,8 +227,8 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${event.location || '-'}</td>
         <td>${event.note || '-'}</td>
         <td>${event.end ? formatDateTime(event.end) : '-'}</td>
-        <td>${event.attachments && event.attachments.length > 0 ? 'Да' : 'Нет'}</td>
-        <td><input type="checkbox" class="form-check" ${event.report_required ? 'checked' : ''}></td>
+        <td>${(event.event_attachments_id && event.event_attachments_id.length > 0) ? 'Да' : 'Нет'}</td>
+        <td><input name="table-check" id=${event.id} type="checkbox" class="form-check" checked></td>
         <td>
           <button class="btn btn-sm btn-primary edit-btn" data-id="${event.id}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
@@ -252,6 +252,24 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleString('ru-RU');
+  }
+
+  async function makeReport() {
+    let reportIds = {"event_id": []}
+    document.getElementsByName("table-check").forEach(check => {
+      if (check) {
+        reportIds.event_id.push(parseInt(check.id))
+      }
+    })
+    const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/test/`);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}` },
+      body: JSON.stringify(reportIds)
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
   }
 
   function updatePagination(totalItemsCount, currentPageArg, pageSizeFromServer) {
@@ -404,9 +422,11 @@ document.addEventListener('DOMContentLoaded', function () {
     restoreFilters();
     loadFilterData();
 
+    document.getElementById('makeReport').addEventListener('click', makeReport)
+
     loasFilterSelect.addEventListener('change', loadLocations);
 
-    document.getElementById('saveFilter').addEventListener('click', function() {
+    document.getElementById('saveFilter').addEventListener('click', function () {
       saveFilters();
       loadEvents(1, currentPageSize);
     });
@@ -417,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('th[data-sort]').forEach(header => {
       header.addEventListener('click', handleHeaderClick);
     });
-    
+
     updateSortUI();
 
     initWebSocket();
