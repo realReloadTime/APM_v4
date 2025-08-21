@@ -1,4 +1,4 @@
-from collections import defaultdict
+from asgiref.sync import sync_to_async
 from django.db.models import Prefetch
 from core.models import (
     Event, EquipmentFailure, AdverseWeather, FireDanger, GeologicalDanger,
@@ -6,7 +6,7 @@ from core.models import (
 )
 
 
-def generate_report_data(event_ids: list[int]) -> dict:
+async def generate_report_data(event_ids: list[int]) -> dict:
     """
     Функция для генерации структурированных данных отчета на основе списка ID событий.
     События группируются по категориям, нумеруются и форматируются в список словарей с полями на русском языке.
@@ -36,48 +36,45 @@ def generate_report_data(event_ids: list[int]) -> dict:
         'OtherDanger': list()
     }
 
-    for event in events:
+    async for event in events:
         category_table = event.category.table_name.lower() if event.category else None
-        data = _collect_common_data(event)
-        print(category_table)
+        data = await _collect_common_data(event)
         if category_table == 'equipment_failure':
-            failure = EquipmentFailure.objects.select_related(
+            failure = await EquipmentFailure.objects.select_related(
                 'object', 'subsystem', 'subsystem_status'
-            ).prefetch_related('influenced_objects').get(event=event)
-            data.update(_collect_equipment_failure_data(failure, event))
+            ).prefetch_related('influenced_objects').aget(event=event)
+            data.update(await _collect_equipment_failure_data(failure, event))
             grouped_data['EquipmentFailure'].append(data)
 
         elif category_table == 'adverse_weather':
-            weather = AdverseWeather.objects.select_related('source', 'condition', 'precipitation').get(event=event)
-            data.update(_collect_weather_danger_data(weather, event))
+            weather = await AdverseWeather.objects.select_related('source', 'condition', 'precipitation').aget(event=event)
+            data.update(await _collect_weather_danger_data(weather, event))
             grouped_data['AdverseWeather'].append(data)
 
         elif category_table == 'fire_danger':
-            fire = FireDanger.objects.select_related('source').get(event=event)
-            data.update(_collect_fire_danger_data(fire, event))
+            fire = await FireDanger.objects.select_related('source').aget(event=event)
+            data.update(await _collect_fire_danger_data(fire, event))
             grouped_data['FireDanger'].append(data)
 
         elif category_table == 'geological_danger':
-            geo = GeologicalDanger.objects.select_related('source').get(event=event)
-            data.update(_collect_geological_danger_data(geo, event))
+            geo = await GeologicalDanger.objects.select_related('source').aget(event=event)
+            data.update(await _collect_geological_danger_data(geo, event))
             grouped_data['GeologicalDanger'].append(data)
 
         elif category_table == 'hydrological_danger':
-            hydro = HydrologicalDanger.objects.select_related('source').get(event=event)
-            data.update(_collect_hydrological_danger_data(hydro, event))
+            hydro = await HydrologicalDanger.objects.select_related('source').aget(event=event)
+            data.update(await _collect_hydrological_danger_data(hydro, event))
             grouped_data['HydrologicalDanger'].append(data)
 
         elif category_table == 'emergency_situation':
-            emergency = EmergencySituation.objects.select_related('source').get(event=event)
-            data.update(_collect_emergency_situation_data(emergency, event))
+            emergency = await EmergencySituation.objects.select_related('source').aget(event=event)
+            data.update(await _collect_emergency_situation_data(emergency, event))
             grouped_data['EmergencySituation'].append(data)
 
         elif category_table == 'other_danger':
-            other = OtherDanger.objects.select_related('source').get(event=event)
-            data.update(_collect_other_danger_data(other, event))
+            other = await OtherDanger.objects.select_related('source').aget(event=event)
+            data.update(await _collect_other_danger_data(other, event))
             grouped_data['OtherDanger'].append(data)
-
-        print(grouped_data, data)
 
     # Нумеруем события в каждой группе
     for category, items in grouped_data.items():
@@ -86,14 +83,13 @@ def generate_report_data(event_ids: list[int]) -> dict:
     return dict(grouped_data)
 
 
-def _collect_common_data(event: Event) -> dict:
+async def _collect_common_data(event: Event) -> dict:
     """Собирает общие данные из модели Event."""
-    measures = '\n'.join(
+    measures = '\n'.join([
         f"{m.adopted_at.strftime('%d.%m.%Y %H:%M:%S')}: {m.description}"
-        for m in event.event_measures.all()
-    ) or ''
+        async for m in event.event_measures.all()]) or ''
 
-    attachments = '\n'.join(a.name for a in event.event_attachments.all()) or ''
+    attachments = '\n'.join([a.name async for a in event.event_attachments.all()]) or ''
 
     return {
         'Дата, время начала': event.begin.strftime('%d.%m.%Y %H:%M:%S') if event.begin else '',
@@ -113,12 +109,12 @@ def _collect_common_data(event: Event) -> dict:
     }
 
 
-def _collect_equipment_failure_data(failure: EquipmentFailure, event: Event) -> dict:
+async def _collect_equipment_failure_data(failure: EquipmentFailure, event: Event) -> dict:
     """Собирает данные для EquipmentFailure в формате отчета об отказах."""
-    influenced = ', '.join(o.name for o in failure.influenced_objects.all()) or ''
+    influenced = ', '.join([o.name async for o in failure.influenced_objects.all()]) or ''
 
     return {
-        'Наименование отказа': f"{failure.subsystem.system.name if failure.subsystem.system else ''} - {failure.subsystem.name}",
+        'Наименование отказа': f"{failure.subsystem.name}",
         'Место возникновения/ Наименование объекта': (
             f"{failure.object.name} (влияние на: {influenced})" if influenced else failure.object.name
         ),
@@ -128,7 +124,7 @@ def _collect_equipment_failure_data(failure: EquipmentFailure, event: Event) -> 
     }
 
 
-def _collect_weather_danger_data(weather: AdverseWeather, event: Event) -> dict:
+async def _collect_weather_danger_data(weather: AdverseWeather, event: Event) -> dict:
     """Собирает данные для AdverseWeather в формате отчета о погодных условиях."""
     return {
         'Вид информации, источник получения': weather.source.name if weather.source else '',
@@ -142,7 +138,7 @@ def _collect_weather_danger_data(weather: AdverseWeather, event: Event) -> dict:
     }
 
 
-def _collect_fire_danger_data(fire: FireDanger, event: Event) -> dict:
+async def _collect_fire_danger_data(fire: FireDanger, event: Event) -> dict:
     """Собирает данные для FireDanger."""
     return {
         'Вид информации, источник получения': fire.source.name if fire.source else '',
@@ -153,7 +149,7 @@ def _collect_fire_danger_data(fire: FireDanger, event: Event) -> dict:
     }
 
 
-def _collect_geological_danger_data(geo: GeologicalDanger, event: Event) -> dict:
+async def _collect_geological_danger_data(geo: GeologicalDanger, event: Event) -> dict:
     """Собирает данные для GeologicalDanger."""
     return {
         'Вид информации, источник получения': geo.source.name if geo.source else '',
@@ -164,7 +160,7 @@ def _collect_geological_danger_data(geo: GeologicalDanger, event: Event) -> dict
     }
 
 
-def _collect_hydrological_danger_data(hydro: HydrologicalDanger, event: Event) -> dict:
+async def _collect_hydrological_danger_data(hydro: HydrologicalDanger, event: Event) -> dict:
     """Собирает данные для HydrologicalDanger."""
     return {
         'Вид информации, источник получения': hydro.source.name if hydro.source else '',
@@ -175,7 +171,7 @@ def _collect_hydrological_danger_data(hydro: HydrologicalDanger, event: Event) -
     }
 
 
-def _collect_emergency_situation_data(emergency: EmergencySituation, event: Event) -> dict:
+async def _collect_emergency_situation_data(emergency: EmergencySituation, event: Event) -> dict:
     """Собирает данные для EmergencySituation."""
     return {
         'Вид информации, источник получения': emergency.source.name if emergency.source else '',
@@ -186,7 +182,7 @@ def _collect_emergency_situation_data(emergency: EmergencySituation, event: Even
     }
 
 
-def _collect_other_danger_data(other: OtherDanger, event: Event) -> dict:
+async def _collect_other_danger_data(other: OtherDanger, event: Event) -> dict:
     """Собирает данные для OtherDanger."""
     return {
         'Вид информации, источник получения': other.source.name if other.source else '',
