@@ -1,7 +1,6 @@
 import xlsxwriter
 
 
-
 async def make_report(data: dict) -> xlsxwriter.Workbook:
     workbook = xlsxwriter.Workbook('report.xlsx')
 
@@ -11,11 +10,11 @@ async def make_report(data: dict) -> xlsxwriter.Workbook:
         'valign': 'vcenter',
         'bg_color': '#D7E4BC',
         'border': 1,
-        'text_wrap': True  # Перенос текста в заголовках
+        'text_wrap': True
     })
 
     cell_format = workbook.add_format({
-        'text_wrap': True,  # Перенос текста в ячейках для длинных описаний
+        'text_wrap': True,
         'valign': 'top',
         'border': 1
     })
@@ -38,18 +37,18 @@ async def make_report(data: dict) -> xlsxwriter.Workbook:
             col += 1
         worksheet.set_column(0, len(headers) - 1, 20)
 
-        row += 1  # Переход к следующей строке после заголовков
+        row += 1
 
         for record in records:
-            col = 0  # Сброс столбца для новой строки
+            col = 0
             for header in headers:
-                value = record.get(header, '')  # Получить значение или пустую строку, если ключа нет
+                value = record.get(header, '')
                 if isinstance(value, (int, float)):
                     worksheet.write_number(row, col, value, cell_format)
                 else:
                     worksheet.write(row, col, value, cell_format)
                 col += 1
-            row += 1  # Переход к следующей строке после записи
+            row += 1
 
     workbook.close()
     return workbook
