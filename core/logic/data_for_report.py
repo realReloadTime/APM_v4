@@ -1,4 +1,3 @@
-from asgiref.sync import sync_to_async
 from django.db.models import Prefetch
 from core.models import (
     Event, EquipmentFailure, AdverseWeather, FireDanger, GeologicalDanger,
@@ -9,7 +8,7 @@ from core.models import (
 async def generate_report_data(event_ids: list[int]) -> dict:
     """
     Функция для генерации структурированных данных отчета на основе списка ID событий.
-    События группируются по категориям, нумеруются и форматируются в список словарей с полями на русском языке.
+    События группируются по категориям, нумеруются и форматируются в список словарей.
 
     :param event_ids: Список ID событий для обработки.
     :return: Словарь с ключами - названиями категорий, значениями - списками словарей с данными событий.
@@ -17,7 +16,6 @@ async def generate_report_data(event_ids: list[int]) -> dict:
     if not event_ids:
         return {}
 
-    # Получаем все события с предзагрузкой связанных данных
     events = Event.objects.filter(id__in=event_ids).select_related(
         'loa', 'category', 'location', 'created_by'
     ).prefetch_related(
@@ -25,7 +23,6 @@ async def generate_report_data(event_ids: list[int]) -> dict:
         'event_attachments'
     )
 
-    # Создаем словарь для группировки
     grouped_data = {
         'EquipmentFailure': list(),
         'AdverseWeather': list(),
@@ -76,7 +73,7 @@ async def generate_report_data(event_ids: list[int]) -> dict:
             data.update(await _collect_other_danger_data(other, event))
             grouped_data['OtherDanger'].append(data)
 
-    # Нумеруем события в каждой группе
+    # нумерация события в каждой группе
     for category, items in grouped_data.items():
         for idx, item in enumerate(items, start=1):
             item['№ п/п'] = idx
