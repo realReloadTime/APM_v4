@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let eventId = getEventIdFromUrl();
-    console.log("Initial eventId:", eventId);
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const eventData = await response.json();
             const attachmentsIds = eventData.event_attachments_id || [];
-            console.log("Found attachments:", attachmentsIds);
 
             for (const attachmentId of attachmentsIds) {
                 const attachmentResponse = await fetch(
@@ -141,8 +139,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (file.id) {
                 const downloadBtn = document.createElement('button');
                 downloadBtn.className = 'btn btn-primary btn-sm';
-                downloadBtn.innerHTML = '<i class="bi bi-download"></i>';
-                downloadBtn.textContent = 'Скачать файл';
+                downloadBtn.innerHTML = '<img src="' + staticUrl + 
+                'box-arrow-in-down.svg" width="16" height="16" style="filter: invert(1);" alt="Скачать">';
                 downloadBtn.onclick = () => downloadFile(file);
                 buttonsContainer.appendChild(downloadBtn);
             }

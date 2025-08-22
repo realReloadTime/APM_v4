@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -11,7 +12,9 @@
     <script src="{% static 'core/js/loadNavbar.js' %}"></script>
     <script src="{% static 'core/js/loadUserProfile.js' %}"></script>
     <script src="{% static 'core/js/loadInformation.js' %}"></script>
+    <script> var staticUrl = "{% static 'core/images/' %}"; </script>
 </head>
+
 <body>
     <div id="menu"></div>
     <main style="padding-top: 90px;">
@@ -24,54 +27,61 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                 </tbody>
             </table>
         </div>
         <div class="internal-block" style="width: 90%; margin-left: auto; margin-right: auto; ">
-            <label>Возможные последствия</label>
-            <input id="consequences" type="text" class="form-control" disabled/>
+            <label><strong>Возможные последствия</strong></label>
+            <input id="consequences" type="text" class="form-control" disabled />
         </div>
         <div class="internal-block" style="width: 90%; margin-left: auto; margin-right: auto; ">
-            <label>Принимаемые меры</label>
+            <label><strong>Принимаемые меры</strong></label>
             <textarea id="actions" class="form-control" disabled rows="5"></textarea>
         </div>
         <div class="internal-block" style="width: 90%; margin-left: auto; margin-right: auto; ">
-            <label>Информацию внес:</label>
+            <label><strong>Информацию внес:</strong></label>
             <input id="created_by" type="text" class="form-control" disabled>
+        </div>
+        <div class="internal-block" style="width: 90%; margin-left: auto; margin-right: auto;">
+            <label class="label-for-textarea" for="attachments">Вложения </label>
+            <div id="fileListContainer">
+                <p class="text-muted">Файлы отсутсвуют</p>
+            </div>
         </div>
     </main>
     <footer class="fixed-bottom bg-light p-2">
-    <div class="container-fluid" style="width: 90%; margin-left: auto; margin-right: auto; ">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <button id="deleteButton" class="btn btn-danger btn-lg">Удалить</button>
-            </div>
-            <div>
-                <a id="editButtonLink" href=''><button class="btn btn-primary btn-lg">Редактировать</button></a>
-                <a href="/table"><button class="btn btn-primary btn-lg">Ок</button></a>
+        <div class="container-fluid" style="width: 90%; margin-left: auto; margin-right: auto; ">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button id="deleteButton" class="btn btn-danger btn-lg">Удалить</button>
+                </div>
+                <div>
+                    <a id="editButtonLink" href=''><button class="btn btn-primary btn-lg">Редактировать</button></a>
+                    <a href="/table"><button class="btn btn-primary btn-lg">Ок</button></a>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
-<!-- Модальное окно для подтверждения удаления -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Подтверждение удаления</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Вы уверены, что хотите удалить это событие? Это действие нельзя отменить.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+    <!-- Модальное окно для подтверждения удаления -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите удалить это событие? Это действие нельзя отменить.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>
