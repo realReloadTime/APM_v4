@@ -3,7 +3,10 @@ async function refreshAccessToken() {
         const refreshToken = localStorage.getItem('refresh_token');
         
         if (!refreshToken) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
             window.location.href = '/login';
+            return;
         }
 
         const response = await fetch(`${window.APP_CONFIG.API_BASE_URL}/api/refresh_token/`, {
@@ -15,24 +18,22 @@ async function refreshAccessToken() {
         });
 
         if (!response.ok) {
-            window.location.href = '/login';
+            throw new Error('Refresh token failed');
         }
 
         const data = await response.json();
         
         if (!data.access) {
-            window.location.href = '/login';
+            throw new Error('Invalid token response');
         }
 
         localStorage.setItem('access_token', data.access);
-        location.reload();
         return data.access;
     } catch (error) {
-               
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        
         window.location.href = '/login';
+        throw error; // Прерываем выполнение
     }
 }
 
@@ -42,6 +43,7 @@ async function loadUserProfile() {
         
         if (!accessToken) {
             window.location.href = '/login';
+            return;
         }
 
         const fetchWithTokenRefresh = async (url, options = {}) => {
@@ -55,23 +57,26 @@ async function loadUserProfile() {
                 
                 if (response.status === 401) {
                     accessToken = await refreshAccessToken();
-                    
                     headers['Authorization'] = `Bearer ${accessToken}`;
-                    
                     response = await fetch(url, { ...options, headers });
+                    location.reload();
                 }
                 
                 return response;
             } catch (error) {
-
-                window.location.href = '/login';
+                if (error.message.includes('token')) {
+                    window.location.href = '/login';
+                }
+                throw error;
             }
         };
 
-        const response = await fetchWithTokenRefresh(`${window.APP_CONFIG.API_BASE_URL}/api/users/me/`);
+        const response = await fetchWithTokenRefresh(
+            `${window.APP_CONFIG.API_BASE_URL}/api/users/me/`
+        );
         
         if (!response.ok) {
-            window.location.href = '/login';
+            throw new Error('Failed to fetch user data');
         }
 
         const userData = await response.json();
@@ -87,10 +92,13 @@ async function loadUserProfile() {
         }));
 
     } catch (error) {
+        if (error.message.includes('token')) {
+            // Ошибка уже обработана в refreshAccessToken
+            return;
+        }
         handleError(error);
     }
 }
-window.loadUserProfile = loadUserProfile;
 
 function handleError(error, status = null) {
     console.error('Ошибка:', error);
@@ -98,10 +106,6 @@ function handleError(error, status = null) {
     if (status === 401 || error.message.includes('token')) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        
-        setTimeout(() => {
-            window.location.href = '/login';
-        }, 3000);
+        window.location.href = '/login';
     }
-    
 }

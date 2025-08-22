@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let isFirstWebSocketConnection = true;
 
   if (!accessToken) {
-    window.location.href = '/login';
+    window.loadUserProfile();
     return;
   }
 
@@ -255,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function makeReport() {
-    let reportIds = {"event_id": []}
+    let reportIds = { "event_id": [] }
     document.getElementsByName("table-check").forEach(check => {
       if (check) {
         reportIds.event_id.push(parseInt(check.id))

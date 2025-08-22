@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
+        if (status === 401 || error.message.includes('token')) {
+            window.loadUserProfile();
+        }
         alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
     }
 
