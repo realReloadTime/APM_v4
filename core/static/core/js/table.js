@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let categoriesFilterSelect, loasFilterSelect, locationsFilterSelect;
   let currentFilters = {};
   let sortFields = {}; // Объект для хранения состояния сортировки {field: direction}
+  let pickAll = true;
 
   let isFirstWebSocketConnection = true;
 
@@ -183,13 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function handleHeaderClick(event) {
+  function handleHeaderClick() {
     const field = this.dataset.sort;
-    const isShiftKey = event.shiftKey;
-
-    if (!isShiftKey) {
-      sortFields = {};
-    }
 
     if (!sortFields[field]) {
       sortFields[field] = 'desc';
@@ -228,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${event.note || '-'}</td>
         <td>${event.end ? formatDateTime(event.end) : '-'}</td>
         <td>${(event.event_attachments_id && event.event_attachments_id.length > 0) ? 'Да' : 'Нет'}</td>
-        <td><input name="table-check" id=${event.id} type="checkbox" class="form-check" checked></td>
+        <td><input name="table-check" id=${event.id} type="checkbox" class="form-check" ${(pickAll) ? 'checked' : ''}></td>
         <td>
           <button class="btn btn-sm btn-primary edit-btn" data-id="${event.id}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
@@ -257,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function makeReport() {
     let reportIds = { "event_id": [] }
     document.getElementsByName("table-check").forEach(check => {
-      if (check) {
+      if (check.checked) {
         reportIds.event_id.push(parseInt(check.id))
       }
     })
@@ -270,6 +266,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  function changeCheck(){
+    document.getElementsByName("table-check").forEach(check => {
+      check.checked = pickAll;
+    })
   }
 
   function updatePagination(totalItemsCount, currentPageArg, pageSizeFromServer) {
@@ -423,6 +424,17 @@ document.addEventListener('DOMContentLoaded', function () {
     loadFilterData();
 
     document.getElementById('makeReport').addEventListener('click', makeReport)
+    pickAllButton = document.getElementById('pickAll')
+    pickAllButton.addEventListener('click', function () {
+      pickAll = !pickAll;
+      if (pickAll){
+        pickAllButton.innerHTML = "Убрать выделение"
+      }
+      else{
+        pickAllButton.innerHTML = "Выделить все"
+      }
+      changeCheck();
+    });
 
     loasFilterSelect.addEventListener('change', loadLocations);
 

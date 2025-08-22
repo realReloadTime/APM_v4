@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         temperature:{
             required: true,
+            min: -273,
             message: 'Укажите температуру'
         },
         direction:{
@@ -86,12 +87,12 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         geography:{
             required: true,
-            minLength: 10,
+            minLength: 5,
             message: 'Укажите место проишествия'
         },
         epicenter:{
             required: true,
-            minLength: 10,
+            minLength: 5,
             message: 'Укажите эпицентр события'
         },
         magnitude: {
@@ -368,12 +369,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.localMeasures = [];
         }
         window.updateAttachmentsEventId(data.id);
-
-        if (eventID) {
-            alert('Событие успешно обновлено!');
-        } else {
-            alert('Новое событие успешно создано!');
-        }
         window.location.href = `/information?event_id=${data.id}`;
         return data;
 

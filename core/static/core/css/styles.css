@@ -3,7 +3,7 @@ html {
     padding: 0;
     height: 100%;
 }
-@media (min-width: 1260px) {
+@media (min-width: 1200px) {
     html {
         font-size: 16px;
     }
@@ -25,7 +25,7 @@ html {
         column-gap: 3.57%;
     }
 }
-@media (max-width: 1260px) {
+@media (max-width: 1199.98px) {
     body {
         font-size: 14px;
     }
@@ -98,7 +98,7 @@ html {
         column-gap: 10%;
     } 
 }
-@media (max-width: 768px){
+@media (max-width: 767.98px){
     .internal-block.responsive-block{
         display: block;
     }
