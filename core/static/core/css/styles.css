@@ -24,18 +24,17 @@ html {
         width:100%;
         column-gap: 3.57%;
     }
+    hr.solid {
+        border-top: none;
+    }
 }
 @media (max-width: 1199.98px) {
     body {
         font-size: 14px;
     }
-    .changing-form{
-        margin-bottom: 30px;
-    }
     .stable-form{
-        grid-row: 2;
+        grid-row: 3;
         grid-column: 1;
-        gap:30px
     }
     #main-navbar {
         position: absolute;
@@ -89,6 +88,12 @@ html {
     .navbar-brand {
         align-items: center;
         padding-bottom: 0;
+    }
+    hr.solid {
+        border-left: none;
+        border-top: 3px solid #bbb; 
+        grid-row: 2;
+        display: grid;
     }
 }
 @media (min-width: 768px){

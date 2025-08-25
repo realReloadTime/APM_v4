@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         reportIds.event_id.push(parseInt(check.id))
       }
     })
-    const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/test/`);
+    const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/report/`);
 
     const response = await fetch(url, {
       method: 'POST',
