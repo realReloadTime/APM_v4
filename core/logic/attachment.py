@@ -99,3 +99,9 @@ class AttachmentService:
             return serializer.data
 
         return await sync_to_async(serialize)()
+
+
+async def async_file_iterator(file_path, chunk_size=8192):  # асинхронная выгрузка файла порционно
+    async with aiofiles.open(file_path, mode='rb') as f:
+        while chunk := await f.read(chunk_size):
+            yield chunk

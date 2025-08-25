@@ -13,4 +13,4 @@ channels
 channels_redis
 websockets
 
-openpyxl
+xlsxwriter

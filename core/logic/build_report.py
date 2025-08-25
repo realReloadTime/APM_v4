@@ -1,23 +1,25 @@
-from asgiref.sync import sync_to_async
+import os
+
+import xlsxwriter
 from django.db.models import Prefetch
+
 from core.models import (
     Event, EquipmentFailure, AdverseWeather, FireDanger, GeologicalDanger,
     HydrologicalDanger, EmergencySituation, OtherDanger, MeasuresTaken
 )
 
 
-async def generate_report_data(event_ids: list[int]) -> dict:
+async def generate_report_data(event_ids: list[int]) -> tuple[dict, int]:
     """
     Функция для генерации структурированных данных отчета на основе списка ID событий.
-    События группируются по категориям, нумеруются и форматируются в список словарей с полями на русском языке.
+    События группируются по категориям, нумеруются и форматируются в список словарей.
 
     :param event_ids: Список ID событий для обработки.
     :return: Словарь с ключами - названиями категорий, значениями - списками словарей с данными событий.
     """
     if not event_ids:
-        return {}
+        return {}, 0
 
-    # Получаем все события с предзагрузкой связанных данных
     events = Event.objects.filter(id__in=event_ids).select_related(
         'loa', 'category', 'location', 'created_by'
     ).prefetch_related(
@@ -25,7 +27,6 @@ async def generate_report_data(event_ids: list[int]) -> dict:
         'event_attachments'
     )
 
-    # Создаем словарь для группировки
     grouped_data = {
         'EquipmentFailure': list(),
         'AdverseWeather': list(),
@@ -38,54 +39,83 @@ async def generate_report_data(event_ids: list[int]) -> dict:
 
     async for event in events:
         category_table = event.category.table_name.lower() if event.category else None
-        data = await _collect_common_data(event)
+
         if category_table == 'equipment_failure':
+            zero_dict = {'№ п/п': len(grouped_data['EquipmentFailure']) + 1}
+            zero_dict.update(await _collect_common_data(event))
+
             failure = await EquipmentFailure.objects.select_related(
                 'object', 'subsystem', 'subsystem_status'
             ).prefetch_related('influenced_objects').aget(event=event)
-            data.update(await _collect_equipment_failure_data(failure, event))
-            grouped_data['EquipmentFailure'].append(data)
+            zero_dict.update(await _collect_equipment_failure_data(failure))
+
+            grouped_data['EquipmentFailure'].append(zero_dict)
 
         elif category_table == 'adverse_weather':
-            weather = await AdverseWeather.objects.select_related('source', 'condition', 'precipitation').aget(event=event)
-            data.update(await _collect_weather_danger_data(weather, event))
-            grouped_data['AdverseWeather'].append(data)
+            zero_dict = {'№ п/п': len(grouped_data['AdverseWeather']) + 1}
+            zero_dict.update(await _collect_common_data(event))
+
+            weather = await AdverseWeather.objects.select_related('source', 'condition', 'precipitation').aget(
+                event=event)
+            zero_dict.update(await _collect_weather_danger_data(weather, event))
+
+            grouped_data['AdverseWeather'].append(zero_dict)
 
         elif category_table == 'fire_danger':
+            zero_dict = {'№ п/п': len(grouped_data['FireDanger']) + 1}
+            zero_dict.update(await _collect_common_data(event))
+
             fire = await FireDanger.objects.select_related('source').aget(event=event)
-            data.update(await _collect_fire_danger_data(fire, event))
-            grouped_data['FireDanger'].append(data)
+            zero_dict.update(await _collect_fire_danger_data(fire, event))
+
+            grouped_data['FireDanger'].append(zero_dict)
 
         elif category_table == 'geological_danger':
+            zero_dict = {'№ п/п': len(grouped_data['GeologicalDanger']) + 1}
+            zero_dict.update(await _collect_common_data(event))
+
             geo = await GeologicalDanger.objects.select_related('source').aget(event=event)
-            data.update(await _collect_geological_danger_data(geo, event))
-            grouped_data['GeologicalDanger'].append(data)
+            zero_dict.update(await _collect_geological_danger_data(geo, event))
+
+            grouped_data['GeologicalDanger'].append(zero_dict)
 
         elif category_table == 'hydrological_danger':
+            zero_dict = {'№ п/п': len(grouped_data['HydrologicalDanger']) + 1}
+            zero_dict.update(await _collect_common_data(event))
+
             hydro = await HydrologicalDanger.objects.select_related('source').aget(event=event)
-            data.update(await _collect_hydrological_danger_data(hydro, event))
-            grouped_data['HydrologicalDanger'].append(data)
+            zero_dict.update(await _collect_hydrological_danger_data(hydro, event))
+
+            grouped_data['HydrologicalDanger'].append(zero_dict)
 
         elif category_table == 'emergency_situation':
+            zero_dict = {'№ п/п': len(grouped_data['EmergencySituation']) + 1}
+            zero_dict.update(await _collect_common_data(event))
+
             emergency = await EmergencySituation.objects.select_related('source').aget(event=event)
-            data.update(await _collect_emergency_situation_data(emergency, event))
-            grouped_data['EmergencySituation'].append(data)
+            zero_dict.update(await _collect_emergency_situation_data(emergency, event))
+
+            grouped_data['EmergencySituation'].append(zero_dict)
 
         elif category_table == 'other_danger':
-            other = await OtherDanger.objects.select_related('source').aget(event=event)
-            data.update(await _collect_other_danger_data(other, event))
-            grouped_data['OtherDanger'].append(data)
+            zero_dict = {'№ п/п': len(grouped_data['OtherDanger']) + 1}
+            zero_dict.update(await _collect_common_data(event))
 
-    # Нумеруем события в каждой группе
+            other = await OtherDanger.objects.select_related('source').aget(event=event)
+            zero_dict.update(await _collect_other_danger_data(other, event))
+            grouped_data['OtherDanger'].append(zero_dict)
+
+    max_range_columns = 0
     for category, items in grouped_data.items():
-        for idx, item in enumerate(items, start=1):
-            item['№ п/п'] = idx
-    return dict(grouped_data)
+        max_range_columns = len(items[0].items()) if items[0] and max_range_columns < len(
+            items[0].items()) else max_range_columns
+
+    return grouped_data, max_range_columns
 
 
 async def _collect_common_data(event: Event) -> dict:
     """Собирает общие данные из модели Event."""
-    measures = '\n'.join([
+    measures = '\n\n'.join([
         f"{m.adopted_at.strftime('%d.%m.%Y %H:%M:%S')}: {m.description}"
         async for m in event.event_measures.all()]) or ''
 
@@ -109,7 +139,7 @@ async def _collect_common_data(event: Event) -> dict:
     }
 
 
-async def _collect_equipment_failure_data(failure: EquipmentFailure, event: Event) -> dict:
+async def _collect_equipment_failure_data(failure: EquipmentFailure) -> dict:
     """Собирает данные для EquipmentFailure в формате отчета об отказах."""
     influenced = ', '.join([o.name async for o in failure.influenced_objects.all()]) or ''
 
@@ -191,3 +221,88 @@ async def _collect_other_danger_data(other: OtherDanger, event: Event) -> dict:
         'Метеоусловия, температура, ветер, осадки': 'Другая опасность',
         'Описание события': other.description,
     }
+
+
+async def make_report(event_ids: list[int], label: str | None) -> bool:
+    data, max_range_size = await generate_report_data(event_ids)
+    file_path = os.path.join('core', 'attachments', 'report.xlsx')
+    workbook = xlsxwriter.Workbook(file_path)
+
+    title_format = workbook.add_format(
+        {
+            'bold': True,
+            'align': 'center',
+            'valign': 'top',
+            'font_size': 12,
+            'font_name': 'Arial',
+            'text_wrap': True
+        }
+    )
+
+    category_format = workbook.add_format(
+        {
+            'bold': True,
+            'align': 'center',
+            'valign': 'bottom',
+            'font_size': 14,
+            'font_name': 'Arial',
+            'text_wrap': True
+        }
+    )
+
+    header_format = workbook.add_format({
+        'bold': True,
+        'align': 'center',
+        'valign': 'vcenter',
+        'bg_color': '#00AEEF',
+        'border': 1,
+        'text_wrap': True,
+        'font_size': 10,
+        'font_name': 'Arial',
+    })
+
+    cell_format = workbook.add_format({
+        'text_wrap': True,
+        'valign': 'top',
+        'border': 1,
+        'font_size': 10,
+        'font_name': 'Arial',
+    })
+
+    worksheet = workbook.add_worksheet()
+    worksheet.hide_gridlines()
+    row = 0
+
+    if label:
+        worksheet.merge_range(row, 0, row, 0 + max_range_size, label, title_format)
+        row += 2
+
+    for category, records in data.items():
+        col = 0
+        worksheet.merge_range(row, col, row, col + max_range_size, category, category_format)
+        row += 1
+        if not records:
+            continue
+
+        headers = list(records[0].keys())
+        for header in headers:
+            worksheet.write(row, col, header, header_format)
+            col += 1
+        worksheet.set_column(0, len(headers) - 1, 20)
+
+        row += 1
+
+        for record in records:
+            col = 0
+            for header in headers:
+                value = record.get(header, '')
+                if isinstance(value, (int, float)):
+                    worksheet.write_number(row, col, value, cell_format)
+                else:
+                    worksheet.write(row, col, value, cell_format)
+                col += 1
+            row += 1
+        row += 1
+
+    workbook.close()
+    return True

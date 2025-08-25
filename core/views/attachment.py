@@ -7,18 +7,12 @@ from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 
 from rest_framework.permissions import IsAuthenticated
 
-from core.logic.attachment import AttachmentRepository, AttachmentService
+from core.logic.attachment import AttachmentRepository, AttachmentService, async_file_iterator
 from core.auth import async_permission_required, async_api_method
 
 
 async def get_attachment_service():
     return AttachmentService(AttachmentRepository())
-
-
-async def async_file_iterator(file_path, chunk_size=8192):  # асинхронная выгрузка файла порционно
-    async with aiofiles.open(file_path, mode='rb') as f:
-        while chunk := await f.read(chunk_size):
-            yield chunk
 
 
 @async_api_method(['GET', 'POST'])

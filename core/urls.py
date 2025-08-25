@@ -37,6 +37,7 @@ from core.views.emergency_situation import get_post_emergency_situation, get_eme
     emergency_situation_by_event, update_emergency_situation, delete_emergency_situation
 from core.views.other_danger import get_post_other_danger, get_other_danger_detail, other_danger_by_event, \
     update_other_danger, delete_other_danger
+from core.views.report import download_report
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -183,8 +184,6 @@ urlpatterns = [
          name='other_danger-by-event'),
     path('other_dangers/<int:danger_id>/update/', update_other_danger, name='other_danger-update'),
     path('other_dangers/<int:danger_id>/delete/', delete_other_danger, name='other_danger-delete'),
+
+    path('report/', download_report, name='download-report')
 ]
-
-from core.views.test import test
-
-urlpatterns.append(path('test/', test, name='test'))
