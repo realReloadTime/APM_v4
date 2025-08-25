@@ -27,8 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 { headers: { 'Authorization': `Bearer ${accessToken}` } }
             );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (response.status === 401) {
+                window.loadUserProfile();
+                return;
             }
 
             const eventData = await response.json();
@@ -46,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 const attachment = await attachmentResponse.json();
-                console.log("Loaded attachment:", attachment);
 
                 selectedFiles.push({
                     id: attachment.id,
@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fileInput.addEventListener('change', function (e) {
         const newFiles = Array.from(e.target.files);
-        console.log("New files selected:", newFiles.length);
 
         newFiles.forEach(newFile => {
             const isDuplicate = selectedFiles.some(
@@ -84,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 selectedFiles.push(fileRecord);
-                console.log("Added file record:", fileRecord);
                 uploadFile(newFile, fileRecord);
             }
         });
@@ -203,8 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData();
         formData.append('file', file);
 
-        console.log("Uploading without event_id initially");
-
         fetch(`${window.APP_CONFIG.API_BASE_URL}/api/attachments/`, {
             method: 'POST',
             body: formData,
@@ -219,8 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                console.log("Upload response:", data);
-
                 fileRecord.id = data.id;
                 fileRecord.serverFile = true;
 
@@ -247,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateSingleFileEventId(fileRecord, eventId) {
         const url = `${window.APP_CONFIG.API_BASE_URL}/api/attachments/${fileRecord.id}/update/`;
-        console.log(`Updating attachment: ${url}`);
 
         fetch(url, {
             method: 'PUT',
@@ -266,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                console.log("Update response:", data);
                 fileRecord.hasEventId = true;
                 renderFileList();
             })
@@ -289,7 +281,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             console.error('Delete error text:', text);
                         });
                     }
-                    console.log("File deleted:", file.id);
                 })
                 .catch(error => console.error('Delete error:', error));
         }
@@ -300,17 +291,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.updateAttachmentsEventId = function (newEventId) {
-        console.log("Updating attachments with new eventId:", newEventId);
         eventId = newEventId;
 
         const temporaryFiles = selectedFiles.filter(file => file.id && !file.hasEventId);
 
         if (temporaryFiles.length === 0) {
-            console.log("No temporary files to update");
             return;
         }
 
-        console.log(`Updating ${temporaryFiles.length} files with eventId=${newEventId}`);
 
         temporaryFiles.forEach(file => {
             updateSingleFileEventId(file, newEventId);

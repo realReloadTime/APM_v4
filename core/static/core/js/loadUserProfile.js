@@ -109,3 +109,4 @@ function handleError(error, status = null) {
         window.location.href = '/login';
     }
 }
+window.loadUserProfile = loadUserProfile;

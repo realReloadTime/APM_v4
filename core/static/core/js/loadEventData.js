@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
-
-        alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
+        alert(`Произошла  ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
     }
 
     async function loadData(object) {
@@ -14,7 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
+                
             const data = await response.json();
 
             if (object === 'subsystems') {
@@ -24,7 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
             renderObject(object, data);
 
         } catch (error) {
-            handleError(error, error.status);
+            if (error.status == 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
         }
     }
 
@@ -65,7 +73,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             const objectTypes = await response.json();
 
             const promises = objectTypes.map(type =>
@@ -73,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(objects => ({ type, objects }))
                     .catch(error => {
                         console.error(`Error loading objects for type ${type.id}:`, error);
-                        return { type, objects: [] }; 
+                        return { type, objects: [] };
                     })
             );
 
@@ -84,7 +96,12 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
         } catch (error) {
-            handleError(error);
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
+
         }
     }
 
@@ -101,12 +118,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             return await response.json();
 
         } catch (error) {
-            handleError(error);
-            return [];
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
         }
     }
 
@@ -235,12 +259,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
-            if (!response.ok) throw new Error('Failed to load locations');
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             const locations = await response.json();
             renderObject("locations", locations);
 
         } catch (error) {
-            console.error('Error loading locations:', error);
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
         }
     }
 
@@ -249,7 +281,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (selected) {
             document.getElementById('object_id').value = selected.value;
             document.getElementById('object').value = selected.getAttribute('data-name');
-            console.log(selected.value)
         }
         bootstrap.Modal.getInstance(document.getElementById('oneObjectModal')).hide();
     });

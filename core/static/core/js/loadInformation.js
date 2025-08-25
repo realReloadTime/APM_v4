@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Ошибка:', error);
         if (status === 401 || error.message.includes('token')) {
             window.loadUserProfile();
+        } else {
+            alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
         }
-        alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
     }
 
     function getEventIdFromUrl() {
@@ -33,7 +34,11 @@ document.addEventListener('DOMContentLoaded', function () {
             renderInformation(data, categoryData);
 
         } catch (error) {
-            handleError(error);
+            if (error.status == 401) {
+                window.loadUserProfile();
+            } else {
+                handleError(error);
+            }
         }
     }
 
@@ -73,13 +78,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.loadUserProfile();
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             measures = await response.json();
             renderMeasures(measures);
         } catch (error) {
-            console.error('Ошибка загрузки мер:', error);
-            alert('Не удалось загрузить принятые меры');
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                console.error('Ошибка загрузки мер:', error);
+                alert('Не удалось загрузить принятые меры');
+            }
         }
     }
 
@@ -87,28 +102,40 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Found attachments:", attachmentsIds);
 
         for (const attachmentId of attachmentsIds) {
-            const attachmentResponse = await fetch(
-                `${window.APP_CONFIG.API_BASE_URL}/api/attachments/${attachmentId}/`,
-                { headers: { 'Authorization': `Bearer ${accessToken}` } }
-            );
+            try {
+                const attachmentResponse = await fetch(
+                    `${window.APP_CONFIG.API_BASE_URL}/api/attachments/${attachmentId}/`,
+                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+                );
 
-            if (!attachmentResponse.ok) {
-                console.warn(`Attachment ${attachmentId} not found, status: ${attachmentResponse.status}`);
-                continue;
+                if (!attachmentResponse.ok) {
+                    if (attachmentResponse.status === 401) {
+                        window.loadUserProfile();
+                        return;
+                    }
+                    console.warn(`Attachment ${attachmentId} not found, status: ${attachmentResponse.status}`);
+                    continue;
+                }
+
+                const attachment = await attachmentResponse.json();
+                console.log("Loaded attachment:", attachment);
+
+                selectedFiles.push({
+                    id: attachment.id,
+                    name: attachment.name,
+                    serverFile: true,
+                    hasEventId: true
+                })
+            } catch (error) {
+                if (error.status === 401 || error.message.includes('token')) {
+                    window.loadUserProfile();
+                    return;
+                }
+                console.warn(`Failed to load attachment ${attachmentId}:`, error);
             }
-
-            const attachment = await attachmentResponse.json();
-            console.log("Loaded attachment:", attachment);
-
-            selectedFiles.push({
-                id: attachment.id,
-                name: attachment.name,
-                serverFile: true,
-                hasEventId: true
-            })
         }
         renderFileList();
-    } 
+    }
 
     function renderMeasures(measures) {
         actionsTextarea = document.getElementById('actions')
@@ -235,12 +262,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (file.id) {
                 const downloadBtn = document.createElement('button');
                 downloadBtn.className = 'btn btn-primary btn-sm';
-                downloadBtn.innerHTML = '<img src="' + staticUrl + 
-                'box-arrow-in-down.svg" width="16" height="16" style="filter: invert(1);" alt="Скачать">';
+                downloadBtn.innerHTML = '<img src="' + staticUrl +
+                    'box-arrow-in-down.svg" width="16" height="16" style="filter: invert(1);" alt="Скачать">';
                 downloadBtn.onclick = () => downloadFile(file);
                 listItem.appendChild(downloadBtn);
             }
-            
+
             list.appendChild(listItem);
         });
 
@@ -254,6 +281,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then(response => {
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        window.loadUserProfile();
+                        return;
+                    }
                     throw new Error(`Download failed: ${response.status}`);
                 }
                 return response.blob();
@@ -270,8 +301,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.body.removeChild(a);
             })
             .catch(error => {
-                console.error('Download error:', error);
-                alert(`Ошибка скачивания файла ${file.name}: ${error.message}`);
+                if (error.status === 401 || error.message.includes('token')) {
+                    window.loadUserProfile();
+                } else {
+                    console.error('Download error:', error);
+                    alert(`Ошибка скачивания файла ${file.name}: ${error.message}`);
+                }
             });
     }
 
@@ -290,6 +325,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    window.loadUserProfile();
+                    return;
+                }
                 const error = new Error(`HTTP error! status: ${response.status}`);
                 error.status = response.status;
                 throw error;
@@ -319,13 +358,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const eventId = getEventIdFromUrl();
-if (eventId) {
-    loadData(eventId);
-    loadMeasures(eventId);
-    changeRef(eventId);
-    setupDeleteConfirmation(eventId);
-} else {
-    console.error('Event ID not found in URL');
-    window.location.href = "/table"
-}
+    if (eventId) {
+        loadData(eventId);
+        loadMeasures(eventId);
+        changeRef(eventId);
+        setupDeleteConfirmation(eventId);
+    } else {
+        console.error('Event ID not found in URL');
+        window.location.href = "/table"
+    }
 });
