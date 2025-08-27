@@ -6,6 +6,7 @@
     <title>Базовая страница</title>
     <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <script> var staticUrl = "{% static 'core/images/' %}"; </script>
     <script src="{% static 'core/js/config.js' %}"></script>
     <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'core/js/loadNavbar.js' %}"></script>
@@ -22,7 +23,8 @@
                     style="width: 80px;" min="1" max="1000" value="10">
                 <button class="btn btn-primary me-2" data-bs-toggle="modal"
                     data-bs-target="#filterModal">Фильтрация</button>
-                <button class="btn btn-primary me-2">Создать отчет</button>
+                <button class="btn btn-primary me-2" id="makeReport">Создать отчет</button>
+                <button class="btn btn-primary me-2" id="pickAll">Убрать выделение</button>
             </div>
             <div class="pagination-info"></div>
         </div>
@@ -35,9 +37,9 @@
                         <th scope="col" width='17%' data-sort="category">Категория информации <span class="sort-icon"></span></th>
                         <th scope="col" width='19%' data-sort="location">Наименование объекта <span class="sort-icon"></span></th>
                         <th scope="col" width='20%'>Примечание</th>
-                        <th scope="col" width='10%' data-sort="end">Закрыто <span class="sort-icon"></span></th>
+                        <th scope="col" width='9%' data-sort="end">Закрыто <span class="sort-icon"></span></th>
                         <th scope="col" width='5%'>Вложения</th>
-                        <th scope="col" width='6%'>В отчёт</th>
+                        <th scope="col" width='7%'>В отчёт</th>
                         <th scope="col" width='5%'></th>
                     </tr>
                 </thead>

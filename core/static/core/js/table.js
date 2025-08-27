@@ -13,11 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
   let categoriesFilterSelect, loasFilterSelect, locationsFilterSelect;
   let currentFilters = {};
   let sortFields = {}; // Объект для хранения состояния сортировки {field: direction}
+  let pickAll = true;
 
   let isFirstWebSocketConnection = true;
 
   if (!accessToken) {
-    window.location.href = '/login';
+    window.loadUserProfile();
     return;
   }
 
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (currentFilters.category) urlObj.searchParams.set('category', currentFilters.category);
     if (currentFilters.loa) urlObj.searchParams.set('loa', currentFilters.loa);
     if (currentFilters.location) urlObj.searchParams.set('location', currentFilters.location);
-    
+
     const sortParams = getSortParams();
     if (sortParams) {
       urlObj.searchParams.set('sort_by', sortParams);
@@ -133,12 +134,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function getSortParams() {
     const sortFieldsArray = [];
-    
+
     for (const [field, direction] of Object.entries(sortFields)) {
       const prefix = direction === 'desc' ? '-' : '';
       sortFieldsArray.push(`${prefix}${field}`);
     }
-    
+
     return sortFieldsArray.length > 0 ? sortFieldsArray.join(',') : null;
   }
 
@@ -171,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.sort-icon').forEach(icon => {
       icon.textContent = '';
     });
-    
+
     for (const [field, direction] of Object.entries(sortFields)) {
       const header = document.querySelector(`th[data-sort="${field}"]`);
       if (header) {
@@ -183,14 +184,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function handleHeaderClick(event) {
+  function handleHeaderClick() {
     const field = this.dataset.sort;
-    const isShiftKey = event.shiftKey; 
-    
-    if (!isShiftKey) {
-      sortFields = {};
-    }
-    
+
     if (!sortFields[field]) {
       sortFields[field] = 'desc';
     } else if (sortFields[field] === 'desc') {
@@ -198,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       delete sortFields[field];
     }
-    
+
     updateSortUI();
     loadEvents(currentPage, currentPageSize);
   }
@@ -227,13 +223,12 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${event.location || '-'}</td>
         <td>${event.note || '-'}</td>
         <td>${event.end ? formatDateTime(event.end) : '-'}</td>
-        <td>${event.attachments && event.attachments.length > 0 ? 'Да' : 'Нет'}</td>
-        <td><input type="checkbox" class="form-check" ${event.report_required ? 'checked' : ''}></td>
+        <td>${(event.event_attachments_id && event.event_attachments_id.length > 0) ? 'Да' : 'Нет'}</td>
+        <td><input name="table-check" id="${event.id}" type="checkbox" class="form-check" ${pickAll ? 'checked' : ''}></td>
         <td>
           <button class="btn btn-sm btn-primary edit-btn" data-id="${event.id}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-            </svg> 
+            <img src="${staticUrl}pencil.svg" 
+                width="16" height="16" style="filter: invert(1);" alt="Редактировать">
           </button>
         </td>
       `;
@@ -252,6 +247,29 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleString('ru-RU');
+  }
+
+  async function makeReport() {
+    let reportIds = { "event_id": [] }
+    document.getElementsByName("table-check").forEach(check => {
+      if (check.checked) {
+        reportIds.event_id.push(parseInt(check.id))
+      }
+    })
+    const url = new URL(`${window.APP_CONFIG.API_BASE_URL}/api/report/`);
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}` },
+      body: JSON.stringify(reportIds)
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  function changeCheck() {
+    document.getElementsByName("table-check").forEach(check => {
+      check.checked = pickAll;
+    })
   }
 
   function updatePagination(totalItemsCount, currentPageArg, pageSizeFromServer) {
@@ -404,9 +422,22 @@ document.addEventListener('DOMContentLoaded', function () {
     restoreFilters();
     loadFilterData();
 
+    document.getElementById('makeReport').addEventListener('click', makeReport)
+    pickAllButton = document.getElementById('pickAll')
+    pickAllButton.addEventListener('click', function () {
+      pickAll = !pickAll;
+      if (pickAll) {
+        pickAllButton.innerHTML = "Убрать выделение"
+      }
+      else {
+        pickAllButton.innerHTML = "Выделить все"
+      }
+      changeCheck();
+    });
+
     loasFilterSelect.addEventListener('change', loadLocations);
 
-    document.getElementById('saveFilter').addEventListener('click', function() {
+    document.getElementById('saveFilter').addEventListener('click', function () {
       saveFilters();
       loadEvents(1, currentPageSize);
     });
@@ -417,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('th[data-sort]').forEach(header => {
       header.addEventListener('click', handleHeaderClick);
     });
-    
+
     updateSortUI();
 
     initWebSocket();

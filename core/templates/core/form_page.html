@@ -5,14 +5,15 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Пустая форма</title>
+    <title></title>
     <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <script> var staticUrl = "{% static 'core/images/' %}"; </script>
     <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'core/js/bootstrap.js' %}"></script>
     <script src="{% static 'core/js/config.js' %}"></script>
-    <script src="{% static 'core/js/loadNavbar.js' %}"></script>
     <script src="{% static 'core/js/loadUserProfile.js' %}"></script>
+    <script src="{% static 'core/js/loadNavbar.js' %}"></script>
     <script src="{% static 'core/js/loadEventData.js' %}"></script>
     <script src="{% static 'core/js/loadFormData.js' %}"></script>
     <script src="{% static 'core/js/sendForm.js' %}"></script>
@@ -279,6 +280,7 @@
                 <textarea class="form-control" id="description-other-dangers" style="width: 100%;"></textarea>
             </div>
         </div>
+        <hr class="solid">
         <div class="stable-form" style="display: block;">
             <div class="external-block" style="display: block; ">
                 <label class="label-for-textarea" for="consequences">Возможные последствия:</label>
@@ -339,11 +341,8 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="search_tab" data-bs-toggle="tab" data-bs-target="#search"
                                 type="button" role="tab" aria-controls="search" aria-selected="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-search" viewBox="0 0 16 16">
-                                    <path
-                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
+                                <img src="{% static 'core/images/search.svg' %}" 
+                                width="16" height="16" style="filter: invert(1);" alt="Поиск">
                             </button>
                         </li>
                     </ul>
@@ -369,11 +368,8 @@
                             <button class="nav-link" id="mot_search_tab" data-bs-toggle="tab"
                                 data-bs-target="#mot_search" type="button" role="tab" aria-controls="mot_search"
                                 aria-selected="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-search" viewBox="0 0 16 16">
-                                    <path
-                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
+                                <img src="{% static 'core/images/search.svg' %}" 
+                                width="16" height="16" style="filter: invert(1);" alt="Поиск">
                             </button>
                         </li>
                     </ul>

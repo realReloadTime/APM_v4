@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleError(error, status) {
         console.error('Ошибка:', error);
-        alert(`Произошла ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
+        alert(`Произошла  ошибка: ${error.message || status || 'Неизвестная ошибка'}`);
     }
 
     async function loadData(object) {
@@ -13,7 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
+                
             const data = await response.json();
 
             if (object === 'subsystems') {
@@ -23,7 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
             renderObject(object, data);
 
         } catch (error) {
-            handleError(error, error.status);
+            if (error.status == 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
         }
     }
 
@@ -64,20 +73,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             const objectTypes = await response.json();
 
-            for (const type of objectTypes) {
-                try {
-                    const objects = await loadObjectsByType(type.id);
-                    renderObjectsInModal(type, objects);
-                } catch (error) {
-                    console.error(`Error loading objects for type ${type.id}:`, error);
-                }
-            }
+            const promises = objectTypes.map(type =>
+                loadObjectsByType(type.id)
+                    .then(objects => ({ type, objects }))
+                    .catch(error => {
+                        console.error(`Error loading objects for type ${type.id}:`, error);
+                        return { type, objects: [] };
+                    })
+            );
+
+            const results = await Promise.all(promises);
+
+            results.forEach(({ type, objects }) => {
+                renderObjectsInModal(type, objects);
+            });
 
         } catch (error) {
-            handleError(error);
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
+
         }
     }
 
@@ -88,17 +112,25 @@ document.addEventListener('DOMContentLoaded', function () {
         if (selectedLoaId) {
             url += `&loa=${selectedLoaId}`;
         }
+
         try {
             const response = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
 
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             return await response.json();
 
         } catch (error) {
-            handleError(error);
-            return [];
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
         }
     }
 
@@ -113,10 +145,10 @@ document.addEventListener('DOMContentLoaded', function () {
         createObjectTab(type, objects, multObjectTab, multObjectTabContent, true);
     }
 
-   function createObjectTab(type, objects, tabContainer, contentContainer, isMultiple) {
+    function createObjectTab(type, objects, tabContainer, contentContainer, isMultiple) {
         const tabId = `tab-${type.id}-${isMultiple ? 'multi' : 'single'}`;
         let tabPane = document.getElementById(tabId);
-        
+
         if (!tabPane) {
             const tabButton = document.createElement('li');
             tabButton.className = 'nav-item';
@@ -124,9 +156,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button class="nav-link" id="${tabId}-tab" data-bs-toggle="tab" 
                     data-bs-target="#${tabId}" type="button" role="tab">${type.name}</button>
             `;
-            
+
             tabContainer.insertBefore(tabButton, tabContainer.lastElementChild);
-            
+
             tabPane = document.createElement('div');
             tabPane.className = 'tab-pane fade';
             tabPane.id = tabId;
@@ -134,10 +166,10 @@ document.addEventListener('DOMContentLoaded', function () {
             tabPane.setAttribute('aria-labelledby', `${tabId}-tab`);
             contentContainer.appendChild(tabPane);
         }
-        
+
         const tableHtml = createObjectsTable(objects, isMultiple);
         tabPane.innerHTML = tableHtml;
-        
+
         addObjectSelectionHandlers(tabPane, isMultiple);
     }
 
@@ -227,12 +259,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(url, {
                 headers: { 'Authorization': `Bearer ${accessToken}` }
             });
-            if (!response.ok) throw new Error('Failed to load locations');
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
             const locations = await response.json();
             renderObject("locations", locations);
 
         } catch (error) {
-            console.error('Error loading locations:', error);
+            if (error.status === 401 || error.message.includes('token')) {
+                window.loadUserProfile();
+            } else {
+                handleError(error, error.status);
+            }
         }
     }
 
@@ -261,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('systems')?.addEventListener('change', filterSubsystems);
-    document.getElementById('loas').addEventListener('change', function () {loadLocations(); loadObjectTypes();});
+    document.getElementById('loas').addEventListener('change', function () { loadLocations(); loadObjectTypes(); });
 
     loadData("categories");
     loadData("systems");

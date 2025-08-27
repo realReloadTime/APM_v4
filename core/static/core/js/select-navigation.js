@@ -33,9 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modalInstance.hide();
             
             document.querySelector('[data-bs-target="#oneObjectModal"]').focus();
-        } else {
-            alert('Пожалуйста, выберите объект');
-        }
+        } 
     });
     
     const modalInstance = new bootstrap.Modal(modal, {
