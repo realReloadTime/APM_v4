@@ -21,7 +21,7 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
 
         if 'profile' not in extra_fields:
-            extra_fields['profile'] = Profile.objects.get(name='Наблюдатель')
+            extra_fields['profile'] = Profile.objects.get(name='Сотрудник')
 
         user = self.model(email=email, **extra_fields)
         user.set_password(password)

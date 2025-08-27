@@ -73,6 +73,8 @@ class EventRepository:
                         orm_filters['begin__gte'] = value
                     elif key == 'end_date':
                         orm_filters['begin__lte'] = value
+                    elif key == 'is_ended':
+                        orm_filters['end__isnull'] = not bool(int(value))
                     else:
                         orm_filters[key] = value
                 qs = qs.filter(**orm_filters)
