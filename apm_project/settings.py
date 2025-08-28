@@ -71,7 +71,7 @@ DATABASES = {
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
         'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': 'localhost',
+        'HOST': os.getenv("DB_HOST", "localhost"),
         'PORT': '5432',
     }
 }
@@ -80,7 +80,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
+            'hosts': [(os.getenv("REDIS_HOST", "127.0.0.1"), 6379)],
         },
     },
 }

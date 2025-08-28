@@ -1,0 +1,7 @@
+.git
+.gitignore
+.venv
+*.pyc
+*.pyo
+__pycache__
+staticfiles
