@@ -113,10 +113,10 @@ document.addEventListener('DOMContentLoaded', function () {
   function applyFiltersToURL(urlObj) {
     if (currentFilters.show && currentFilters.show !== 'showAll') {
       if (currentFilters.show == "showEnded") {
-        urlObj.searchParams.set('is_ended', true);
+        urlObj.searchParams.set('is_ended', 1);
       }
       else {
-        urlObj.searchParams.set('is_ended', false);
+        urlObj.searchParams.set('is_ended', 0);
       }
     }
 
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${event.note || '-'}</td>
         <td>${event.end ? formatDateTime(event.end) : '-'}</td>
         <td>${(event.event_attachments_id && event.event_attachments_id.length > 0) ? 'Да' : 'Нет'}</td>
-        <td><input name="table-check" id="${event.id}" type="checkbox" class="form-check" ${pickAll ? 'checked' : ''}></td>
+        <td><input name="table-check" id="${event.id}" type="checkbox" class="form-check primary" ${pickAll ? 'checked' : ''}></td>
         <td>
           <button class="btn btn-sm btn-primary edit-btn" data-id="${event.id}">
             <img src="${staticUrl}pencil.svg" 

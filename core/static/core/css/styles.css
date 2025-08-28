@@ -153,7 +153,12 @@ main{
 .label-for-textarea{
     padding-bottom: 0.5%;
 }
+/* input.form-check.primary:checked,
+input.multObject {
+  accent-color: #0d6efd; 
+} */
 input.form-control,
+input.form-check,
 select.form-select,
 button.btn-primary,
 textarea.form-control,
@@ -161,6 +166,7 @@ button.btn-danger{
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     line-height: 1.5;
+    accent-color: #0d6efd; 
 }
 
 #save:disabled {
